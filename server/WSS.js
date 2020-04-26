@@ -1,0 +1,455 @@
+
+// NATIVE PACKAGES
+const host = require('os').hostname()
+const express = require('express')
+const http = require('http')
+const fs = require('fs')
+const os = require('os')
+
+// LOCAL PACKAGES
+const log = require('./server/log.js')
+const DB = require('./server/db.js')
+// const config = require('./config.js')
+const env = require('./server/.env.js')
+// const env = require(!fs.existsSync("env.js") ? './default_env.js' : './.env.js')
+
+// NPM 
+const bodyParser = require('body-parser')
+const session = require('express-session')
+const cookie = require('cookie')
+const cookieParser = require('cookie-parser')
+const FormData = require('express-form-data')
+const mkdirp = require('mkdirp')
+
+
+
+const User = require('./User.js')
+
+const MemoryStore = require('memorystore')(session)
+
+// const uuid = require('uuid').v4
+
+const GAME = require('./server/GAME.js')
+
+// const ROUTER = require('./ROUTER.js')
+
+// const SOCKETS = require('./SOCKETS.js')
+
+// const lib = require('./lib.js')
+const WSS = require('./Server.js')()
+
+const MAP = require('./server/MAP.js')
+
+const auth = require('./server/auth.js')
+
+// const readline = require('readline')
+
+log('call', 'mud.js')
+
+const STORE = new MemoryStore({
+	checkPeriod: 1000 * 60 * 60 * 24 * 2// prune expired entries every 24h
+})
+
+const render = require('/client/mud_html.js')
+
+// CACHED SESSIONS
+const lru_session = session({
+	cookie: { maxAge: 1000 * 60 * 60 * 24 * 2 },
+	resave: false,
+	saveUninitialized: true,
+	store: STORE,
+	secret: env.SECRET
+})
+
+
+
+// const version = 14
+
+const gatekeep = function(req, res, next) {
+
+	if( req.path.match(/\/resource/) || req.path.match(/\/client/) ){
+
+		log('flag', 'resource: ', req.path )
+
+		next()
+
+	}else{
+
+		req.session.USER = new User( req.session.USER )
+
+		log('gatekeep', req.path )
+
+		next()
+
+	}
+
+}
+
+const exp = new express()
+
+const server = http.createServer( exp )
+
+
+
+// const upload = multer({
+//   dest: env.UPLOAD_DIR
+// })
+
+
+const FormData_options = {
+  uploadDir: os.tmpdir(),
+  autoClean: true
+}
+ 
+// parse data with connect-multiparty. 
+exp.use( FormData.parse( FormData_options ) )
+// delete from the request all empty files (size == 0)
+exp.use( FormData.format() )
+// change the file objects to fs.ReadStream 
+// exp.use( FormData.stream() )
+// union the body and the files
+// exp.use( FormData.union() )
+
+
+
+
+
+
+// HTTP ROUTER
+// exp.set( 'port', env.PORT )
+
+exp.use('/client', express.static( '/client' )) // __dirname + 
+// exp.use('/static', express.static( '/resource' )) // __dirname + 
+exp.use('/resource', express.static( '/resource' )) // __dirname + 
+exp.use('/fs', express.static( '/fs' )) // __dirname + 
+// exp.use('/favicon.ico', express.static( '/static/media/favicon.ico') )
+// exp.use('/fs', express.static(__dirname + '/fs'))
+exp.use( bodyParser.json({ 
+	type: 'application/json' 
+}))
+
+// exp.use( upload.array() )
+
+exp.use( lru_session )
+
+exp.use( gatekeep )
+
+// routing
+exp.get('/', function(request, response) {
+	response.send( render( 'index', request ) )
+})
+
+exp.post('/register', function( request, response ){
+	auth.register( request )
+	.then( res => {
+		// includes success false's :
+		response.json( res )
+	}).catch( err => {
+		log('flag', 'err register: ', err )
+		response.json({
+			success: false,
+			msg: 'error logging in'
+		})
+	})
+})
+
+exp.post('/login', function( request, response ){
+	auth.login( request )
+	.then( res => {
+		// includes success false's :
+		response.json( res )
+	}).catch( err => {
+		log('flag', 'err login: ', err )
+		response.json({
+			success: false,
+			msg: 'error logging in'
+		})
+	})
+})
+
+exp.post('/logout', function( request, response ){
+	auth.logout( request )
+	.then( res => {
+		// includes success false's :
+		response.json( res )
+	}).catch( err => {
+		log('flag', 'err logout: ', err )
+		response.json({
+			success: false,
+			msg: 'error logging out'
+		})
+	})
+})
+
+exp.post('/update', function( request, response ){
+	auth.update( request )
+	.then( res => {
+		// includes success false's :
+		response.json( res )
+	}).catch( err => {
+		log('flag', 'err update: ', err )
+		response.json({
+			success: false,
+			msg: 'error updating'
+		})
+	})
+})
+
+
+
+exp.post('/img_handler', function( request, response ){
+
+	if( request.files && request.session.USER.name ){
+
+		const FILE = request.files.upload
+
+		const slot_mud_id = request.body.slot_mud_id
+		const title = request.body.title
+		const description = request.body.description
+
+		const tempPath = FILE.path
+
+		const file_URL = `${ Date.now() }__${ FILE.originalFilename }`
+		const mud_idPath = env.UPLOAD_DIR + request.session.USER.mud_id
+
+		const finalPath = mud_idPath + '/' + file_URL
+
+		if( '(check valid)' == '(check valid)' ){
+
+			mkdirp( mud_idPath, { mode: '0744' })
+			.then( res => {
+
+				// fs.rename( tempPath, finalPath, err => {
+				fs.rename( tempPath, finalPath, err => {
+					
+					if( err ) {
+						log('flag', 'filepath err: ', err)
+						response.status(500).end()
+					}
+
+					// log('flag', 'request.session.USER.website: ', request.session.USER )
+
+					GAME.add_img_upload( request.session.USER.mud_id, slot_mud_id, file_URL, description, title )
+					.then( res => {
+						if( res.success ){
+							response.json({
+								success: true
+							})
+						}else{
+							log('flag', 'new img fail: ', res )
+							response.json({
+								success: false,
+								msg: 'failed to set image'
+							})
+						}
+					}).catch( err => { log('flag', 'error setting image: ', err ) })
+
+				})
+
+			}).catch( err => {
+				log('flag', 'err saving upload', err )
+		    	response.status(500).end()
+		    	return false
+			})
+
+		}else{
+
+			fs.unlink( tempPath, err => {
+				if( err ) return false
+				response.status(403).contentType('text/plain').end('invalid file upload')
+			})
+
+		}
+
+	}else{
+		log('flag', 'no file')
+		response.end()
+	}
+})
+
+exp.post('*', function(request, response){
+	log('router', '404 POST: ' + request.url)
+	if( request.url.match(/\.html$/) ){
+		response.status( 404 ).sendFile('/client/html/404.html', { 
+			root : '/' 
+		})    
+	}else{
+		response.end()
+	}
+})
+
+exp.get('*', function(request, response){
+	log('router', '404 GET: ' + request.url)
+	response.status( 404 ).send( render('404', request) )
+	// response.status(404).sendFile('/client/html/404.html', { root : '/'})    
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DB.initDB(( err, db ) => {
+
+	if( err ) return console.error( 'no db: ', err )
+	
+	log('db', 'init:', Date.now() )
+  
+	server.listen( env.PORT, function() {
+		log( 'boot', 'Starting server on ' + host + ':' + env.PORT, Date.now() )
+	})
+
+	server.on('upgrade', function( request, socket, head ){
+
+		lru_session( request, {}, () => {
+			if ( !request.session.USER ) {
+				socket.destroy()
+				return
+			}
+
+			log('wss', 'session parsed')
+
+			WSS.handleUpgrade( request, socket, head, function( ws ) {
+				WSS.emit('connection', ws, request)
+			})
+		})
+	})
+
+	WSS.on('connection', function connection( socket, req ) {
+
+		log('wss', 'socket connection ', req.session.USER.name )
+
+		socket.request = req
+
+		if( Object.keys( SOCKETS ).length >= env.MAX_CONNECTIONS ) {
+			return {
+				success: false,
+				msg: 'at capacity'
+			}
+		}
+
+		socket.request.session.USER = new USER( socket.request.session.USER )
+
+		let mud_id = socket.request.session.USER.mud_id
+
+		SOCKETS[ mud_id ] = socket
+
+		ROUTER.bind_USER( GAME, mud_id )
+
+		SOCKETS[ mud_id ].send( JSON.stringify( {
+			type: 'session_init',
+			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
+			map: MAP
+		}) )
+
+		if( !GAME.pulse && !GAME.opening ) {
+			GAME.opening = true
+			GAME.init_async_elements()
+			.then( res => {
+				GAME.opening = false
+				GAME.init_sync_elements()
+			})
+			.catch( err => {
+				log('flag', 'err opening GAME: ', err )
+			})
+		}
+
+	})
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if( env.ACTIVE.serverlog ){ 
+
+	const readline = require('readline')
+	
+	const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
+		prompt: 'serverlog> \n'
+	})
+	
+	setTimeout(function(){
+		rl.prompt()
+	}, 500)
+
+	// let readline_last = []
+	
+	rl.on('line', ( line ) => {
+
+		if( env.READLINE_LITERAL ){	// Mac terminal reads the characters outputted by 'up' literally (?)
+			// switch ( line.trim() ) {
+			// 	case '^[[A':
+			// 		log('flag', 'wut')
+			// 		try_readline( readline_last[0] )
+			// 		break
+			// 	default:
+			// 		readline_last.unshift( line.trim() )
+			//	break
+			// }
+		}else{
+			try_readline( line.trim() )
+		}
+
+		rl.prompt()
+	}).on('close', () => {
+		process.exit( 0 )
+	})
+
+}
+
+function try_readline( msg ){
+	try{ 
+		log( 'serverlog', eval(`${ msg }`) ) //), '\n(command): ' + String( msg ) )
+		log( 'serverlog', String( msg ) )
+	}catch( e ){
+		log('serverlog', 'fail: ', e )
+	}
+}
+
+
+
+function hal( type, msg, time ){
+
+	for( const mud_id of Object.keys( SOCKETS ) ){
+
+		SOCKETS[ mud_id ].send(JSON.stringify({
+			type: 'hal',
+			hal_type: type,
+			msg: msg,
+			time: time
+		}))
+
+	}
+
+}
