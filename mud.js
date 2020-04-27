@@ -174,6 +174,22 @@ exp.post('/login', function( request, response ){
 	})
 })
 
+exp.post('/world', function( request, response ){
+
+	response.send( render('world') )
+	// auth.login_user( request )
+	// .then( success => {
+	// 	if( success ){
+	// 		response.send( render( 'avatar' ) )
+	// 	}else{
+	// 		response.send( render( 'index' ) )
+	// 	}
+	// }).catch( err => {
+	// 	log('flag', 'err login: ', err )
+	// 	response.send( render('index') )
+	// })
+})
+
 exp.post('/logout', function( request, response ){
 	auth.logout( request )
 	.then( res => {
@@ -277,7 +293,7 @@ exp.post('/img_handler', function( request, response ){
 exp.post('*', function(request, response){
 	log('router', '404 POST: ' + request.url)
 	if( request.url.match(/\.html$/) ){
-		response.status( 404 ).sendFile('/client/html/404.html', { root : '/' })    
+		response.send( render('gabbagabbahey'))
 	}else{
 		response.end()
 	}
@@ -285,8 +301,11 @@ exp.post('*', function(request, response){
 
 exp.get('*', function(request, response){
 	log('router', '404 GET: ' + request.url)
-	response.status( 404 ).send( render('404', request) )
-	// response.status(404).sendFile('/client/html/404.html', { root : '/'})    
+	if( request.url.match(/\.html$/) ){
+		response.send( render('jargonyjargon'))
+	}else{
+		response.end()
+	}
 })
 
 

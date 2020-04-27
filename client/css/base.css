@@ -2,6 +2,7 @@ body{
     margin: 0;
     background: black;
     color: grey;
+/*     font-family: Courier */
 }
 
 div,
@@ -10,11 +11,10 @@ input{
     box-sizing: border-box;
 }
 
-#mud-home{
-    border: 2px solid;
-    height: 90vh;
-    width: 90vw;
-    margin: 5vh
+.flex-liner{
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .button{
@@ -26,4 +26,49 @@ input{
     text-transform: uppercase;
     font-weight: bold;
     letter-spacing: 2px;
+}
+
+
+#alert-contain{
+	position: fixed;
+	top: 0;
+	z-index: 99999;
+	text-align: center;
+	width: 100%;
+}
+
+#alert-contain .alert-msg{
+	display: inline-block;
+	background: white;
+	padding: 10px;
+	padding-right: 80px;
+	position: relative;
+    margin: 5px 0;
+    max-width: 60%;
+    text-align: left;
+    color: black;
+}
+.alert-close{
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: white;
+	display: inline-block;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.ui-fader{
+    transition: .5s;
+    opacity: 1;
+}
+
+#alert-contain .error{
+	background: rgb(200, 100, 0 );
+}
+#alert-contain .success{
+	background: rgb(35, 141, 52)
+}
+#alert-contain .npc{
+    background: rgb(250, 220, 150);
 }
