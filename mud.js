@@ -128,7 +128,9 @@ exp.use('/fs', express.static( '/fs' )) // __dirname +
 exp.use( bodyParser.json({ 
 	type: 'application/json' 
 }))
-
+exp.use( bodyParser.urlencoded({
+  extended: true
+}));
 // exp.use( upload.array() )
 
 exp.use( lru_session )
@@ -140,35 +142,35 @@ exp.get('/', function(request, response) {
 	response.send( render( 'index', request ) )
 })
 
-exp.get('/test', function( request, response) {
-	log('flag', Object.keys(heaptester).length )
-})
+// exp.get('/test', function( request, response) {
+// 	log('flag', Object.keys(h).length )
+// })
 
 exp.post('/register', function( request, response ){
-	auth.register( request )
-	.then( res => {
-		// includes success false's :
-		response.json( res )
+	auth.register_user( request )
+	.then( success => {
+		if( success ){
+			response.send( render( 'avatar' ) )
+		}else{
+			response.send( render( 'index' ) )
+		}
 	}).catch( err => {
 		log('flag', 'err register: ', err )
-		response.json({
-			success: false,
-			msg: 'error logging in'
-		})
+		response.send( render('index') )
 	})
 })
 
 exp.post('/login', function( request, response ){
-	auth.login( request )
-	.then( res => {
-		// includes success false's :
-		response.json( res )
+	auth.login_user( request )
+	.then( success => {
+		if( success ){
+			response.send( render( 'avatar' ) )
+		}else{
+			response.send( render( 'index' ) )
+		}
 	}).catch( err => {
 		log('flag', 'err login: ', err )
-		response.json({
-			success: false,
-			msg: 'error logging in'
-		})
+		response.send( render('index') )
 	})
 })
 
@@ -275,9 +277,7 @@ exp.post('/img_handler', function( request, response ){
 exp.post('*', function(request, response){
 	log('router', '404 POST: ' + request.url)
 	if( request.url.match(/\.html$/) ){
-		response.status( 404 ).sendFile('/client/html/404.html', { 
-			root : '/' 
-		})    
+		response.status( 404 ).sendFile('/client/html/404.html', { root : '/' })    
 	}else{
 		response.end()
 	}
@@ -317,7 +317,23 @@ DB.initPool(( err, pool ) => {
 	log('db', 'init:', Date.now() )
   
 	server.listen( env.PORT, function() {
-		log( 'boot', 'Starting server on ' + host + ':' + env.PORT, Date.now() )
+		log( 'boot', `\n
+          ,-'''-.
+       ,-'       \`-.
+     ,'             \`.
+   ,'                 \`.
+  /                     \\
+ /                       \\
++-------------------------\\--------------------------
+                           \\                       /
+                            \\                     /   
+                             \`.                 ,'
+                               \`.             ,'
+                                 \`-.       ,-'
+                                    \`-,,,-'\n
+\n ${ host }: ${ env.PORT }
+\n ${ Date.now() } 
+\n` )
 	})
 
 	server.on('upgrade', function( request, socket, head ){
@@ -460,35 +476,36 @@ function hal( type, msg, time ){
 }
 
 
-function heap(){
-	const mem = process.memoryUsage()
-	for (const key in mem) {
-		console.log(`${key} ${Math.round(mem[key] / 1024 / 1024 * 100) / 100} MB`);
-	}
-}
+// function heap(){
+// 	const mem = process.memoryUsage()
+// 	for (const key in mem) {
+// 		console.log(`${key} ${Math.round(mem[key] / 1024 / 1024 * 100) / 100} MB`);
+// 	}
+// }
 
-class Mapcell {
-	constructor( init ){
-		this.id = init.id
-		this.x = init.x
-		this.y = init.y
-		this.z = init.z
-	}
-}
+// class Mapcell {
+// 	constructor( init ){
+// 		this.id = init.id
+// 		this.x = init.x
+// 		this.y = init.y
+// 		this.z = init.z
+// 	}
+// }
 
-const heaptester = (function( width, height ){
-	const grid = {}
-	const total = width * height
-	let id
-	for( let i = 0; i < total; i++ ){
-		id = Math.floor( Math.random() * 1000000000 )
-		grid[ id ] = new Mapcell({
-			id: id,
-			x: i % width,
-			y: Math.random(),
-			z: Math.floor( i / width )
-		})
-	}
-	return grid
-})( 200, 500 )
+// let h = {};
+
+// (function( width, height ){
+// 	const total = width * height
+// 	let id
+// 	for( let i = 0; i < total; i++ ){
+// 		id = uuid()
+// 		h[ id ] = new Number()
+// 		// Mapcell({
+// 			// id: id,
+// 			// x: i % width,
+// 			// y: Math.random(),
+// 			// z: Math.floor( i / width )
+// 		// })
+// 	}
+// })( 1000, 1000 )
 

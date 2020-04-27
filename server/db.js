@@ -1,4 +1,4 @@
-// const util = require('util')
+
 const log = require('./log.js')
 
 const env = require('./.env.js')
@@ -39,14 +39,9 @@ function initPool( callback ) {
 	const queryPromise = ( ...args ) => new Promise( (resolve, reject) => {
 
 		_pool.query( ...args, (error, results, fields) => {
-
 			resolve({ error, results, fields })
-			// if ( error ) {
-				// reject( error )
-			// } else {
-// 
-			// }
 		})
+
 	})
 
 	_pool.queryPromise = queryPromise
