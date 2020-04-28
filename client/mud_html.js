@@ -30,6 +30,13 @@ const overlays = {
 			<!--div id='world-map'></div-->
 			<div id='action-bar'></div>
 		</div>`,
+	dev: `
+		<div id='dev'>
+			<div class='coords'>
+			</div>
+			<div class='crowd'>
+			</div>
+		</div>`
 }
 
 
@@ -107,6 +114,7 @@ const render = function( type, request ){
 					${ js_includes }
 				</head>
 				<body>
+					${ overlays.dev }
 					${ overlays.alert }
 					${ overlays.world_ui }
 				</body>

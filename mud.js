@@ -32,9 +32,9 @@ const MemoryStore = require('memorystore')(session)
 
 const GAME = require('./server/GAME.js')
 
-// const ROUTER = require('./ROUTER.js')
+const ROUTER = require('./server/ROUTER.js')
 
-// const SOCKETS = require('./SOCKETS.js')
+const SOCKETS = require('./server/SOCKETS.js')
 
 // const lib = require('./lib.js')
 const WSS = require('./Server.js')()
@@ -68,9 +68,9 @@ const lru_session = session({
 
 const gatekeep = function(req, res, next) {
 
-	if( req.path.match(/\/resource/) || req.path.match(/\/client/) ){
+	if( req.path.match(/\/resource/) || req.path.match(/\/client/) || req.path.match(/favicon/)){
 
-		log('flag', 'resource: ', req.path )
+		// log('flag', 'resource: ', req.path )
 
 		next()
 
@@ -78,7 +78,7 @@ const gatekeep = function(req, res, next) {
 
 		req.session.USER = new User( req.session.USER )
 
-		log('gatekeep', req.path )
+		log('gatekeep', req.path, req.session.USER.id )
 
 		next()
 
@@ -123,7 +123,7 @@ exp.use('/client', express.static( './client' )) // __dirname +
 // exp.use('/static', express.static( '/resource' )) // __dirname + 
 exp.use('/resource', express.static( './resource' )) // __dirname + 
 exp.use('/fs', express.static( '/fs' )) // __dirname + 
-// exp.use('/favicon.ico', express.static( '/static/media/favicon.ico') )
+exp.use('/favicon.ico', express.static( '/resource/favicon.ico') )
 // exp.use('/fs', express.static(__dirname + '/fs'))
 exp.use( bodyParser.json({ 
 	type: 'application/json' 
@@ -378,19 +378,17 @@ DB.initPool(( err, pool ) => {
 		socket.request = req
 
 		if( Object.keys( SOCKETS ).length >= env.MAX_CONNECTIONS ) {
-			return {
-				success: false,
-				msg: 'at capacity'
-			}
+			log('flag', 'max capacity')
+			return false
 		}
 
-		socket.request.session.USER = new USER( socket.request.session.USER )
+		socket.request.session.USER = new User( socket.request.session.USER )
 
 		let mud_id = socket.request.session.USER.mud_id
 
 		SOCKETS[ mud_id ] = socket
 
-		ROUTER.bind_USER( GAME, mud_id )
+		ROUTER.bind_user( GAME, mud_id )
 
 		SOCKETS[ mud_id ].send( JSON.stringify( {
 			type: 'session_init',
@@ -399,15 +397,19 @@ DB.initPool(( err, pool ) => {
 		}) )
 
 		if( !GAME.pulse && !GAME.opening ) {
+			
 			GAME.opening = true
-			GAME.init_async_elements()
-			.then( res => {
-				GAME.opening = false
-				GAME.init_sync_elements()
-			})
-			.catch( err => {
-				log('flag', 'err opening GAME: ', err )
-			})
+
+			log('flag', 'BEGIN !  now rewrite for world / tiles....')
+
+			// GAME.init_async_elements()
+			// .then( res => {
+			// 	GAME.opening = false
+			// 	GAME.init_sync_elements()
+			// })
+			// .catch( err => {
+			// 	log('flag', 'err opening GAME: ', err )
+			// })
 		}
 
 	})

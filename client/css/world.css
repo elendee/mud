@@ -29,10 +29,9 @@
 #action-wrapper,
 #character-wrapper{
     display: inline-block;
-    padding: 10px 10px 0 10px;
-    margin-top: -10px;
+    padding: 10px 10px 10px 10px;
     border-radius: 10px 10px 0 0;
-    margin: -10px 10px;
+    margin: -10px 10px 0 10px;
     border: 1px solid wheat;
     border-bottom: 0px;
 }

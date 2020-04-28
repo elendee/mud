@@ -1,7 +1,7 @@
 
-import env from './system/env.js'
+import env from './env.js'
 
-import { TextureLoader } from '../../../resource/inc/three/three.module.js'
+// import { TextureLoader } from '../../../resource/inc/three/three.module.js'
 // receives data from server
 
 
@@ -9,8 +9,8 @@ const MAPS = {}
 
 
 if( env.EXPOSE ){
-	window.ECC = window.ECC || {}
-	window.ECC.MAPS = MAPS
+	// window.ECC = window.ECC || {}
+	// window.ECC.MAPS = MAPS
 }
 
 // MAPS.ShipMap

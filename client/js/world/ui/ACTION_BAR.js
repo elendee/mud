@@ -1,14 +1,12 @@
 
 const action_bar = document.getElementById('action-bar')
 
-export default function init_ui(){
+function init(){
 
 	init_action_buttons()
 	init_character_buttons()
 	
 }
-
-
 
 
 function init_character_buttons(){
@@ -54,4 +52,11 @@ function init_action_buttons(){
 		action_wrapper.appendChild( button )
 	}
 	action_bar.appendChild( action_wrapper )
+}
+
+
+
+
+export {
+	init
 }

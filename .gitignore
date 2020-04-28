@@ -4,3 +4,4 @@ node_modules/*
 fs/*
 _storage/*
 package-lock.json
+client/js/env.js
