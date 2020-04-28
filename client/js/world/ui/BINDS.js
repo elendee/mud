@@ -1,5 +1,4 @@
-
-export default {
+const binds = {
 
 	global: {
 
@@ -47,3 +46,9 @@ export default {
 
 
 }
+
+
+window.BINDS = binds
+
+export default binds
+
