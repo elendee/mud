@@ -5,6 +5,8 @@ const SOCKETS = require('./SOCKETS.js')
 const ROUTER = require('./ROUTER.js')
 const MAP = require('./MAP.js')
 
+const DB = require('./db.js')
+
 const Toon = require('./Toon.js')
 
 class Game {
@@ -24,6 +26,8 @@ class Game {
 		this.growth = false
 
 		this.bot_pulse = false
+
+		this.ZONES = init.ZONES || {}
 
 	}
 
@@ -66,17 +70,17 @@ class Game {
 		socket.request.session.USER.TOON = new Toon( socket.request.session.USER.TOON )
 
 		const x = Math.floor( socket.request.session.USER.TOON.ref.position.x )
+		const y = Math.floor( socket.request.session.USER.TOON.ref.position.y )
 		const z = Math.floor( socket.request.session.USER.TOON.ref.position.z )
 
-
-
+		const zone = await this.touch_zone( x, y, z )
 
 		ROUTER.bind_user( this, mud_id )
 
 		SOCKETS[ mud_id ].send( JSON.stringify( {
 			type: 'session_init',
 			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
-			ZONE: 
+			ZONE: zone,
 			map: MAP
 		}) )
 
@@ -111,6 +115,29 @@ class Game {
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))
 		}
+
+	}
+
+
+
+
+	async touch_zone( x, y, z ){
+
+		if( typeof( x ) !== 'number' || typeof( y ) !== 'number' || typeof( z ) !== 'number' ) return false
+
+		let string_id = x + '-' + y + '-' + z
+
+		if( this.ZONES[ string_id ])  return this.ZONES[ string_id ]
+		
+		const pool = DB.getPool()
+
+		const sql = 'SELECT * FROM `zones` WHERE x=? AND y=? AND z=? LIMIT 1'
+
+		const { error, results, fields } = await pool.queryPromise( sql, [x, y, z])
+
+		let zone = new Zone( results[0] )
+
+		return zone
 
 	}
 
