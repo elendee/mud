@@ -1,3 +1,8 @@
+canvas#mud-flats{
+/*     border: 2px solid; */
+    width: 100%;
+}
+
 #action-bar{
     position: fixed;
     bottom: 0px;

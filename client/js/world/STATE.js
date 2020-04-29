@@ -8,11 +8,11 @@ export default {
 	
 	handler: 'world',
 	
-	// mousedown: {
-	// 	left: false,
-	// 	right: false,
-	// 	middle: false
-	// },
+	mousedown: {
+		left: false,
+		right: false,
+		middle: false
+	},
 
 	ctrlKey: false,
 	

@@ -46,7 +46,7 @@ class Game {
 
 
 
-	init_user( socket ){
+	async init_user( socket ){
 
 		socket.request.session.USER = new User( socket.request.session.USER )
 		// log('flag', 'user id: ', socket.request.session.USER.id )
@@ -65,11 +65,18 @@ class Game {
 
 		socket.request.session.USER.TOON = new Toon( socket.request.session.USER.TOON )
 
+		const x = Math.floor( socket.request.session.USER.TOON.ref.position.x )
+		const z = Math.floor( socket.request.session.USER.TOON.ref.position.z )
+
+
+
+
 		ROUTER.bind_user( this, mud_id )
 
 		SOCKETS[ mud_id ].send( JSON.stringify( {
 			type: 'session_init',
 			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
+			ZONE: 
 			map: MAP
 		}) )
 

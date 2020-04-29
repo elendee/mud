@@ -2,6 +2,7 @@ import env from '../env.js'
 
 import SCENE from '../three/SCENE.js'
 import CAMERA from '../three/CAMERA.js'
+import RENDERER from '../three/RENDERER.js'
 import * as LIGHT from '../three/LIGHT.js'
 
 import * as KEYS from './ui/KEYS.js'
@@ -10,6 +11,10 @@ import CHAT from './ui/CHAT.js'
 // import DIALOGUE from './'
 
 import animate from './animate.js'
+
+import {
+	Vector3
+} from '../lib/three.module.js'
 
 if( env.EXPOSE ){
 	window.SCENE = SCENE
@@ -32,28 +37,34 @@ class Zone {
 
 		const TOON = window.TOON
 
-		TOON.model( 'self' )
+		TOON.model('self')
 
-		TOON.MODEL.position.set( 
-			TOON.ref.position.x + Math.floor( Math.random() * 10 ), 
-			TOON.height / 2, 
-			TOON.ref.position.z + Math.floor( Math.random() * 10 )
-		)
+		// TOON.MODEL.position.set( 
+		// 	TOON.ref.position.x + Math.floor( Math.random() * 10 ), 
+		// 	TOON.height / 2, 
+		// 	TOON.ref.position.z + Math.floor( Math.random() * 10 )
+		// )
 
-		SCENE.add( LIGHT.spotlight )
-		LIGHT.spotlight.target = TOON.MODEL
+		TOON.MODEL.position.set( 0, 0, 0 )
+
+		// SCENE.add( LIGHT.spotlight )
+		// LIGHT.spotlight.target = TOON.MODEL
 		SCENE.add( LIGHT.hemispherical )
 
 		SCENE.add( TOON.MODEL )
 
-		CAMERA.position.set( 0, 8, -50 )
-
 		// TOON.HEAD.add( CAMERA )
 		TOON.MODEL.add( CAMERA )
 
+		CAMERA.position.set( 0, 100, 0 )
+
+
 		setTimeout(function(){
 			// CAMERA.lookAt( window.TOON.MODEL.position.clone().add( TOON.HEAD.position ) )
-			CAMERA.lookAt( window.TOON.MODEL.position.clone().add( TOON.MODEL.position ) )
+			CAMERA.lookAt( TOON.MODEL.position ) 
+
+			RENDERER.frame( SCENE )
+
 		}, 100 )
 
 		TOON.begin_stream()

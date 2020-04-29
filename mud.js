@@ -424,6 +424,9 @@ DB.initPool(( err, pool ) => {
 					GAME.init_sync_elements()
 			
 					GAME.init_user( socket )
+					.catch( err => {
+						log('flag', 'err init user:', err )
+					})
 			
 				})
 				.catch( err => {
@@ -432,14 +435,11 @@ DB.initPool(( err, pool ) => {
 
 			}
 
-
 		}else{
 
 			GAME.init_user( socket )
 
 		}
-
-
 
 	})
 

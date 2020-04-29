@@ -19,7 +19,11 @@ export default (function(){
 	} )
 
 	renderer.setPixelRatio( window.devicePixelRatio )
-	renderer.setSize( window.innerWidth / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], window.innerHeight / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], false )
+	renderer.setSize( 
+		window.innerWidth / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], 
+		window.innerHeight / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], 
+		false 
+	)
 
 	renderer.shadowMap.enabled = true
 	renderer.shadowMap.autoUpdate = true
@@ -34,7 +38,7 @@ export default (function(){
 // renderer.shadowMapWidth = 1024;
 // renderer.shadowMapHeight = 1024;
 
-	renderer.domElement.id = 'sip-gallery'
+	renderer.domElement.id = 'mud-flats'
 	renderer.domElement.tabindex = 1
 
 	renderer.onWindowResize = function(){

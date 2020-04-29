@@ -11,6 +11,8 @@ import DEV from './world/ui/DEV.js'
 
 import ZONE from './world/ZONE.js'
 
+import RENDERER from './three/RENDERER.js'
+
 import Toon from './world/Toon.js'
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -18,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function(){
 	ACTION_BAR.init()
 
 	KEYS.init()
+
+	window.addEventListener( 'resize', RENDERER.onWindowResize, false )
 
 	ROUTER.bind()
 	.then( res => {
