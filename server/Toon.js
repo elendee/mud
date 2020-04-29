@@ -1,3 +1,5 @@
+
+const Persistent = require('./Persistent.js')
 const uuid = require('uuid').v4
 const lib = require('./lib.js')
 const {
@@ -5,15 +7,15 @@ const {
 	Quaternion
 } = require('three')
 
-module.exports = class Toon {
+module.exports = class Toon extends Persistent {
 
 	constructor( init ){
 
+		super( init )
+
 		init = init || {}
 
-		this._id = init._id
-
-		this.mud_id = init.mud_id || uuid()
+		this._table = 'avatars'
 
 		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
 
@@ -24,6 +26,8 @@ module.exports = class Toon {
 		// this.portrait = init.portrait || lib.gen_portrait()
 		
 		this.name_attempted = init.name_attempted || Date.now() - 30000
+
+		this._altitude = init._altitude || 1
 
 		this.ref = init.ref || {}
 

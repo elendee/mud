@@ -414,8 +414,6 @@ DB.initPool(( err, pool ) => {
 
 				GAME.opening = true
 
-				log('flag', 'BEGIN !  now rewrite for world / tiles....')
-
 				GAME.init_async_elements()
 				.then( res => {
 			

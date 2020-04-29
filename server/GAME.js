@@ -8,6 +8,8 @@ const MAP = require('./MAP.js')
 const DB = require('./db.js')
 
 const Toon = require('./Toon.js')
+const Zone = require('./Zone.js')
+
 
 class Game {
 
@@ -18,14 +20,6 @@ class Game {
 		this.opening = false
 
 		this.pulse = false
-
-		this.move_pulse = false
-
-		this.census = false
-
-		this.growth = false
-
-		this.bot_pulse = false
 
 		this.ZONES = init.ZONES || {}
 
@@ -43,7 +37,7 @@ class Game {
 
 	init_sync_elements(){
 
-	
+		
 
 	}
 
@@ -70,17 +64,23 @@ class Game {
 		socket.request.session.USER.TOON = new Toon( socket.request.session.USER.TOON )
 
 		const x = Math.floor( socket.request.session.USER.TOON.ref.position.x )
-		const y = Math.floor( socket.request.session.USER.TOON.ref.position.y )
+		// const y = Math.floor( socket.request.session.USER.TOON.ref.position.y )
 		const z = Math.floor( socket.request.session.USER.TOON.ref.position.z )
+		const altitude = socket.request.session.USER.TOON._altitude
 
-		const zone = await this.touch_zone( x, y, z )
+		const zone = await this.touch_zone( x, z, altitude )
+
+		if( !zone ){
+			log('flag', 'init_user fail')
+			return false
+		}
 
 		ROUTER.bind_user( this, mud_id )
 
 		SOCKETS[ mud_id ].send( JSON.stringify( {
 			type: 'session_init',
 			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
-			ZONE: zone,
+			ZONE: zone.publish(),
 			map: MAP
 		}) )
 
@@ -121,21 +121,40 @@ class Game {
 
 
 
-	async touch_zone( x, y, z ){
+	async touch_zone( x, z, altitude ){
 
-		if( typeof( x ) !== 'number' || typeof( y ) !== 'number' || typeof( z ) !== 'number' ) return false
+		if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( altitude ) !== 'number' ) return false
 
-		let string_id = x + '-' + y + '-' + z
+		let string_id = x + '-' + z + '-' + altitude
 
 		if( this.ZONES[ string_id ])  return this.ZONES[ string_id ]
 		
 		const pool = DB.getPool()
 
-		const sql = 'SELECT * FROM `zones` WHERE x=? AND y=? AND z=? LIMIT 1'
+		const sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND altitude=? LIMIT 1'
 
-		const { error, results, fields } = await pool.queryPromise( sql, [x, y, z])
+		const { error, results, fields } = await pool.queryPromise( sql, [x, z, altitude])
 
-		let zone = new Zone( results[0] )
+		let zone 
+
+		if( results && results[0] ){ // read
+
+			zone = new Zone( results[0] )
+			await zone.bring_online()
+
+		}else{ // create
+
+			zone = new Zone({
+				_x: x,
+				_z: z,
+				_altitude: altitude
+			})
+
+			await zone.save()
+
+		}
+
+		this.ZONES[ zone.mud_id ] = zone
 
 		return zone
 
