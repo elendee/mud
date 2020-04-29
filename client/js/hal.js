@@ -4,7 +4,7 @@
 
 window.hal = hal
 
-export default function hal( type, msg, time ){
+export default function hal( type, msg, time, redirect ){
 
 	if( !type || ( type !== 'error' && type !== 'success' && type !== 'npc' ) ) type = 'standard'
 
@@ -46,6 +46,9 @@ export default function hal( type, msg, time ){
 	if( time ){
 		setTimeout(function(){
 			alert.style.opacity = 0
+			if( redirect ){
+				location.assign( redirect )
+			}
 			setTimeout(function(){
 				alert.remove()
 			}, 500)

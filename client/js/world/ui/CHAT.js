@@ -6,6 +6,10 @@ import STATE from '../STATE.js'
 import TOONS from '../TOONS.js'
 import NPCS from '../NPCS.js'
 
+import {
+	Vector3
+} from '../../lib/three.module.js'
+
 
 class Chat {
 
@@ -52,27 +56,27 @@ class Chat {
 	add_chat( obj ){
 		// type
 		// method
-		// sender_dpkt_id
+		// sender_mud_id
 		// speaker
 		// chat
 		// color
 
 		const CHAT = this		
 
-		if( !obj.sender_dpkt_id ){
-			console.log('undefined sender_dpkt_id ', obj )
+		if( !obj.sender_mud_id ){
+			console.log('undefined sender_mud_id ', obj )
 			return false
 		}
 
-		if( !NPCS[ obj.sender_dpkt_id ] && !TOONS[ obj.sender_dpkt_id ] && !BOTS[ obj.sender_dpkt_id ] && window.TOON.dpkt_id !== obj.sender_dpkt_id ){
-			console.log('no toon found for chat ', obj.sender_dpkt_id )
+		if( !NPCS[ obj.sender_mud_id ] && !TOONS[ obj.sender_mud_id ] && window.TOON.mud_id !== obj.sender_mud_id ){
+			console.log('no toon found for chat ', obj.sender_mud_id )
 			return false
 		}
 
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
 		chat.classList.add( obj.method )
-		if( obj.sender_dpkt_id == window.TOON.dpkt_id ) chat.classList.add('self')
+		if( obj.sender_mud_id == window.TOON.mud_id ) chat.classList.add('self')
 		chat.innerHTML = `<span class="speaker" style="color: ${ obj.color }">${ obj.speaker }: </span>${ obj.chat }`
 
 		this.content.appendChild( chat )
@@ -85,7 +89,7 @@ class Chat {
 			chats[ 0 ].remove()
 		}
 
-		// if( !TOONS[ obj.sender_dpkt_id ] && window.TOON.dpkt_id !== obj.sender_dpkt_id ){
+		// if( !TOONS[ obj.sender_mud_id ] && window.TOON.mud_id !== obj.sender_mud_id ){
 		// 	console.log('speaker not found for chat')
 		// 	return false
 		// }
@@ -179,7 +183,7 @@ class Bubble {
 		this.type = init.type
 		this.hash = lib.random_hex( 6 )
 		this.method = init.method
-		this.sender_dpkt_id = init.sender_dpkt_id
+		this.sender_mud_id = init.sender_mud_id
 		this.speaker = init.speaker
 		this.chat = init.chat
 		this.color = init.color
@@ -202,50 +206,46 @@ class Bubble {
 
 	update_position(){
 
-		console.log('update_position needs updating from threejs...')
+		let vector
+		if( this.sender_mud_id == window.TOON.mud_id ){
+			vector = new Vector3().copy( window.TOON.MODEL.position )
+		}else if( TOONS[ this.sender_mud_id ] && TOONS[ this.sender_mud_id ].MODEL ){
+			vector = new Vector3().copy( TOONS[ this.sender_mud_id ].MODEL.position )
+		}else if( NPCS[ this.sender_mud_id ] && NPCS[ this.sender_mud_id ].MODEL ){
+			vector = new Vector3().copy( NPCS[ this.sender_mud_id ].MODEL.position )
+		}else{
+			console.log('no model found for chat ', this.sender_mud_id )
+			return false
+		}
 
-		// let vector
-		// if( this.sender_dpkt_id == window.TOON.dpkt_id ){
-		// 	vector = new Vector3().copy( window.TOON.MODEL.position )
-		// }else if( TOONS[ this.sender_dpkt_id ] && TOONS[ this.sender_dpkt_id ].MODEL ){
-		// 	vector = new Vector3().copy( TOONS[ this.sender_dpkt_id ].MODEL.position )
-		// }else if( NPCS[ this.sender_dpkt_id ] && NPCS[ this.sender_dpkt_id ].MODEL ){
-		// 	vector = new Vector3().copy( NPCS[ this.sender_dpkt_id ].MODEL.position )
-		// }else if( BOTS[ this.sender_dpkt_id ] && BOTS[ this.sender_dpkt_id ].MODEL ){
-		// 	vector = new Vector3().copy( BOTS[ this.sender_dpkt_id ].MODEL.position )
-		// }else{
-		// 	console.log('no model found for chat ', this.sender_dpkt_id )
-		// 	return false
-		// }
+		const canvas = RENDERER.domElement
 
-		// const canvas = RENDERER.domElement
+		vector.project( CAMERA )
+		vector.x = Math.round( (   vector.x + 1 ) * canvas.width  / 2 )
+		vector.y = Math.round( ( - vector.y + 1 ) * canvas.height / 2 )
+		vector.z = 0;
 
-		// vector.project( CAMERA )
-		// vector.x = Math.round( (   vector.x + 1 ) * canvas.width  / 2 )
-		// vector.y = Math.round( ( - vector.y + 1 ) * canvas.height / 2 )
-		// vector.z = 0;
+		this.posX = vector.x + 30
+		this.posY = vector.y - 100
 
-		// this.posX = vector.x + 30
-		// this.posY = vector.y - 100
-
-		// this.bound = this.ele.getBoundingClientRect()
+		this.bound = this.ele.getBoundingClientRect()
 
 
-		// if( this.posX + this.bound.width > window.innerWidth ){
-		// 	this.ele.style.left = 'auto'
-		// 	this.ele.style.right = '0px'
-		// }else{
-		// 	this.ele.style.left = this.posX + 'px'
-		// 	this.ele.style.right = 'auto'
-		// }
+		if( this.posX + this.bound.width > window.innerWidth ){
+			this.ele.style.left = 'auto'
+			this.ele.style.right = '0px'
+		}else{
+			this.ele.style.left = this.posX + 'px'
+			this.ele.style.right = 'auto'
+		}
 
-		// if( this.posY + this.bound.height > window.innerHeight ){
-		// 	this.ele.style.top = 'auto'
-		// 	this.ele.style.bottom = '0px'
-		// }else{
-		// 	this.ele.style.top = this.posY + 'px'
-		// 	this.ele.style.bottom = 'auto'
-		// }
+		if( this.posY + this.bound.height > window.innerHeight ){
+			this.ele.style.top = 'auto'
+			this.ele.style.bottom = '0px'
+		}else{
+			this.ele.style.top = this.posY + 'px'
+			this.ele.style.bottom = 'auto'
+		}
 		
 	}
 

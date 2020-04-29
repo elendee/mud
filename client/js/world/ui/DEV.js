@@ -20,8 +20,8 @@ class Dev {
 
 				let patrons = 'crowd:<br>'
 
-				for( const dpkt_id of Object.keys( data )){
-					patrons += data[ dpkt_id ].name + '<br>'
+				for( const mud_id of Object.keys( data )){
+					patrons += data[ mud_id ].name + '<br>'
 				}
 
 				this.crowd.innerHTML = patrons

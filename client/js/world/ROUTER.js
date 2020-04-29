@@ -99,7 +99,7 @@ const bind = function(){
 				case 'login':
 					// console.error('finish switching logout to http .... ')
 					// if( obj.success ) {
-						// if( obj.patron.dpkt_id === window.TOON.dpkt_id ){
+						// if( obj.patron.mud_id === window.TOON.mud_id ){
 						// 	hal('success', 'welcome back!', 3000)
 						// }
 						GALLERY.touch_patron( obj.patron )
@@ -117,7 +117,7 @@ const bind = function(){
 				case 'register':
 					// console.error('finish switching register to http .... ')
 					// if( obj.success ) {
-					if( obj.patron.dpkt_id === window.TOON.dpkt_id ){
+					if( obj.patron.mud_id === window.TOON.mud_id ){
 						hal('success', 'artist created', 4000)
 					}
 					GALLERY.touch_patron( obj.patron )
@@ -168,7 +168,7 @@ const bind = function(){
 					break;
 
 				case 'error':
-					hal('error', obj.msg, obj.time )
+					hal('error', obj.msg, obj.time, obj.redirect )
 					break;
 
 				case 'hal':

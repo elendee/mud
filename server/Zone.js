@@ -1,10 +1,12 @@
+const DB = require('./db.js')
+const log = require('./log.js')
+
 
 const Persistent = require('./Persistent.js')
 const Toon = require('./Toon.js')
 const Structure = require('./Structure.js')
 const Foliage = require('./Foliage.js')
 
-const DB = require('./db.js')
 
 class Zone extends Persistent {
 
@@ -29,10 +31,10 @@ class Zone extends Persistent {
 		this.growth = false
 		this.bot_pulse = false
 
-		this.FOLIAGE = init.FOLIAGE
-		this.STRUCTURES = init.STRUCTURES
-		this.NPCS = init.NPCS
-		this.TOONS = init.TOONS
+		this.FOLIAGE = init.FOLIAGE || {}
+		this.STRUCTURES = init.STRUCTURES || {}
+		this.NPCS = init.NPCS || {}
+		this.TOONS = init.TOONS || {}
 
 	}
 
@@ -65,6 +67,12 @@ class Zone extends Persistent {
 		const res = await DB.update( this, update_fields, update_vals )
 
 		return res
+
+	}
+
+	close(){
+
+		log('flag', 'closing zone: ', this.mud_id )
 
 	}
 

@@ -28,8 +28,6 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
-		// this.mud_id = init.mud_id // || uuid()
-
 		this.ref = init.ref = init.ref || {}
 
 		this.ref = init.ref || {}

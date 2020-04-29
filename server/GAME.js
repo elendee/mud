@@ -1,4 +1,7 @@
 const log = require('./log.js')
+const lib = require('./lib.js')
+
+const GLOBAL = require('./GLOBAL.js')
 
 const User = require('./User.js')
 const SOCKETS = require('./SOCKETS.js')
@@ -37,6 +40,35 @@ class Game {
 
 	init_sync_elements(){
 
+		const game = this
+
+		game.pulse = setInterval(function(){
+
+			let online = false
+
+			for( const mud_id of Object.keys( game.ZONES ) ){
+
+				log('flag', Object.keys( game.ZONES ).length  + ' zones online')
+
+				online = true
+
+				if( !Object.keys( game.ZONES[ mud_id ].TOONS ).length ){
+					game.ZONES[ mud_id ].close()
+					delete game.ZONES[ mud_id ]
+				}
+
+			}
+
+			if( !online ){
+
+				clearInterval( game.pulse )
+				game.pulse = false
+				log('flag', 'no zones; game going offline')
+
+			}
+
+		}, GLOBAL.GAME_PULSE )
+
 		
 
 	}
@@ -61,28 +93,60 @@ class Game {
 			return false
 		}
 
-		socket.request.session.USER.TOON = new Toon( socket.request.session.USER.TOON )
+		let TOON 
 
-		const x = Math.floor( socket.request.session.USER.TOON.ref.position.x )
-		// const y = Math.floor( socket.request.session.USER.TOON.ref.position.y )
-		const z = Math.floor( socket.request.session.USER.TOON.ref.position.z )
-		const altitude = socket.request.session.USER.TOON._altitude
+		socket.request.session.USER.TOON = TOON = new Toon( socket.request.session.USER.TOON )
+		TOON.mud_id = mud_id // v. important, overwrite mud_id so they share
+
+		let x, z
+
+		const pool = DB.getPool()
+
+		const { error, results, fields } = await pool.queryPromise( 'SELECT * FROM `structures` WHERE id=? LIMIT 1', [TOON.camped_key] )
+
+		if( error ){
+			log('flag', 'err toon init: ', error )
+			return false
+		}
+
+		if( !results || !results.length || !results[0].zone_key ){
+			log('flag', 'initializing uncamped toon')
+			x = 0; z = 0
+		}else{
+			x = Math.floor( results[0].x )
+			z = Math.floor( results[0].z )
+		}
+
+		// const x = Math.floor( TOON.ref.position.x )
+		// const y = Math.floor( TOON.ref.position.y )
+		// const z = Math.floor( TOON.ref.position.z )
+		const altitude = TOON._altitude
 
 		const zone = await this.touch_zone( x, z, altitude )
 
 		if( !zone ){
-			log('flag', 'init_user fail')
-			return false
+
+			SOCKETS[ mud_id ].send( JSON.stringify( {
+				type: 'error',
+				msg: 'error initializing zone<br><a href="/">back to landing page</a>',
+			}) )
+
+		}else{
+
+			ROUTER.bind_user( this, mud_id )
+
+			zone.TOONS[ mud_id ] = TOON
+
+			log('flag', '\n user mud_id: ', mud_id, '\n toon mud_id: ', TOON.mud_id )
+
+			SOCKETS[ mud_id ].send( JSON.stringify( {
+				type: 'session_init',
+				USER: SOCKETS[ mud_id ].request.session.USER.publish(),
+				ZONE: zone.publish(),
+				map: MAP,
+			}) )
+
 		}
-
-		ROUTER.bind_user( this, mud_id )
-
-		SOCKETS[ mud_id ].send( JSON.stringify( {
-			type: 'session_init',
-			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
-			ZONE: zone.publish(),
-			map: MAP
-		}) )
 
 	}
 
@@ -108,9 +172,9 @@ class Game {
 				type: 'chat',
 				method: packet.method,
 				sender_mud_id: mud_id,
-				speaker: SOCKETS[ mud_id ].request.session.PATRON.name,
+				speaker: SOCKETS[ mud_id ].request.session.USER.TOON.name,
 				chat: lib.sanitize_chat( packet.chat ),
-				color: SOCKETS[ mud_id ].request.session.PATRON.color
+				color: SOCKETS[ mud_id ].request.session.USER.TOON.color
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))
@@ -150,7 +214,8 @@ class Game {
 				_altitude: altitude
 			})
 
-			await zone.save()
+			const res = await zone.save()
+			if( !res ) return false
 
 		}
 
@@ -160,7 +225,20 @@ class Game {
 
 	}
 
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
 
 
 let game = false

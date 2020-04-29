@@ -154,9 +154,10 @@ async function update( doc, field_array, value_array ){
 	if( error || !results ){
 		if( error ){
 			log('flag', 'update err:', error.sqlMessage )
+			return false
 		}else{
 			// throw new Error( 'UPDATE error: ', error.sqlMessage, 'attempted: ', '\nATTEMPTED: ', update, doc._table )
-			throw new Error( 'no results: ', update )
+			throw new Error( 'no results: ' + update )
 		}
 	}
 

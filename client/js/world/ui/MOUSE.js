@@ -198,59 +198,49 @@ function detect_object_clicked( e ){
 		if( clicked ){
 
 			// TARGET.set( clicked )
-			console.log( 'clicked: ', clicked.userData.type, clicked.userData.dpkt_id, clicked )
+			console.log( 'clicked: ', clicked.userData.type, clicked.userData.mud_id, clicked )
 
 			if( !check_distance( clicked, intersects ) ){
 				hal('error', 'too far', 2000 )
 				return false
 			}
 
-			if( clicked.userData.type === 'image' ){
+			if( clicked.userData.type === 'npc' ){
 
-				DIALOGUE.render_image_info( clicked )
-				DIALOGUE.render_reticule( clicked )
-
-			}else if( clicked.userData.type === 'npc' ){
+				console.log('clicked npc')
 
 				if( clicked.userData.popup ){
-					POPUP.show( clicked.userData.popup )
-					DIALOGUE.render_reticule( clicked )
+					// POPUP.show( clicked.userData.popup )
+					// DIALOGUE.render_reticule( clicked )
 				}
 
-				NPCS[ clicked.userData.dpkt_id ].greet()
+				// NPCS[ clicked.userData.mud_id ].greet()
 
 			}else if( clicked.userData.type == 'self'){
 
-				POPUP.show('self')
+				console.log( 'clicked self')
+
+				// POPUP.show('self')
 
 			}else if( clicked.userData.type == 'toon' ){
 
-				DIALOGUE.render_toon( clicked.userData )
-				POPUP.show('toon-profile')
+				console.log('clicked toon')
 
-			}else if( clicked.userData.type === 'pillar' ){
+				// DIALOGUE.render_toon( clicked.userData )
+				// POPUP.show('toon-profile')
 
-				console.log( clicked.userData )
+			}else if( clicked.userData.type == 'foliage' ){
 
-			}else if( clicked.userData.type == 'open' ){
-
-				POPUP.show('upload')
-				DIALOGUE.render_reticule( clicked )
-
-			}else if( clicked.userData.type == 'tree' ){
-
-
-
-				window.TREE = clicked
+				console.log('clicked foliage ')
 
 			}
 
 		}else{
-			DIALOGUE.close_all()
+			// DIALOGUE.close_all()
 		}
 
 	}else{
-		DIALOGUE.close_all()
+		// DIALOGUE.close_all()
 	}
  
 }
@@ -264,25 +254,11 @@ function check_distance( clicked, intersects ){
 	let dist, clicked_position, required_dist
 	let type = clicked.userData.type
 
-	if( type == 'pillar' ){
+	if( type == 'foliage' ){
 
 		return true
 
-	}else if( type == 'image' || type == 'open' ){
-
-		let pillar = recurse_for('pillar', intersects[0].object )
-		if( !pillar ){
-			console.log( 'could not find pillar for image')
-			return false
-		}
-
-		clicked_position = new Vector3().copy( pillar.position )
-
-		if( type == 'image' || type == 'open' )  clicked_position.add( clicked.position )
-
-		required_dist = MAP.TARGET_DIST
-
-	}else if( type == 'npc' || type == 'toon' || type == 'tree' ){
+	}else if( type == 'npc' || type == 'toon' ){
 
 		clicked_position = new Vector3().copy( clicked.position )
 		required_dist = MAP.TARGET_DIST * 2
@@ -336,36 +312,37 @@ function recurse_for( type, search ){
 		}
 		return false
 
-	}else if( type === 'pillar' ){
-
-		if( check_pillar( search ) ) return search
-
-		for( let i = 0; i < 15; i++ ){
-
-			if( !search.parent ) return false
-
-			if( check_pillar( search.parent ) ) return search.parent
-			search = search.parent 
-
-		}
-		return false
-
 	}
+	// else if( type === 'pillar' ){
+
+	// 	if( check_pillar( search ) ) return search
+
+	// 	for( let i = 0; i < 15; i++ ){
+
+	// 		if( !search.parent ) return false
+
+	// 		if( check_pillar( search.parent ) ) return search.parent
+	// 		search = search.parent 
+
+	// 	}
+	// 	return false
+
+	// }
 
 }
 
-function check_pillar( obj ){
-	if( obj.parent.type && typeof( obj.parent.type ) === 'string' && obj.parent.type.match(/scene/i) ){
-		return obj
-	}else{
-		return false
-	}
-}
+// function check_pillar( obj ){
+// 	if( obj.parent.type && typeof( obj.parent.type ) === 'string' && obj.parent.type.match(/scene/i) ){
+// 		return obj
+// 	}else{
+// 		return false
+// 	}
+// }
 
 
 function check_clickable( obj ){
 	if( obj && obj.userData && obj.userData.clickable ){
-		if( DIALOGUE.TARGET.entity && DIALOGUE.TARGET.entity.dpkt_id === obj.dpkt_id ) return false
+		// if( DIALOGUE.TARGET.entity && DIALOGUE.TARGET.entity.mud_id === obj.mud_id ) return false
 		return obj
 	}else{
 		return false
