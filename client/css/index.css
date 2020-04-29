@@ -21,6 +21,7 @@ form{
 form.auth-form{
     width: 50%;
     font-size: initial;
+/*     border: 1px solid; */
 }
 
 form input{
@@ -40,7 +41,9 @@ form input::placeholder{
 
 #auth-contain{
     display: inline-block;
+    width: 100%;
     font-size: 0px;
+    min-height: 100vh;
 }
 
 #play-contain{

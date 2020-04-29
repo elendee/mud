@@ -20,11 +20,13 @@ const styles = {
 	index: `<link rel='stylesheet' href='/client/css/index.css'>`,
 	avatar: `<link rel='stylesheet' href='/client/css/avatar.css'>`,
 	world: `<link rel='stylesheet' href='/client/css/world.css'>`,
+	chat: `<link rel='stylesheet' href='/client/css/chat.css'>`,
 	'404': `<link rel='stylesheet' href='/client/css/404.css'>`,
 }
 
 const overlays = {
-	alert:`<div id=alert-contain></div>`,
+	alert:`
+		<div id=alert-contain></div>`,
 	world_ui: `
 		<div id='world-ui'>
 			<!--div id='world-map'></div-->
@@ -36,6 +38,12 @@ const overlays = {
 			</div>
 			<div class='crowd'>
 			</div>
+		</div>`,
+	chat:`
+		<div id='chat'>
+			<div id='chat-content'>
+			</div>
+			<input id='chat-input' type='text' placeholder="say:">
 		</div>`
 }
 
@@ -104,7 +112,7 @@ const render = function( type, request ){
 			break;
 
 		case 'world':
-			css_includes += styles.world
+			css_includes += styles.world + styles.chat
 			js_includes += scripts.world
 			return `
 			<html>
@@ -117,6 +125,7 @@ const render = function( type, request ){
 					${ overlays.dev }
 					${ overlays.alert }
 					${ overlays.world_ui }
+					${ overlays.chat }
 				</body>
 			</html>`
 			break;

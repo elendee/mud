@@ -27,13 +27,13 @@ const tables = {
 	verboten: ['fuk', 'fuck', 'cunt', 'damn', 'nigger', 'kike', 'chink', 'bitch']
 }
 
-function gen_portrait(){
+// function gen_portrait(){
 
-	const portrait = MAP.PORTRAITS[ Math.floor( Math.random() * MAP.PORTRAITS.length ) ]
+// 	const portrait = MAP.PORTRAITS[ Math.floor( Math.random() * MAP.PORTRAITS.length ) ]
 
-	return portrait
+// 	return portrait
 
-}
+// }
 
 function sanitize_packet( packet ){
 
@@ -270,7 +270,7 @@ function random_rgb( min, max ){
 
 module.exports = {
 	tables,
-	gen_portrait,
+	// gen_portrait,
 	sanitize_chat,
 	sanitize_packet,
 	parse_id,

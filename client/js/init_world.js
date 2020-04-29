@@ -9,7 +9,7 @@ import * as ROUTER from './world/ROUTER.js'
 
 import DEV from './world/ui/DEV.js'
 
-import WORLD from './world/WORLD.js'
+import ZONE from './world/ZONE.js'
 
 import Toon from './world/Toon.js'
 
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	ROUTER.bind()
 	.then( res => {
-		init_session()
+		init_session( res )
 	})
 	.catch( err => {
 		console.log( err )
@@ -34,20 +34,21 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
-async function init_session( patron ){
+async function init_session( res ){
 
 	if( localStorage.getItem('devkey') === 'true' )  DEV.ele.style.display = 'initial'
 
 	// websocket now bound
 
 	// window.SCENE = SCENE
-	window.TOON = new Toon( patron )
+	window.TOON = new Toon( res.USER.TOON )
+	// window.TOON.model()
 
 	// SCENE.add( GROUND )
 
 	// SCENE.add( SKYBOX )
 
-	WORLD.render()
+	ZONE.initialize()
 
 	// const box = new BoxBufferGeometry(3, 3, 3)
 	// const wires = new WireframeGeometry( box )

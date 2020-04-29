@@ -63,19 +63,19 @@ module.exports = {
 
 	// WALKABLE_GRID_MARGIN: WALKABLE_GRID_MARGIN,
 
-	PORTRAITS: [
-		'butterbur.png', 
-		'wolf.png', 
-		'carl-reininghaus.png', 
-		'egon-photo.png', 
-		'egon.png', 
-		'frog.png',
-		'iron-man.png', 
-		'mononoke.png',
-		'nelson.png', 
-		'panther.png',
-		'owl.png',
-		'owl2.png',
-	]
+	// PORTRAITS: [
+	// 	'butterbur.png', 
+	// 	'wolf.png', 
+	// 	'carl-reininghaus.png', 
+	// 	'egon-photo.png', 
+	// 	'egon.png', 
+	// 	'frog.png',
+	// 	'iron-man.png', 
+	// 	'mononoke.png',
+	// 	'nelson.png', 
+	// 	'panther.png',
+	// 	'owl.png',
+	// 	'owl2.png',
+	// ]
 
 }

@@ -2,7 +2,14 @@ import env from '../env.js'
 
 // import uuid from '../../../node_modules/uuid/dist/esm-browser/v4.js'
 
-import { Vector3 } from '../lib.js'
+import { 
+	Vector3,
+	Quaternion,
+	BoxBufferGeometry,
+	Mesh,
+	MeshLambertMaterial,
+	Color
+} from '../lib/three.module.js'
 
 import STATE from './STATE.js'
 import DEV from './ui/DEV.js'
@@ -15,6 +22,8 @@ export default class Toon {
 
 		init = init || {}
 
+		this.bindings = {}
+
 		for( const key of Object.keys( init ) ){
 			this[ key ] = init[ key ]
 		}
@@ -25,17 +34,36 @@ export default class Toon {
 
 		this.ref = init.ref || {}
 
-		this.ref.position = this.ref.position || new Vector3(),
+		if( this.ref.position ){
+			this.ref.position = new Vector3(
+				this.ref.position.x,
+				this.ref.position.y,
+				this.ref.position.z,
+			)
+		}else{
+			this.ref.position = new Vector3()
+		}
 
-		this.height = init.height || 3
+		if( this.ref.quaternion ){
+			this.ref.quaternion = new Quaternion(
+				this.ref.quaternion._x,
+				this.ref.quaternion._y,
+				this.ref.quaternion._z,
+				this.ref.quaternion._w,
+			)
+		}else{
+			this.ref.quaternion = new Quaternion()
+		}
+
+		// this.height = init.height || 3
 
 		this.needs_lerp = init.needs_lerp || false
 		
 		this.needs_stream = false
 
-		this.speed = init.speed || env.SPEED
+		// this.speed = init.speed || env.SPEED
 
-		this.bindings = {}
+		this.MODEL = init.MODEL
 
 	}
 
@@ -47,30 +75,28 @@ export default class Toon {
 
 	model( type ){
 
-		console.log('toon model needs updating from three....')
-
 		// const face_texture = texLoader.load('/resource/textures/profiles/' + ( this.portrait || 'butterbur.png' ) )
 		
-		// const geometry = new BoxBufferGeometry( 1, this.height || 3, 1 )
-		// const material = new MeshLambertMaterial({
-		// 	color: new Color( this.color )
-		// })
+		const geometry = new BoxBufferGeometry( 1, this.height || 3, 1 )
+		const material = new MeshLambertMaterial({
+			color: new Color( this.color )
+		})
 		// const face_material = new MeshLambertMaterial({
 		// 	map: face_texture,
 		// 	depthWrite: false,
 		// 	side: DoubleSide,
 		// 	transparent: true
 		// })
-		// this.MODEL = new Mesh( geometry, material )
-		// this.MODEL.castShadow = true
-		// this.MODEL.receiveShadow = true
+		this.MODEL = new Mesh( geometry, material )
+		this.MODEL.castShadow = true
+		this.MODEL.receiveShadow = true
 
-		// this.MODEL.userData = {
-		// 	clickable: true,
-		// 	type: type,
-		// 	website: this.website,
-		// 	name: this.name
-		// }
+		this.MODEL.userData = {
+			clickable: true,
+			type: type,
+			website: this.website,
+			name: this.name
+		}
 
 		// const head_geometry = new BoxBufferGeometry( 1.2, 1.2, 1.2 )
 		// const head_material = material

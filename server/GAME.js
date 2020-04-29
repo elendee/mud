@@ -1,3 +1,12 @@
+const log = require('./log.js')
+
+const User = require('./User.js')
+const SOCKETS = require('./SOCKETS.js')
+const ROUTER = require('./ROUTER.js')
+const MAP = require('./MAP.js')
+
+const Toon = require('./Toon.js')
+
 class Game {
 
 	constructor( init ){
@@ -22,7 +31,7 @@ class Game {
 
 	async init_async_elements(){
 
-		
+		return true		
 
 	}
 
@@ -31,6 +40,38 @@ class Game {
 	init_sync_elements(){
 
 	
+
+	}
+
+
+
+
+	init_user( socket ){
+
+		socket.request.session.USER = new User( socket.request.session.USER )
+		// log('flag', 'user id: ', socket.request.session.USER.id )
+
+		let mud_id = socket.request.session.USER.mud_id
+
+		SOCKETS[ mud_id ] = socket
+
+		if( socket.request.session.USER.id && !socket.request.session.USER.active_avatar ){
+			socket.send( JSON.stringify({
+				type: 'error',
+				msg: 'no avatar found<br><a href="/">back to selection</a>'
+			}))
+			return false
+		}
+
+		socket.request.session.USER.TOON = new Toon( socket.request.session.USER.TOON )
+
+		ROUTER.bind_user( this, mud_id )
+
+		SOCKETS[ mud_id ].send( JSON.stringify( {
+			type: 'session_init',
+			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
+			map: MAP
+		}) )
 
 	}
 

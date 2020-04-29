@@ -2,7 +2,7 @@ import env from '../env.js'
 
 import hal from '../hal.js'
 
-import * as TILE from './TILE.js'
+
 
 // import * as DIALOGUE from './ui/DIALOGUE.js'
 
@@ -53,7 +53,7 @@ const bind = function(){
 						MAP[ key ] = obj.map[ key ]
 					}
 					window.MAP = MAP
-					resolve( obj.patron )
+					resolve( obj )
 					break;
 
 				case 'move_pulse':

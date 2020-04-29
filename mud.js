@@ -32,12 +32,12 @@ const MemoryStore = require('memorystore')(session)
 
 const GAME = require('./server/GAME.js')
 
-const ROUTER = require('./server/ROUTER.js')
+// const ROUTER = require('./server/ROUTER.js')
 
 const SOCKETS = require('./server/SOCKETS.js')
 
 // const lib = require('./lib.js')
-const WSS = require('./Server.js')()
+const WSS = require('./server/WSS.js')
 
 const MAP = require('./server/MAP.js')
 
@@ -76,9 +76,17 @@ const gatekeep = function(req, res, next) {
 
 	}else{
 
-		req.session.USER = new User( req.session.USER )
+		// log('flag', 'old blorble: ', req.session.blorble )
 
-		log('gatekeep', req.path, req.session.USER.id )
+		// const hhttp_b = 'heres an http blorble: ' + Date.now()
+
+		// log('flag', 'saved to http blorble: ', hhttp_b )
+
+		// req.session.blorble = 	hhttp_b
+
+		// req.session.USER = new User( req.session.USER )
+
+		log('gatekeep', req.path )
 
 		next()
 
@@ -358,59 +366,80 @@ DB.initPool(( err, pool ) => {
 	server.on('upgrade', function( request, socket, head ){
 
 		lru_session( request, {}, () => {
-			if ( !request.session.USER ) {
-				socket.destroy()
-				return
-			}
+			// if ( !request.session.USER ) {
+			// 	log('flag', 'no user, aborting')
+			// 	socket.destroy()
+			// 	return
+			// }
 
 			log('wss', 'session parsed')
 
 			WSS.handleUpgrade( request, socket, head, function( ws ) {
-				WSS.emit('connection', ws, request)
+				WSS.emit('connection', ws, request )
 			})
 		})
 	})
 
 	WSS.on('connection', function connection( socket, req ) {
 
-		log('wss', 'socket connection ', req.session.USER.name )
+		// log('wss', 'socket connection ', req.session.USER.name )
 
 		socket.request = req
+
+		// log('wss', 'stuff...'  )///socket.request.session.save
+
+		// USER not a User yet...
+		// const this_save  = 'savd from socket: ' + Date.now()
+
+		// socket.request.session.blorble = this_save
+		// socket.request.session.save( function(){
+		// 	console.log('saved......', this_save )
+		// })
 
 		if( Object.keys( SOCKETS ).length >= env.MAX_CONNECTIONS ) {
 			log('flag', 'max capacity')
 			return false
 		}
 
-		socket.request.session.USER = new User( socket.request.session.USER )
+		if( !GAME.pulse ) {
 
-		let mud_id = socket.request.session.USER.mud_id
-
-		SOCKETS[ mud_id ] = socket
-
-		ROUTER.bind_user( GAME, mud_id )
-
-		SOCKETS[ mud_id ].send( JSON.stringify( {
-			type: 'session_init',
-			USER: SOCKETS[ mud_id ].request.session.USER.publish(),
-			map: MAP
-		}) )
-
-		if( !GAME.pulse && !GAME.opening ) {
+			if( GAME.opening ){ // extremely unlikely
 			
-			GAME.opening = true
+				socket.send(JSON.stringify({
+					type: 'error',
+					msg: 'tried to join during server start - try again in a few seconds'
+				}))
 
-			log('flag', 'BEGIN !  now rewrite for world / tiles....')
+			}else{
 
-			// GAME.init_async_elements()
-			// .then( res => {
-			// 	GAME.opening = false
-			// 	GAME.init_sync_elements()
-			// })
-			// .catch( err => {
-			// 	log('flag', 'err opening GAME: ', err )
-			// })
+				GAME.opening = true
+
+				log('flag', 'BEGIN !  now rewrite for world / tiles....')
+
+				GAME.init_async_elements()
+				.then( res => {
+			
+					GAME.opening = false
+			
+					GAME.init_sync_elements()
+			
+					GAME.init_user( socket )
+			
+				})
+				.catch( err => {
+					log('flag', 'err opening GAME: ', err )
+				})
+
+			}
+
+
+		}else{
+
+			GAME.init_user( socket )
+
 		}
+
+
 
 	})
 

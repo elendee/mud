@@ -1,4 +1,9 @@
 const uuid = require('uuid').v4
+const lib = require('./lib.js')
+const {
+	Vector3,
+	Quaternion
+} = require('three')
 
 module.exports = class Toon {
 
@@ -10,17 +15,21 @@ module.exports = class Toon {
 
 		this.mud_id = init.mud_id || uuid()
 
-		this.name = init.name || 'Patron_' + lib.random_hex( 4 )
+		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
 
 		this.height = 3
 
 		this.color = init.color || lib.random_rgb(100, 255)
 
-		this.portrait = init.portrait || lib.gen_portrait()
+		// this.portrait = init.portrait || lib.gen_portrait()
 		
 		this.name_attempted = init.name_attempted || Date.now() - 30000
 
+		this.ref = init.ref || {}
 
+		this.ref.position = this.ref.position || new Vector3()
+		
+		this.ref.quaternion = this.ref.quaternion || new Quaternion()
 
 	}
 

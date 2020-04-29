@@ -8,7 +8,7 @@ const EMIT = require('./EMIT.js')
 
 const auth = require('./auth.js')
 
-// const { Vector3, Quaternion } = require('three')
+const { Vector3, Quaternion } = require('three')
 
 // const TREES = require('./TREES.js')
 // const BOTS = require('./BOTS.js')
@@ -17,7 +17,7 @@ let loc_type, loc_id, LOCATION
 
 module.exports = {
 
-	bind_user: function( GALLERY, mud_id ){
+	bind_user: function( GAME, mud_id ){
 
 		let packet = {}
 
@@ -36,104 +36,82 @@ module.exports = {
 				}
 			}
 
+			const TOON = SOCKETS[ mud_id ].request.session.USER.TOON
+
 			switch( packet.type ){
 
-				case 'profile_ping':
+				case 'user_ping':
 
 					if( SOCKETS[ packet.mud_id ]){
 						SOCKETS[ mud_id ].send(JSON.stringify({
-							type: 'profile_pong',
-							patron: SOCKETS[ packet.mud_id ].request.session.PATRON.publish()
+							type: 'user_pong',
+							user: TOON.publish()
 						}))
 					}
 
 					break;
 
-				case 'pillar_ping':
-					log('router', 'pillar ping')
+				// case 'pillar_ping':
+				// 	log('router', 'pillar ping')
 
-					// const response = Object.assign( {}, PILLARS )
+				// 	SOCKETS[ mud_id ].send( JSON.stringify({
+				// 		type: 'pillars',
+				// 		pillars: PILLARS
+				// 	}))
 
-					SOCKETS[ mud_id ].send( JSON.stringify({
-						type: 'pillars',
-						pillars: PILLARS
-					}))
+				// 	break;
 
-					// log('flag', 'len: ', Object.keys( PILLARS ).length )
-
-					break;
-
-				case 'pillar_ping_single':
-					if( PILLARS[ packet.mud_id ]){
-						SOCKETS[ mud_id ].send( JSON.stringify({
-							type: 'pillar_pong_single',
-							pillar: PILLARS[ packet.mud_id ]
-						}))
-					}
-					break;
-
-				case 'floorplan_ping':
-					log('router', 'floorplan ping')
-
-					EMIT( 'floorplan_pong', { mud_id: mud_id } )
-					break;
-
-				case 'bot_ping':
-					log('router', 'bot ping, req: ', packet.mud_id )
-					EMIT( 'bot_pong', { 
-						mud_id: mud_id,
-						bot_mud_id: packet.mud_id
-					} )
-					break;
-
-				case 'forest_ping':
-					log('router', 'forest_ping')
-					EMIT( 'forest_pong', { mud_id: mud_id } )
-					// log('flag', 'emitting: ', TREES )
-					break;
+				// case 'pillar_ping_single':
+				// 	if( PILLARS[ packet.mud_id ]){
+				// 		SOCKETS[ mud_id ].send( JSON.stringify({
+				// 			type: 'pillar_pong_single',
+				// 			pillar: PILLARS[ packet.mud_id ]
+				// 		}))
+				// 	}
+				// 	break;
 
 				case 'move_stream':
 
-					if( SOCKETS[ mud_id ] && SOCKETS[ mud_id ].request.session.PATRON ){
+					if( TOON ){
 
-						SOCKETS[ mud_id ].request.session.PATRON.ref.position = new Vector3(
+						TOON.ref.position = new Vector3(
 							packet.ref.position.x,
 							packet.ref.position.y,
 							packet.ref.position.z
 						)
-						SOCKETS[ mud_id ].request.session.PATRON.ref.quaternion = new Quaternion(
-							packet.ref.quaternion._x,
-							packet.ref.quaternion._y,
-							packet.ref.quaternion._z,
-							packet.ref.quaternion._w
-						)
+						// TOON.ref.quaternion = new Quaternion(
+						// 	packet.ref.quaternion._x,
+						// 	packet.ref.quaternion._y,
+						// 	packet.ref.quaternion._z,
+						// 	packet.ref.quaternion._w
+						// )
 
-						SOCKETS[ mud_id ].request.session.PATRON.needs_pulse = true
+						TOON.needs_pulse = true
 
 					}
 
 					break;
 
 				case 'chat':
-					GALLERY.handle_chat( packet, mud_id )
+					GAME.handle_chat( packet, mud_id )
 					break;
 
 				// case 'register':
-				// 	auth.register( SOCKETS[ mud_id ].request.session.PATRON, packet )
+				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )
 				// 	.catch( err => {
 				// 		log('flag', 'register err: ', err )
 				// 	})
 				// 	break;
 
 				// case 'login':
-				// 	auth.login( SOCKETS[ mud_id ].request.session.PATRON, packet )
+				// 	auth.login( SOCKETS[ mud_id ].request.session.USER, packet )
 				// 	.catch( err => {
 				// 		log('flag', 'login err: ', err )
 				// 	})
 				// 	break;
 
 				// case 'logout':
-				// 	auth.logout( SOCKETS[ mud_id ].request.session.PATRON )
+				// 	auth.logout( SOCKETS[ mud_id ].request.session.USER )
 				// 	.catch( err => {
 				// 		log('flag', 'logout err: ', err )
 				// 	})
@@ -141,7 +119,7 @@ module.exports = {
 
 				// case 'update_profile':
 				// 	log('router', 'update_profile: ', packet )
-				// 	auth.update_profile( SOCKETS[ mud_id ].request.session.PATRON, packet )
+				// 	auth.update_profile( SOCKETS[ mud_id ].request.session.USER, packet )
 				// 	.catch( err => {
 				// 		log('flag', 'profile err: ', err )
 				// 	})

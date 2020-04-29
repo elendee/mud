@@ -1,6 +1,6 @@
-import log from '../LOG.js'
+// import log from '../LOG.js'
 
-log('call', 'GLOBAL.js')
+// log('call', 'GLOBAL.js')
 
 
 const base = {
