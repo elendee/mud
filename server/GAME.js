@@ -97,6 +97,9 @@ class Game {
 
 		socket.request.session.USER.TOON = TOON = new Toon( socket.request.session.USER.TOON )
 		TOON.mud_id = mud_id // v. important, overwrite mud_id so they share
+		socket.request.session.save(function(){
+			log('flag','savead session.....')
+		})
 
 		let x, z
 
@@ -117,33 +120,30 @@ class Game {
 			z = Math.floor( results[0].z )
 		}
 
-		// const x = Math.floor( TOON.ref.position.x )
-		// const y = Math.floor( TOON.ref.position.y )
-		// const z = Math.floor( TOON.ref.position.z )
 		const altitude = TOON._altitude
 
 		const zone = await this.touch_zone( x, z, altitude )
 
-		if( !zone ){
-
-			SOCKETS[ mud_id ].send( JSON.stringify( {
-				type: 'error',
-				msg: 'error initializing zone<br><a href="/">back to landing page</a>',
-			}) )
-
-		}else{
+		if( zone ){
 
 			ROUTER.bind_user( this, mud_id )
 
 			zone.TOONS[ mud_id ] = TOON
 
-			log('flag', '\n user mud_id: ', mud_id, '\n toon mud_id: ', TOON.mud_id )
+			// log('flag', '\n user mud_id: ', mud_id, '\n toon mud_id: ', TOON.mud_id )
 
 			SOCKETS[ mud_id ].send( JSON.stringify( {
 				type: 'session_init',
 				USER: SOCKETS[ mud_id ].request.session.USER.publish(),
 				ZONE: zone.publish(),
 				map: MAP,
+			}) )
+
+		}else{
+
+			SOCKETS[ mud_id ].send( JSON.stringify( {
+				type: 'error',
+				msg: 'error initializing zone<br><a href="/">back to landing page</a>',
 			}) )
 
 		}
@@ -189,9 +189,9 @@ class Game {
 
 		if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( altitude ) !== 'number' ) return false
 
-		let string_id = x + '-' + z + '-' + altitude
+		let string_id = lib.zone_id( x, z, altitude )
 
-		if( this.ZONES[ string_id ])  return this.ZONES[ string_id ]
+		if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
 		
 		const pool = DB.getPool()
 
@@ -214,12 +214,14 @@ class Game {
 				_altitude: altitude
 			})
 
+			await zone.bring_online()
+
 			const res = await zone.save()
-			if( !res ) return false
+			// if( !res ) return false
 
 		}
 
-		this.ZONES[ zone.mud_id ] = zone
+		this.ZONES[ zone.get_id() ] = zone
 
 		return zone
 

@@ -14,6 +14,7 @@ import CHAT from './CHAT.js'
 
 import BINDS from './BINDS.js'
 
+import * as ANIMATE from '../animate.js'
 
 // const BAR = getBar()
 
@@ -68,47 +69,35 @@ function handle_keydown( e ){
 				break;
 
 			case BINDS.world.move.left:
-				STATE.move.left = true
-				STATE.stream_down = true
+				ANIMATE.move('left', true )
 				break
 
 			case BINDS.world.move.right:
-				STATE.move.right = true
-				STATE.stream_down = true
+				ANIMATE.move('right', true )
 				break
 
 			case BINDS.world.move.forward: 
-				STATE.move.forward = true
-				STATE.stream_down = true
+				ANIMATE.move('forward', true )
 				break
 
 			case BINDS.world.move.back:
-				STATE.move.back = true
-				STATE.stream_down = true
+				ANIMATE.move('back', true )
 				break
 
 			case BINDS.world.move_alt.forward:
-				STATE.move.forward = true
-				STATE.stream_down = true
+				ANIMATE.move('forward', true )
 				break;
 
 			case BINDS.world.move_alt.back:
-				STATE.move.back = true
-				STATE.stream_down = true
+				ANIMATE.move('back', true )
 				break;
 
 			case BINDS.world.turn.left:
-				STATE.rotate.left = true
-				STATE.stream_down = true
+				ANIMATE.digital_turn('left', true )
 				break;
 
 			case BINDS.world.turn.right:
-				STATE.rotate.right = true
-				STATE.stream_down = true
-				break;
-
-			case BINDS.world.flip_cam: 
-				flip_cam('flip')
+				ANIMATE.digital_turn('right', true )
 				break;
 
 			case BINDS.world.actions.one:
@@ -181,59 +170,55 @@ function handle_keyup( e ){
 			switch(e.keyCode){
 
 			case BINDS.world.move.forward:
-				STATE.move.forward = false
-				check_stream()
+				ANIMATE.move('forward', false)
 				break
 
 			case BINDS.world.move.back:
-				STATE.move.back = false
-				check_stream()
+				ANIMATE.move('back', false)
 				break
 
 			case BINDS.world.move.left:
-				STATE.move.left = false
-				check_stream()
+				ANIMATE.move('left', false)
 				break
 
 			case BINDS.world.move.right:
-				STATE.move.right = false
-				check_stream()
+				ANIMATE.move('right', false)
 				break
 
 			case BINDS.world.move_alt.forward:
-				STATE.move.forward = false
-				check_stream()
+				ANIMATE.move('forward', false)
 				break;
 
 			case BINDS.world.move_alt.back:
-				STATE.move.back = false
-				check_stream()
+				ANIMATE.move('back', false)
 				break;
 
 			case BINDS.world.turn.left:
-				STATE.rotate.left = false
-				check_stream()
+				ANIMATE.digital_turn('left', false)
 				break;
 
 			case BINDS.world.turn.right:
-				STATE.rotate.right = false
-				check_stream()
+				ANIMATE.digital_turn('right', false)
 				break;
 
-			case BINDS.world.flip_cam:
-				flip_cam('return')
-				break;
+			// case BINDS.world.flip_cam:
+			// 	flip_cam('return')
+			// 	break;
 
 			case BINDS.world.actions.one:
+				console.log('action one')
 				break;
 
 			case BINDS.world.actions.two:
+				console.log('action two')
 				break;
 
 			case BINDS.world.actions.three:
+				console.log('action three')
 				break;
 
 			case BINDS.world.actions.four:
+				console.log('action four')
 				break;
 
 			default: 
@@ -258,14 +243,14 @@ function init(){
 	document.addEventListener('keyup', handle_keyup )
 	document.addEventListener('keydown', handle_keydown )
 
-	if( window.innerWidth < 800 ){
+	// if( window.innerWidth < 800 ){
 
 
-		if( env.LOCAL ){
-			console.log('skipping mobile controls')
-		}else{
-			alert('mobile controls coming soon')
-		}
+		// if( env.LOCAL ){
+		// 	console.log('skipping mobile controls')
+		// }else{
+		// 	alert('mobile controls coming soon')
+		// }
 
 
 		// const mcf = document.getElementById('mc-forward');
@@ -288,53 +273,42 @@ function init(){
 		// mcr.addEventListener("touchend", handleEnd, false);
 		// mcr.addEventListener("touchcancel", handleCancel, false);
 		// mcf.addEventListener("touchmove", handleMove, false);
-	}
+	// }
 
 }
 
 
 
-function handleForward( e ){
-	e.preventDefault()
-	STATE.move.forward = true
-	STATE.stream_down = true
-	window.TOON.needs_stream = true
-}
+// function handleForward( e ){
+// 	e.preventDefault()
+// 	ANIMATE.move('forward')
+// }
 
-function handleBack( e ){
-	e.preventDefault()
-	STATE.move.back = true
-	STATE.stream_down = true	
-	window.TOON.needs_stream = true
-}
+// function handleBack( e ){
+// 	e.preventDefault()
+// 	ANIMATE.move('back')
+// }
 
-function handleLeft( e ){
-	e.preventDefault()
-	
-	STATE.rotate.left = true
-	STATE.stream_down = true
-	window.TOON.needs_stream = true
-}
+// function handleLeft( e ){
+// 	e.preventDefault()
+// 	ANIMATE.move('left')
+// }
 
-function handleRight( e ){
-	e.preventDefault()
-	
-	STATE.rotate.right = true
-	STATE.stream_down = true	
-	window.TOON.needs_stream = true
-}
+// function handleRight( e ){
+// 	e.preventDefault()
+// 	ANIMATE.move('right')
+// }
 
-function handleEnd( e ){
-	e.preventDefault()
-	STATE.rotate.right = STATE.rotate.left = STATE.move.forward = STATE.move.back = false
-	STATE.stream_down = false
-}
+// function handleEnd( e ){
+// 	e.preventDefault()
+// 	STATE.rotate.right = STATE.rotate.left = STATE.move.forward = STATE.move.back = false
+// 	STATE.stream_down = false
+// }
 
-function handleCancel( e ){
-	e.preventDefault()
-	STATE.rotate.right = STATE.rotate.left = STATE.move.forward = STATE.move.back = false
-	STATE.stream_down = false
-}
+// function handleCancel( e ){
+// 	e.preventDefault()
+// 	ANIMATE.move('cancel')
+// }
 
 
 function apply_user_bindings(){
@@ -349,26 +323,20 @@ function apply_user_bindings(){
 
 
 
-function check_stream(){
-	if( !STATE.move.forward && !STATE.move.back && !STATE.move.left && !STATE.move.right ){
-		STATE.stream_down = false
-	}
-}
 
-
-function flip_cam( type ){
-	if( type == 'flip' ){
-		if( !STATE.cam_flip ){
-			CAMERA.position.z = Math.abs( CAMERA.position.z ) 
-			CAMERA.lookAt( window.TOON.MODEL.position )
-			STATE.cam_flip = true
-		}
-	}else if( type == 'return' ){
-		CAMERA.position.z = Math.abs( CAMERA.position.z ) * -1
-		CAMERA.lookAt( window.TOON.MODEL.position )
-		STATE.cam_flip = false
-	}
-}
+// function flip_cam( type ){
+// 	if( type == 'flip' ){
+// 		if( !STATE.cam_flip ){
+// 			CAMERA.position.z = Math.abs( CAMERA.position.z ) 
+// 			CAMERA.lookAt( window.TOON.MODEL.position )
+// 			STATE.cam_flip = true
+// 		}
+// 	}else if( type == 'return' ){
+// 		CAMERA.position.z = Math.abs( CAMERA.position.z ) * -1
+// 		CAMERA.lookAt( window.TOON.MODEL.position )
+// 		STATE.cam_flip = false
+// 	}
+// }
 
 
 

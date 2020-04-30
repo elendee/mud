@@ -50,6 +50,17 @@ function parse_id( id ){
 
 }
 
+
+
+
+function zone_id( x, z, altitude ){
+	if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( altitude ) !== 'number' ){
+		log('flag', 'failed to build zone id: ', x, z, altitude )
+		return false
+	}
+	return x + '-' + z + '-' + altitude
+}
+
 // sanitize_chat: sanitize_chat,	
 
 // is_valid_name: is_valid_name,
@@ -284,5 +295,6 @@ module.exports = {
 	is_valid_email,
 	random_hex,
 	random_rgb,
+	zone_id
 }
 

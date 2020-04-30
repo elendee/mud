@@ -3,34 +3,38 @@
 class Dev {
 
 	constructor( init ){
+
 		init = init || {}
 
 		this.ele = document.getElementById('dev')
 		this.crowd = this.ele.querySelector('.crowd')
 		this.coords = this.ele.querySelector('.coords')
-		this.ele.style.display = 'none'
+		this.modulo = this.ele.querySelector('.anim-modulo')
 
+		this.anim_count = 0
 	}
 
 	render( type, data ){
 
-		if( localStorage.getItem('devkey') === 'true' ){
+		// if( type == 'crowd' ){
 
-			if( type == 'crowd' ){
+		// 	let toons = 'crowd:<br>'
 
-				let patrons = 'crowd:<br>'
+		// 	for( const mud_id of Object.keys( data )){
+		// 		toons += data[ mud_id ].name + '<br>'
+		// 	}
 
-				for( const mud_id of Object.keys( data )){
-					patrons += data[ mud_id ].name + '<br>'
-				}
+		// 	this.crowd.innerHTML = toons
 
-				this.crowd.innerHTML = patrons
+		// }else 
+		if( type == 'coords' ){
 
-			}else if( type == 'coords' ){
+			this.coords.innerHTML = 'x: ' + data.x + '<br>z: ' + data.z
 
-				this.coords.innerHTML = 'x: ' + data.x + '<br>z: ' + data.z
+		}else if( type == 'modulo' ){
 
-			}
+			this.anim_count++
+			this.modulo.style.left = Math.floor( this.anim_count % 100 ) + '%'
 
 		}
 

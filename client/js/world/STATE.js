@@ -1,7 +1,7 @@
 export default {
 
-	// animating: true,
-	
+	animating: false,
+
 	stream_down: false,
 
 	// cam_flip: false,

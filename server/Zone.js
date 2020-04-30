@@ -20,9 +20,9 @@ class Zone extends Persistent {
 
 		this.name = init.name
 
-		this._x = init._x
-		this._z = init._z
-		this._altitude = init._altitude
+		this._x = init._x || init.x
+		this._z = init._z || init.y
+		this._altitude = init._altitude || init.altitude
 
 		this.precipitation = init.precipitation || 1
 
@@ -35,6 +35,17 @@ class Zone extends Persistent {
 		this.STRUCTURES = init.STRUCTURES || {}
 		this.NPCS = init.NPCS || {}
 		this.TOONS = init.TOONS || {}
+
+	}
+
+	get_id(){
+
+		if( !this._x || !this._z || !this._altitude ){
+			log('flag', 'could not build zone id: ', this._x, this._z, this._altitude )
+			return false
+		}
+
+		return this._x + '-' + this._z + '-' + this._altitude
 
 	}
 

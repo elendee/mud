@@ -17,6 +17,8 @@ import RAYCASTER from '../../three/RAYCASTER.js'
 import RENDERER from '../../three/RENDERER.js'
 import SCENE from '../../three/SCENE.js'
 
+import * as ANIMATE from '../animate.js'
+
 // import TARGET from './TARGET.js'
 
 // import * as DIALOGUE from '../ui/DIALOGUE.js'
@@ -69,6 +71,8 @@ function click_up( e ){
 
 	if( e.button == 2 )  lastX = lastY = -1
 
+	ANIMATE.analog_turn( false )
+
 }
 
 function move( e ){
@@ -82,7 +86,7 @@ function move( e ){
 
 		}
 
-		orient_patron( distX, distY )
+		orient_patron( distX, distY, e )
 
 		lastX = e.clientX
 		lastY = e.clientY
@@ -90,13 +94,14 @@ function move( e ){
 
 }
 
-function orient_patron( x, y ){
+function orient_patron( x, y, e ){
 
-	window.TOON.MODEL.rotation.y -= ( x / 100 )
+	if( e.clientY > window.innerHeight / 2 )  x *= -1
 
-	adjust_camera_altitude( y )
-
-	window.TOON.needs_stream = true
+	ANIMATE.analog_turn( ( x / 100 ), true )
+	// window.TOON.MODEL.rotation.y -= ( x / 100 )
+	// adjust_camera_altitude( y )
+	// window.TOON.needs_stream = true
 
 }
 

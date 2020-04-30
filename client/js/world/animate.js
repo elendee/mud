@@ -1,5 +1,7 @@
 import env from '../env.js'
 
+import DEV from './ui/DEV.js'
+
 import { Vector3 } from '../lib/three.module.js'
 
 import RENDERER from '../three/RENDERER.js'
@@ -28,10 +30,126 @@ const FORWARD = new Vector3(0, 0, 1)
 
 
 
+function move( dir, pressed ){
+	switch( dir ){
+		case 'forward':
+			STATE.move.forward = pressed
+			if( pressed ){
+				STATE.stream_down = true
+				window.TOON.needs_stream = true
+				if( !STATE.animating ) animate( true )
+			}else{
+				check_stream()
+			}
+			break;
 
-export default function animate(){
+		case 'back':
+			STATE.move.back = pressed
+			if( pressed ){
+				STATE.stream_down = true
+				window.TOON.needs_stream = true
+				if( !STATE.animating ) animate( true )
+			}else{
+				check_stream()
+			}
+			break;
 
-	if( !STATE.animating ) return false
+		case 'left':
+			STATE.move.left = pressed
+			if( pressed ){
+				STATE.stream_down = true
+				window.TOON.needs_stream = true
+				if( !STATE.animating ) animate( true )
+			}else{
+				check_stream()
+			}
+			break;
+
+		case 'right':
+			STATE.move.right = pressed
+			if( pressed ){
+				STATE.stream_down = true
+				window.TOON.needs_stream = true
+				if( !STATE.animating ) animate( true )
+			}else{
+				check_stream()
+			}
+			break;
+
+		case 'cancel':
+			STATE.rotate.right = STATE.rotate.left = STATE.move.forward = STATE.move.back = false
+			STATE.stream_down = false
+			break;
+
+		default: break;
+	}
+}
+
+
+function analog_turn( amount ){
+
+	if( amount ){
+		window.TOON.MODEL.rotation.y -= amount
+		window.TOON.needs_stream = true
+		STATE.stream_down = true
+		if( !STATE.animating ) animate( true )
+	}else{
+		check_stream()
+	}
+
+}
+
+function digital_turn( dir, pressed ){
+
+	switch( dir ){
+		case 'left':
+			STATE.rotate.left = pressed
+			break;
+
+		case 'right':
+			STATE.rotate.right = pressed
+			break;
+
+		default: break;
+	}
+
+	if( pressed ){
+		STATE.stream_down = true
+		window.TOON.needs_stream = true
+		if( !STATE.animating ) animate( true )
+	}else{
+		check_stream()
+	}
+	
+}
+
+
+
+
+function check_stream(){
+	if( !STATE.move.forward && !STATE.move.back && !STATE.move.left && !STATE.move.right ){
+		STATE.stream_down = false
+	}
+}
+
+
+
+function animate( start ){
+
+	if( typeof( start ) === 'boolean' ){
+		then = performance.now()
+		console.log('anim start', start )
+	}
+
+	STATE.animating = true
+
+	if( !STATE.stream_down ){ // && !x && !y ....
+		console.log('anim end')
+		STATE.animating = false
+		return false
+	}
+
+	DEV.render('modulo')
 
 	requestAnimationFrame( animate )
 
@@ -56,17 +174,19 @@ export default function animate(){
 			distance[1] *= .7
 	    }
 
+	    // console.log( distance[0])
+
 	    window.TOON.MODEL.translateX( distance[0] )
 	    window.TOON.MODEL.translateZ( distance[1] )
 
-		SKYBOX.position.copy( window.TOON.MODEL.position )
+		// SKYBOX.position.copy( window.TOON.MODEL.position )
 
 		LIGHT.spotlight.position.copy( window.TOON.MODEL.position ).add( LIGHT.offset )
 
 		RENDERER.shadowMap.needsUpdate = true
 
-		GROUND.position.x = window.TOON.MODEL.position.x
-		GROUND.position.z = window.TOON.MODEL.position.z
+		// GROUND.position.x = window.TOON.MODEL.position.x
+		// GROUND.position.z = window.TOON.MODEL.position.z
 
 	}
 
@@ -75,9 +195,6 @@ export default function animate(){
 	}else if( STATE.rotate.right ){
 		window.TOON.MODEL.rotation.y -= MAP.ROTATE_RATE
 	}
-
-
-
 
 	// for( const dpkt_id of Object.keys( PATRONS )){ // should not include player
 	// 	if( PATRONS[ dpkt_id ].needs_lerp ){
@@ -94,7 +211,6 @@ export default function animate(){
 	// 	}
 	// }
 
-
 	// for( const dpkt_id of Object.keys( BOTS )){ // should not include player
 	// 	if( BOTS[ dpkt_id ].needs_lerp ){
 	// 		BOTS[ dpkt_id ].MODEL.position.lerp( BOTS[ dpkt_id ].ref.position, .01 )
@@ -110,7 +226,6 @@ export default function animate(){
 	// 	}
 	// }
 	
-
 	// for( const dpkt_id of Object.keys( PILLARS )){
 	// 	if( PILLARS[ dpkt_id ].MODEL.position.y > 300 ){
 	// 		PILLARS[ dpkt_id ].destruct()
@@ -121,8 +236,16 @@ export default function animate(){
 	// 	}
 	// }
 
-
 	RENDERER.render( SCENE, CAMERA )
 	// console.log('ya')
 
+}
+
+
+
+
+export { 
+	move,
+	analog_turn,
+	digital_turn
 }

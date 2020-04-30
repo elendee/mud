@@ -15,9 +15,7 @@ export default {
 
 	},
 
-	HAL_ICON: 'robot',
-
-	NUM_BILLBOARDS: 4,
+	TILE_WIDTH: 10,
 
 	MATERIALIZE_TIME: 1000,
 

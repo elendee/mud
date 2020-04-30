@@ -5,15 +5,21 @@ import CAMERA from '../three/CAMERA.js'
 import RENDERER from '../three/RENDERER.js'
 import * as LIGHT from '../three/LIGHT.js'
 
+import GLOBAL from '../GLOBAL.js'
+
 import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
 import CHAT from './ui/CHAT.js'
 // import DIALOGUE from './'
 
-import animate from './animate.js'
+import * as ANIMATE from './animate.js'
 
 import {
-	Vector3
+	Vector3,
+	PlaneBufferGeometry,
+	MeshLambertMaterial,
+	DoubleSide,
+	Mesh
 } from '../lib/three.module.js'
 
 if( env.EXPOSE ){
@@ -51,8 +57,9 @@ class Zone {
 
 		TOON.MODEL.position.set( 0, 0, 0 )
 
-		// SCENE.add( LIGHT.spotlight )
-		// LIGHT.spotlight.target = TOON.MODEL
+		// TOON.MODEL.add( LIGHT.spotlight )
+		SCENE.add( LIGHT.spotlight )
+		LIGHT.spotlight.target = TOON.MODEL
 		SCENE.add( LIGHT.hemispherical )
 
 		SCENE.add( TOON.MODEL )
@@ -61,6 +68,7 @@ class Zone {
 		TOON.MODEL.add( CAMERA )
 
 		CAMERA.position.set( 0, 100, 0 )
+
 
 
 		setTimeout(function(){
@@ -77,39 +85,31 @@ class Zone {
 
 		window.CAMERA = CAMERA
 
-		animate()	
-
 	}
 
 
 
-	render_zone(){
+	render(){
 
-		console.log('render_zone....')
+		const geometry = new PlaneBufferGeometry( GLOBAL.TILE_WIDTH, GLOBAL.TILE_WIDTH, 32 )
+		const material = new MeshLambertMaterial({ 
+			color: 0x222200, 
+			side: DoubleSide 
+		})
 
-		// animate()
+		let tile
 
-		// PROXIMALS.start()
+		for( let x = 0; x < 3; x++ ){
+			for( let z = 0; z < 3; z++ ){
+				
+				const ground = new Mesh( geometry, material )
+				ground.receiveShadow = true
+				ground.rotation.x = Math.PI / 2
+				ground.position.set( x * GLOBAL.TILE_WIDTH + ( x ), .1, z * GLOBAL.TILE_WIDTH  + ( z ))
+				SCENE.add( ground )
 
-		// setTimeout(function(){
-		// 	window.SOCKET.send(JSON.stringify({
-		// 		type: 'zone_ping'
-		// 	}))
-		// }, 500)
-		// setTimeout(function(){
-		// 	window.SOCKET.send(JSON.stringify({
-		// 		type: 'floorplan_ping'
-		// 	}))
-		// }, 1500)
-		// setTimeout(function(){
-		// 	window.SOCKET.send(JSON.stringify({
-		// 		type: 'forest_ping'
-		// 	}))
-		// }, 5000)
-
-		// window.PATRONS = PATRONS
-		// window.PILLARS = PILLARS
-		// window.CONTROLS = CONTROLS
+			}	
+		}
 
 	}
 

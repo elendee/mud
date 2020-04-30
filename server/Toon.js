@@ -21,6 +21,8 @@ module.exports = class Toon extends Persistent {
 
 		this.height = 3
 
+		this.speed = 10
+
 		this.color = init.color || lib.random_rgb(100, 255)
 
 		// this.portrait = init.portrait || lib.gen_portrait()

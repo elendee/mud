@@ -1,6 +1,6 @@
-import hal from './hal.js'
 
-import animate from './world/animate.js'
+import env from './env.js'
+import hal from './hal.js'
 
 import * as ACTION_BAR from './world/ui/ACTION_BAR.js'
 import * as KEYS from './world/ui/KEYS.js'
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	ROUTER.bind()
 	.then( res => {
 		init_session( res )
+		ZONE.render( res.ZONE )
 	})
 	.catch( err => {
 		console.log( err )
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 async function init_session( res ){
 
-	if( localStorage.getItem('devkey') === 'true' )  DEV.ele.style.display = 'initial'
+	if( env.LOCAL )  DEV.ele.style.display = 'initial'
 
 	// websocket now bound
 

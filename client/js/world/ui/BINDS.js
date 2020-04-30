@@ -17,15 +17,15 @@ const binds = {
 	world: {
 
 		move: {
-			forward: 87, // w
-			back: 83, // s
-			left: 65, // d
-			right: 68 // a
+			forward: 83, // w
+			back: 87, // s
+			left: 68, // d
+			right: 65 // a
 		},
 
 		move_alt: {
-			forward: 38, // up
-			back: 40, // down
+			forward: 40, // up
+			back: 38, // down
 		},
 
 		turn: {

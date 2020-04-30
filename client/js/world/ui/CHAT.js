@@ -105,7 +105,7 @@ class Chat {
 		setTimeout(function(){
 			bubble.ele.remove()
 			delete CHAT.BUBBLES[ bubble.hash ]
-		}, 7000 )
+		}, 6000 )
 
 	}
 
@@ -225,8 +225,8 @@ class Bubble {
 		vector.y = Math.round( ( - vector.y + 1 ) * canvas.height / 2 )
 		vector.z = 0;
 
-		this.posX = vector.x + 30
-		this.posY = vector.y - 100
+		this.posX = vector.x //+ 30
+		this.posY = vector.y //- 30
 
 		this.bound = this.ele.getBoundingClientRect()
 
