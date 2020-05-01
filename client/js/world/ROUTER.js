@@ -2,7 +2,9 @@ import env from '../env.js'
 
 import hal from '../hal.js'
 
+import ZONE from './ZONE.js'
 
+import DEV from './ui/DEV.js'
 
 // import * as DIALOGUE from './ui/DIALOGUE.js'
 
@@ -57,40 +59,44 @@ const bind = function(){
 					break;
 
 				case 'move_pulse':
-					GALLERY.handle_move( obj.bundle )
+					ZONE.handle_move( obj.packet )
 					break;
 
-				case 'census':
-					GALLERY.census( obj.crowd )
-					break;
+				// case 'census':
+				// 	ZONE.census( obj.crowd )
+				// 	break;
 
 				case 'profile_pong':
-					GALLERY.touch_patron( obj.patron )
+					ZONE.touch_patron( obj.patron )
 					break;
 
-				case 'floorplan_pong':
-					GALLERY.layout( obj.floorplan )
+				// case 'floorplan_pong':
+				// 	ZONE.layout( obj.floorplan )
+				// 	break;
+
+				case 'toon_pong':
+					ZONE.touch_toon( obj )
 					break;
 
-				case 'bot_pong':
-					GALLERY.handle_bot( obj )
+				case 'dev_pong':
+					DEV.render('pong', obj )
 					break;
 
-				case 'forest_pong':
-					GALLERY.walk_forest( obj.forest )
-					break;
+				// case 'forest_pong':
+				// 	ZONE.walk_forest( obj.forest )
+				// 	break;
 
-				case 'pillars':
-					if( obj.pillars ){
-						GALLERY.install( obj.pillars, false )
-					}else{
-						setTimeout(function(){
-							SOCKET.send( JSON.stringify({ 
-								type: 'pillar_ping' 
-							}))
-						}, 1000 )
-					}
-					break;
+				// case 'pillars':
+				// 	if( obj.pillars ){
+				// 		ZONE.install( obj.pillars, false )
+				// 	}else{
+				// 		setTimeout(function(){
+				// 			SOCKET.send( JSON.stringify({ 
+				// 				type: 'pillar_ping' 
+				// 			}))
+				// 		}, 1000 )
+				// 	}
+				// 	break;
 
 				case 'chat':
 					CHAT.add_chat( obj )
@@ -102,7 +108,7 @@ const bind = function(){
 						// if( obj.patron.mud_id === window.TOON.mud_id ){
 						// 	hal('success', 'welcome back!', 3000)
 						// }
-						GALLERY.touch_patron( obj.patron )
+						ZONE.touch_patron( obj.patron )
 					// }
 					break;
 
@@ -120,52 +126,52 @@ const bind = function(){
 					if( obj.patron.mud_id === window.TOON.mud_id ){
 						hal('success', 'artist created', 4000)
 					}
-					GALLERY.touch_patron( obj.patron )
+					ZONE.touch_patron( obj.patron )
 					// }
 					break;
 
 				case 'profile':
 					// console.error('finish switching update to http .... ')
 					// if( obj.msg == 'success' ){
-					GALLERY.update_toon( obj )
+					ZONE.update_toon( obj )
 					// }else{
 					// 	console.log('error changing profile: ', obj )
 					// }
 					break;
 
 				case 'new_img':
-					GALLERY.new_img( obj )
+					ZONE.new_img( obj )
 					break;
 
 				// case 'bot_begin_path':
-				// 	GALLERY.handle_bot( obj )
+				// 	ZONE.handle_bot( obj )
 				// 	break;
 
-				case 'bot_walk':
-					GALLERY.handle_bot( obj )
-					break;
+				// case 'bot_walk':
+				// 	ZONE.handle_bot( obj )
+				// 	break;
 
-				case 'bot_pulse':
-					console.log('bot pulse should be deprecated...')
-					GALLERY.handle_bot( obj )
-					break;
+				// case 'bot_pulse':
+				// 	console.log('bot pulse should be deprecated...')
+				// 	ZONE.handle_bot( obj )
+				// 	break;
 
-				case 'bot_thought':
-					GALLERY.handle_bot( obj )
-					break;
+				// case 'bot_thought':
+				// 	ZONE.handle_bot( obj )
+				// 	break;
 
-				case 'zoom':
-					window.TOON.zoom()
-					break;
+				// case 'zoom':
+				// 	window.TOON.zoom()
+				// 	break;
 
-				case 'pulse_pillar_key':
-					GALLERY.check_pillar_keys( obj.keys )
-					break;
+				// case 'pulse_pillar_key':
+				// 	ZONE.check_pillar_keys( obj.keys )
+				// 	break;
 
-				case 'pillar_ping_single':
-					console.log('single...')
-					// GALLERY.install( obj.pillar, true )
-					break;
+				// case 'pillar_ping_single':
+				// 	console.log('single...')
+				// 	// ZONE.install( obj.pillar, true )
+				// 	break;
 
 				case 'error':
 					hal('error', obj.msg, obj.time, obj.redirect )

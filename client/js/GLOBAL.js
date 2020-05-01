@@ -1,6 +1,9 @@
 // import log from '../LOG.js'
 
 // log('call', 'GLOBAL.js')
+import {
+	Vector3
+} from './lib/three.module.js'
 
 
 const base = {
@@ -9,15 +12,21 @@ const base = {
 
 export default {
 
-	AUDIBLE: {
+	TREE_BASE: 20,
 
-		EXPLOSION: 1500
+	// AUDIBLE: {
 
-	},
+	// 	EXPLOSION: 1500
 
-	TILE_WIDTH: 10,
+	// },
 
-	MATERIALIZE_TIME: 1000,
+	MAX_CAM: 150,
+
+	MIN_CAM: 10,
+
+	// TILE_WIDTH: 10,
+
+	// MATERIALIZE_TIME: 1000,
 
 	TARGET_DIST: 10000,
 
@@ -64,6 +73,8 @@ export default {
 	RES_KEY: 'medium',
 
 	SOUND_ALL: 'off',
+
+	ORIGIN: new Vector3(0,0,0),
 
 	LOOK_HORIZONTAL: base.LOOK_SPEED / 2,
 

@@ -144,7 +144,7 @@ function handle_keyup( e ){
 			if( STATE.handler == 'chat' ){
 				CHAT.input.blur()
 			}else{
-				DIALOGUE.close_all()
+				// DIALOGUE.close_all()
 				// document.getElementById('info-panel').style.display = 'none'
 			}
 			global_handled = true

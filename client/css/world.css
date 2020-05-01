@@ -1,3 +1,7 @@
+body{
+	overflow: hidden;
+}
+
 canvas#mud-flats{
 /*     border: 2px solid; */
     width: 100%;
@@ -62,7 +66,7 @@ canvas#mud-flats{
     background: rgba( 0, 0, 0, .3);
     color: white;
     padding: 10px;
-    font-size: 12px;
+    font-size: 10px;
 
     display: none;
 }
@@ -75,4 +79,6 @@ canvas#mud-flats{
     width: 1px;
     border-left: 1px solid red;
 }
+
+
 

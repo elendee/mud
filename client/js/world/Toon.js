@@ -14,6 +14,8 @@ import {
 import STATE from './STATE.js'
 import DEV from './ui/DEV.js'
 
+import TOONS from './TOONS.js'
+
 window.STATE = STATE
 
 export default class Toon {
@@ -55,9 +57,13 @@ export default class Toon {
 
 		// this.height = init.height || 3
 
-		this.needs_lerp = init.needs_lerp || false
+		this.needs_move = init.needs_move || false
+		this.needs_rotate = init.needs_rotate || false
 		
 		this.needs_stream = false
+
+		this.intervals = {
+			stream: false		}
 
 		// this.speed = init.speed || env.SPEED
 
@@ -119,11 +125,11 @@ export default class Toon {
 
 
 
-	begin_stream(){
+	begin_intervals(){
 
 		const toon = this
 
-		this.stream = setInterval(function(){
+		this.intervals.stream = setInterval(function(){
 
 			// if( STATE.stream_down ){
 			if( TOON.needs_stream ){
@@ -134,6 +140,7 @@ export default class Toon {
 						type: 'move_stream',
 						ref: {
 							position: toon.MODEL.position,
+							quaternion: toon.MODEL.quaternion
 						}
 					}))
 
@@ -149,6 +156,8 @@ export default class Toon {
 			}
 
 		}, 2000 )
+
+		
 
 	}
 

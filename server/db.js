@@ -83,7 +83,7 @@ async function update( doc, field_array, value_array ){
 
 	for( let i = 0; i < field_array.length; i++ ){
 
-		let value = false
+		let value = 'NULL'
 		let type = typeof( value_array[i] )
 
 		if( type === 'string' ) {
@@ -118,11 +118,11 @@ async function update( doc, field_array, value_array ){
 
 		}else if( type === 'undefined' ){
 
-			log('flag', 'unexpected UPDATE val: ', field_array[i], value_array[i] )
+			log('flag', 'unexpected UPDATE val: \n' + field_array[i] + '\n' + value_array[i] )
 
 		}
 
-		log('flag', 'field_array: ', field_array[i], type, value_array[i], value )
+		// log('flag', 'field_array: ', field_array[i] +'\n' + type + '\n' + value_array[i] + '\n' + value )
 
 
 		let concat

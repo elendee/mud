@@ -1,6 +1,9 @@
 const DB = require('./db.js')
 const log = require('./log.js')
 
+const GLOBAL = require('./GLOBAL.js')
+
+const SOCKETS = require('./SOCKETS.js')
 
 const Persistent = require('./Persistent.js')
 const Toon = require('./Toon.js')
@@ -20,38 +23,57 @@ class Zone extends Persistent {
 
 		this.name = init.name
 
-		this._x = init._x || init.x
-		this._z = init._z || init.y
-		this._altitude = init._altitude || init.altitude
+		this._x = typeof( init._x ) === 'number' ? init._x : init.x
+		this._z = typeof( init._z ) === 'number' ? init._z : init.z
+		this._layer = typeof( init._layer ) === 'number' ? init._layer :  init.layer
 
-		this.precipitation = init.precipitation || 1
+		this.precipitation = typeof( init.precipitation ) === 'number' ? init.precipitation : 1
 
-		this.move_pulse = false
-		this.census = false
-		this.growth = false
-		this.bot_pulse = false
+		this._pulses = {
+			move: false
+		}
 
-		this.FOLIAGE = init.FOLIAGE || {}
-		this.STRUCTURES = init.STRUCTURES || {}
-		this.NPCS = init.NPCS || {}
-		this.TOONS = init.TOONS || {}
+		this._FOLIAGE = init.FOLIAGE || {}
+		this._STRUCTURES = init.STRUCTURES || {}
+		this._NPCS = init.NPCS || {}
+		this._TOONS = init.TOONS || {}
 
 	}
 
 	get_id(){
 
-		if( !this._x || !this._z || !this._altitude ){
-			log('flag', 'could not build zone id: ', this._x, this._z, this._altitude )
+		if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
+			log('flag', 'could not build zone id: ', this._x, this._z, this._layer )
 			return false
 		}
 
-		return this._x + '-' + this._z + '-' + this._altitude
+		return this._x + '-' + this._z + '-' + this._layer
 
 	}
 
 	async bring_online(){
 
+		const zone = this
 
+		this._pulses.move = setInterval(function(){
+
+			let packet = {}
+
+			for( const mud_id of Object.keys( zone._TOONS )){
+				packet[ mud_id ] = {
+					position: zone._TOONS[ mud_id ].ref.position,
+					quaternion: zone._TOONS[ mud_id ].ref.quaternion
+				}
+			}
+
+			for( const mud_id of Object.keys( SOCKETS ) ){
+				SOCKETS[ mud_id ].send( JSON.stringify({
+					type: 'move_pulse',
+					packet: packet
+				}))
+			}
+
+		}, GLOBAL.PULSES.MOVE )
 
 		return true
 
@@ -63,7 +85,7 @@ class Zone extends Persistent {
 			'name',
 			'x',
 			'z',
-			'altitude',
+			'layer',
 			'precipitation'
 		]
 
@@ -71,9 +93,14 @@ class Zone extends Persistent {
 			this.name, 
 			this._x,
 			this._z,
-			this._altitude,
+			this._layer,
 			this.precipitation
 		]
+
+		if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
+			log('flag', 'cannot identify zone for save: ', this._x, this._z, this._layer )
+			return false
+		}
 
 		const res = await DB.update( this, update_fields, update_vals )
 

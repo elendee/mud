@@ -10,6 +10,7 @@ class Dev {
 		this.crowd = this.ele.querySelector('.crowd')
 		this.coords = this.ele.querySelector('.coords')
 		this.modulo = this.ele.querySelector('.anim-modulo')
+		this.zones = this.ele.querySelector('.zones')
 
 		this.anim_count = 0
 	}
@@ -35,6 +36,13 @@ class Dev {
 
 			this.anim_count++
 			this.modulo.style.left = Math.floor( this.anim_count % 100 ) + '%'
+
+		}else if( type == 'pong' ){
+
+			this.zones.innerHTML = ''
+			for( const mud_id of data.zones ){
+				this.zones.innerHTML += mud_id + '<br>'
+			}
 
 		}
 

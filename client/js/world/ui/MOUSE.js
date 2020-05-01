@@ -36,10 +36,10 @@ let distY = 0
 
 let clearance, toon_offset, new_height
 
-const toPatron = new Vector3()
+const toToon = new Vector3()
 const wheel_projection = new Vector3()
 
-const head_pos = new Vector3()
+// const head_pos = new Vector3()
 
 
 function init(){
@@ -134,9 +134,10 @@ function adjust_camera_altitude( y ){
 
 function center_camera(){
 
-	head_pos.copy( window.TOON.MODEL.position ).add( window.TOON.HEAD.position )
+	// head_pos.copy( window.TOON.MODEL.position ).add( window.TOON.HEAD.position )
 
-	CAMERA.lookAt( head_pos )
+	// CAMERA.lookAt( head_pos )
+	// CAMERA.lookAt( window.TOON.MODEL.position )
 
 }
 
@@ -145,26 +146,35 @@ function wheel( e ){
 
 	if( STATE.stream_down || STATE.mousedown.left || STATE.mousedown.right || STATE.mousedown.middle )  return false
 
-	toPatron.subVectors( GLOBAL.ORIGIN, CAMERA.position ).normalize().multiplyScalar( 2.5 )
+	toToon.subVectors( GLOBAL.ORIGIN, CAMERA.position ).normalize().multiplyScalar( 5.5 )
 
-	if( e.wheelDelta < 0 ) toPatron.multiplyScalar( -1 )
+	if( e.wheelDelta < 0 ) toToon.multiplyScalar( -1 )
 
-	wheel_projection.copy( CAMERA.position ).add( toPatron )
+	wheel_projection.copy( CAMERA.position ).add( toToon )
 
 	if( e.wheelDelta > 0 ){
 		let dist = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		if( dist > GLOBAL.MIN_CAM + 5){
-			CAMERA.position.add( toPatron )
+			CAMERA.position.add( toToon )
 		}
 	}else{
-		if( wheel_projection.distanceTo( GLOBAL.ORIGIN ) < GLOBAL.MAX_CAM && wheel_projection.y > 0 - ( window.TOON.height / 2 ) ){
-			CAMERA.position.add( toPatron )
+		let dist1 = wheel_projection.distanceTo( GLOBAL.ORIGIN )
+		let dist2 = GLOBAL.MAX_CAM
+
+		console.log( dist1, dist2 )
+
+		if( dist1 < dist2 && wheel_projection.y > 0 - ( window.TOON.height / 2 ) ){
+			CAMERA.position.add( toToon )
 		}else{
-			console.log('scroll back problem... ', wheel_projection )
+			console.log('scroll back problem... ' ) // , wheel_projection
 		}
 	}
 
-	center_camera()
+	// CAMERA.rotation.z = Math.PI
+
+	RENDERER.frame( SCENE )
+
+	// center_camera()
 
 }
 

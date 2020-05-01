@@ -3,6 +3,8 @@ import * as lib from '../../lib.js'
 
 import STATE from '../STATE.js'
 
+import GLOBAL from '../../GLOBAL.js'
+
 import TOONS from '../TOONS.js'
 import NPCS from '../NPCS.js'
 
@@ -220,13 +222,22 @@ class Bubble {
 
 		const canvas = RENDERER.domElement
 
-		vector.project( CAMERA )
-		vector.x = Math.round( (   vector.x + 1 ) * canvas.width  / 2 )
-		vector.y = Math.round( ( - vector.y + 1 ) * canvas.height / 2 )
-		vector.z = 0;
+		const scalarX = canvas.width / window.innerWidth
+		const scalarY = canvas.height / window.innerHeight
+		// GLOBAL.RES_MAP[ GLOBAL.RES_KEY ]
 
-		this.posX = vector.x //+ 30
-		this.posY = vector.y //- 30
+		vector.project( CAMERA )
+		vector.x = Math.round( ( vector.x + 1 ) * canvas.width  / 2 )
+		// vector.x = Math.round( ( vector.x + 1 ) * scalar )
+		vector.y = Math.round( ( -vector.y + 1 ) * canvas.height / 2 )
+		// vector.y = Math.round( ( -vector.y + 1 ) * scalar )
+		// vector.y = 0
+		vector.z = 0;
+		// vector.z = Math.round( ( - vector.z + 1 ) * canvas.height / 2 )
+
+		this.posX = Math.floor( vector.x / scalarX ) + 5
+		this.posY = Math.floor( vector.y / scalarY ) - 5
+		// this.posY = vector.z //- 30
 
 		this.bound = this.ele.getBoundingClientRect()
 
@@ -239,12 +250,12 @@ class Bubble {
 			this.ele.style.right = 'auto'
 		}
 
-		if( this.posY + this.bound.height > window.innerHeight ){
+		if( this.posY > window.innerHeight ){
 			this.ele.style.top = 'auto'
 			this.ele.style.bottom = '0px'
 		}else{
-			this.ele.style.top = this.posY + 'px'
-			this.ele.style.bottom = 'auto'
+			this.ele.style.bottom = ( window.innerHeight - this.posY ) + 'px'
+			this.ele.style.top = 'auto'
 		}
 		
 	}

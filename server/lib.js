@@ -53,12 +53,12 @@ function parse_id( id ){
 
 
 
-function zone_id( x, z, altitude ){
-	if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( altitude ) !== 'number' ){
-		log('flag', 'failed to build zone id: ', x, z, altitude )
+function zone_id( x, z, layer ){
+	if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( layer ) !== 'number' ){
+		log('flag', 'failed to build zone id: ', x, z, layer )
 		return false
 	}
-	return x + '-' + z + '-' + altitude
+	return x + '-' + z + '-' + layer
 }
 
 // sanitize_chat: sanitize_chat,	
@@ -261,8 +261,14 @@ function random_rgb( min, max ){
 
 
 
+function tile_from_Xpos( toon_x ){
+	return Math.max( 0, Math.floor( toon_x / MAP.ZONE_WIDTH ) )
+}
 
 
+function tile_from_Zpos( toon_z ){
+	return Math.max( 0, Math.floor( toon_z / MAP.ZONE_WIDTH ) )
+}
 
 
 
@@ -295,6 +301,8 @@ module.exports = {
 	is_valid_email,
 	random_hex,
 	random_rgb,
-	zone_id
+	zone_id,
+	tile_from_Zpos,
+	tile_from_Xpos
 }
 

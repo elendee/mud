@@ -10,14 +10,12 @@ import CAMERA from '../three/CAMERA.js'
 import SKYBOX from '../three/SKYBOX.js'
 // import GROUND from '../three/GROUND.js'
 // import PILLARS from './PILLARS.js'
-// import BOTS from './BOTS.js'
+import TOONS from './TOONS.js'
 import * as LIGHT from '../three/LIGHT.js'
 // import CONTROLS from './three/CONTROLS.js'
 import STATE from './STATE.js'
 import MAP from '../MAP.js'
 
-
-// import PATRONS from './PATRONS.js'
 
 
 if( env.EXPOSE ) window.RENDERER = RENDERER
@@ -27,6 +25,9 @@ const direction = []
 const distance = []
 const facing = new Vector3()
 const FORWARD = new Vector3(0, 0, 1)
+
+const moving_toons = []
+const rotating_toons = []
 
 
 
@@ -125,6 +126,23 @@ function digital_turn( dir, pressed ){
 
 
 
+function receive_move( mud_id ){
+	if( !moving_toons.includes( mud_id ) ){
+		moving_toons.push( mud_id )
+		if( !STATE.animating )  animate( true )
+	}
+}
+
+
+function receive_rotate( mud_id ){
+	if( !moving_toons.includes( mud_id ) ){
+		moving_toons.push( mud_id )
+		if( !STATE.animating )  animate( true )
+	}	
+}
+
+
+
 
 function check_stream(){
 	if( !STATE.move.forward && !STATE.move.back && !STATE.move.left && !STATE.move.right ){
@@ -143,13 +161,11 @@ function animate( start ){
 
 	STATE.animating = true
 
-	if( !STATE.stream_down ){ // && !x && !y ....
+	if( !STATE.stream_down && !moving_toons.length && !rotating_toons.length ){ // && !x && !y ....
 		console.log('anim end')
 		STATE.animating = false
 		return false
 	}
-
-	DEV.render('modulo')
 
 	requestAnimationFrame( animate )
 
@@ -160,6 +176,8 @@ function animate( start ){
 	then = now 
 
 	delta_seconds = delta / 1000
+
+	DEV.render('modulo')
 
 	if( STATE.stream_down ){
 
@@ -179,6 +197,9 @@ function animate( start ){
 	    window.TOON.MODEL.translateX( distance[0] )
 	    window.TOON.MODEL.translateZ( distance[1] )
 
+	    window.TOON.MODEL.position.x = Math.min( Math.max( 0, window.TOON.MODEL.position.x ), MAP.ZONE_WIDTH )
+	    window.TOON.MODEL.position.z = Math.min( Math.max( 0, window.TOON.MODEL.position.z ), MAP.ZONE_WIDTH )
+
 		// SKYBOX.position.copy( window.TOON.MODEL.position )
 
 		LIGHT.spotlight.position.copy( window.TOON.MODEL.position ).add( LIGHT.offset )
@@ -196,43 +217,49 @@ function animate( start ){
 		window.TOON.MODEL.rotation.y -= MAP.ROTATE_RATE
 	}
 
-	// for( const dpkt_id of Object.keys( PATRONS )){ // should not include player
-	// 	if( PATRONS[ dpkt_id ].needs_lerp ){
-	// 		PATRONS[ dpkt_id ].MODEL.position.lerp( PATRONS[ dpkt_id ].ref.position, .01 )
-	// 		if( PATRONS[ dpkt_id ].MODEL.position.distanceTo( PATRONS[ dpkt_id ].ref.position ) < .1 ){
-	// 			PATRONS[ dpkt_id ].needs_lerp = false
-	// 			// console.log('lerp arrived')
-	// 		}
-	// 	}
-	// 	if( PATRONS[ dpkt_id ].needs_slerp > 0 ){
-	// 		PATRONS[ dpkt_id ].MODEL.quaternion.slerp( PATRONS[ dpkt_id ].ref.quaternion, .01 )
-	// 		PATRONS[ dpkt_id ].needs_slerp--
-	// 		// if( PATRONS[ dpkt_id ].needs_slerp === 0 ) console.log( 'slerp arrived')
-	// 	}
-	// }
+	for( const mud_id of Object.keys( TOONS )){ // should not include player
+		if( TOONS[ mud_id ].needs_move ){
+			TOONS[ mud_id ].MODEL.position.lerp( TOONS[ mud_id ].ref.position, .01 )
+			if( TOONS[ mud_id ].MODEL.position.distanceTo( TOONS[ mud_id ].ref.position ) < .1 ){
+				TOONS[ mud_id ].needs_move = false
+				moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
+				// delete moving_toons[ mud_id ]
+				// console.log('lerp arrived')
+			}
+		}
+		if( TOONS[ mud_id ].needs_rotate > 0 ){
+			TOONS[ mud_id ].MODEL.quaternion.slerp( TOONS[ mud_id ].ref.quaternion, .01 )
+			TOONS[ mud_id ].needs_rotate--
+			if( TOONS[ mud_id ].needs_rotate === 0 ){
+				// console.log( 'slerp arrived')
+				// TOONS[ mud_id ].
+				rotating_toons.splice( rotating_toons.indexOf( mud_id ), 1 )
+			}
+		}
+	}
 
-	// for( const dpkt_id of Object.keys( BOTS )){ // should not include player
-	// 	if( BOTS[ dpkt_id ].needs_lerp ){
-	// 		BOTS[ dpkt_id ].MODEL.position.lerp( BOTS[ dpkt_id ].ref.position, .01 )
-	// 		if( BOTS[ dpkt_id ].MODEL.position.distanceTo( BOTS[ dpkt_id ].ref.position ) < .1 ){
-	// 			BOTS[ dpkt_id ].needs_lerp = false
+	// for( const mud_id of Object.keys( BOTS )){ // should not include player
+	// 	if( BOTS[ mud_id ].needs_move ){
+	// 		BOTS[ mud_id ].MODEL.position.lerp( BOTS[ mud_id ].ref.position, .01 )
+	// 		if( BOTS[ mud_id ].MODEL.position.distanceTo( BOTS[ mud_id ].ref.position ) < .1 ){
+	// 			BOTS[ mud_id ].needs_move = false
 	// 			// console.log('lerp arrived')
 	// 		}
 	// 	}
-	// 	if( BOTS[ dpkt_id ].needs_slerp > 0 ){
-	// 		BOTS[ dpkt_id ].MODEL.quaternion.slerp( BOTS[ dpkt_id ].ref.quaternion, .02 )
-	// 		BOTS[ dpkt_id ].needs_slerp--
-	// 		// if( BOTS[ dpkt_id ].needs_slerp === 0 ) console.log( 'slerp arrived')
+	// 	if( BOTS[ mud_id ].needs_rotate > 0 ){
+	// 		BOTS[ mud_id ].MODEL.quaternion.slerp( BOTS[ mud_id ].ref.quaternion, .02 )
+	// 		BOTS[ mud_id ].needs_rotate--
+	// 		// if( BOTS[ mud_id ].needs_rotate === 0 ) console.log( 'slerp arrived')
 	// 	}
 	// }
 	
-	// for( const dpkt_id of Object.keys( PILLARS )){
-	// 	if( PILLARS[ dpkt_id ].MODEL.position.y > 300 ){
-	// 		PILLARS[ dpkt_id ].destruct()
-	// 	}else if( PILLARS[ dpkt_id ].ballooning ){
-	// 		PILLARS[ dpkt_id ].MODEL.position.y += .2
-	// 		PILLARS[ dpkt_id ].MODEL.rotation.y += PILLARS[ dpkt_id ].balloonY
-	// 		PILLARS[ dpkt_id ].MODEL.rotation.z += PILLARS[ dpkt_id ].balloonZ
+	// for( const mud_id of Object.keys( PILLARS )){
+	// 	if( PILLARS[ mud_id ].MODEL.position.y > 300 ){
+	// 		PILLARS[ mud_id ].destruct()
+	// 	}else if( PILLARS[ mud_id ].ballooning ){
+	// 		PILLARS[ mud_id ].MODEL.position.y += .2
+	// 		PILLARS[ mud_id ].MODEL.rotation.y += PILLARS[ mud_id ].balloonY
+	// 		PILLARS[ mud_id ].MODEL.rotation.z += PILLARS[ mud_id ].balloonZ
 	// 	}
 	// }
 
@@ -247,5 +274,9 @@ function animate( start ){
 export { 
 	move,
 	analog_turn,
-	digital_turn
+	digital_turn,
+	moving_toons,
+	rotating_toons,
+	receive_move,
+	receive_rotate
 }

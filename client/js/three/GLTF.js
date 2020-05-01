@@ -3,7 +3,7 @@
 // } from '../lib/three.module.js'
 import {
 	GLTFLoader
-} from '../node_modules/three/examples/jsm/loaders/GLTFLoader.js'
+} from '../lib/GLTFLoader.js'
 
 let gltf = false
 

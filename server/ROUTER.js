@@ -51,6 +51,40 @@ module.exports = {
 
 					break;
 
+				case 'toon_ping':
+					let zone, toon
+					for( const zone_id of Object.keys( GAME.ZONES )){
+						for( const toon_id of Object.keys( GAME.ZONES[ zone_id ]._TOONS )){
+							log('flag', 'resident toons.. ', toon_id )
+							if( toon_id === packet.mud_id ){
+								zone = GAME.ZONES[ zone_id ]
+							}
+						}
+					}
+					if( zone ){
+						for( const toon_id of Object.keys( zone._TOONS ) ){
+							if( toon_id === packet.mud_id ){
+								toon = zone._TOONS[ toon_id ]
+							}
+						}
+						if( toon ){
+							SOCKETS[ mud_id ].send(JSON.stringify({
+								type: 'toon_pong',
+								toon: toon.publish()
+							}))
+						}
+					}
+					// if( !zone ) log('flag', 'could not find zone', packet )
+					// if( !toon ) log('flag', 'could not find toon', packet )
+					break;
+
+				case 'dev_ping':
+					SOCKETS[ mud_id ].send( JSON.stringify({
+						type: 'dev_pong',
+						zones: Object.keys( GAME.ZONES )
+					}))
+					break;
+
 				// case 'pillar_ping':
 				// 	log('router', 'pillar ping')
 
@@ -79,12 +113,12 @@ module.exports = {
 							packet.ref.position.y,
 							packet.ref.position.z
 						)
-						// TOON.ref.quaternion = new Quaternion(
-						// 	packet.ref.quaternion._x,
-						// 	packet.ref.quaternion._y,
-						// 	packet.ref.quaternion._z,
-						// 	packet.ref.quaternion._w
-						// )
+						TOON.ref.quaternion = new Quaternion(
+							packet.ref.quaternion._x,
+							packet.ref.quaternion._y,
+							packet.ref.quaternion._z,
+							packet.ref.quaternion._w
+						)
 
 						TOON.needs_pulse = true
 

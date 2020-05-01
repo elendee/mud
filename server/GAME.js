@@ -52,7 +52,7 @@ class Game {
 
 				online = true
 
-				if( !Object.keys( game.ZONES[ mud_id ].TOONS ).length ){
+				if( !Object.keys( game.ZONES[ mud_id ]._TOONS ).length ){
 					game.ZONES[ mud_id ].close()
 					delete game.ZONES[ mud_id ]
 				}
@@ -67,9 +67,8 @@ class Game {
 
 			}
 
-		}, GLOBAL.GAME_PULSE )
+		}, GLOBAL.PULSES.GAME )
 
-		
 
 	}
 
@@ -98,39 +97,54 @@ class Game {
 		socket.request.session.USER.TOON = TOON = new Toon( socket.request.session.USER.TOON )
 		TOON.mud_id = mud_id // v. important, overwrite mud_id so they share
 		socket.request.session.save(function(){
-			log('flag','savead session.....')
+			// log('flag','saved session.....')
 		})
 
 		let x, z
 
-		const pool = DB.getPool()
+		if( TOON.camped_key ){
 
-		const { error, results, fields } = await pool.queryPromise( 'SELECT * FROM `structures` WHERE id=? LIMIT 1', [TOON.camped_key] )
+			const pool = DB.getPool()
 
-		if( error ){
-			log('flag', 'err toon init: ', error )
-			return false
+			const sql = 'SELECT * FROM `structures` WHERE id=? LIMIT 1'
+
+			const values = [ TOON.camped_key ]
+
+			const { error, results, fields } = await pool.queryPromise( sql, values )
+
+			if( error ){
+				log('flag', 'err toon init: ', error )
+				return false
+			}
+
+			if( !results || !results.length || !results[0].zone_key ){
+				log('flag', 'initializing uncamped toon')
+				x = z = 0
+			}else{
+				x = lib.tile_from_Xpos( results[0].x )
+				z = lib.tile_from_Zpos( results[0].z )
+			}
+
+		}else{ // placing an uncamped toon:
+
+			TOON.ref.position.x = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
+			TOON.ref.position.z = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
+
+			// probably will be Zone 0, 0 forever, but just in case:
+			x = lib.tile_from_Xpos( TOON.ref.position.x ) + 11
+			z = lib.tile_from_Zpos( TOON.ref.position.z )
+
 		}
 
-		if( !results || !results.length || !results[0].zone_key ){
-			log('flag', 'initializing uncamped toon')
-			x = 0; z = 0
-		}else{
-			x = Math.floor( results[0].x )
-			z = Math.floor( results[0].z )
-		}
+		const layer = TOON._layer
 
-		const altitude = TOON._altitude
-
-		const zone = await this.touch_zone( x, z, altitude )
+		const zone = await this.touch_zone( x, z, layer )
 
 		if( zone ){
 
 			ROUTER.bind_user( this, mud_id )
 
-			zone.TOONS[ mud_id ] = TOON
-
-			// log('flag', '\n user mud_id: ', mud_id, '\n toon mud_id: ', TOON.mud_id )
+			zone._TOONS[ mud_id ] = TOON
 
 			SOCKETS[ mud_id ].send( JSON.stringify( {
 				type: 'session_init',
@@ -153,6 +167,56 @@ class Game {
 
 
 
+
+
+
+	async touch_zone( x, z, layer ){
+
+		if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( layer ) !== 'number' ) return false
+
+		let string_id = lib.zone_id( x, z, layer )
+
+		if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
+		
+		const pool = DB.getPool()
+
+		const sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND layer=? LIMIT 1'
+
+		const { error, results, fields } = await pool.queryPromise( sql, [x, z, layer])
+
+		let zone 
+
+		if( results && results[0] ){ // read
+
+			zone = new Zone( results[0] )
+			await zone.bring_online()
+
+		}else{ // create
+
+			zone = new Zone({
+				_x: x,
+				_z: z,
+				_layer: layer
+			})
+
+			// log('flag', 'why invalid: ', zone._x, zone._z, zone._layer, x, z, layer )
+
+			await zone.bring_online()
+
+			const res = await zone.save()
+
+		}
+
+		this.ZONES[ zone.get_id() ] = zone
+
+		return zone
+
+	}
+
+
+
+
+
 	handle_chat( packet, mud_id ){
 
 		if( packet.chat.match(/^\/.*/)){
@@ -161,9 +225,9 @@ class Game {
 		}
 
 		if( packet.chat == 'xyzzy'){
-			SOCKETS[ mud_id ].send( JSON.stringify({
-				type: 'zoom'
-			}))
+			// SOCKETS[ mud_id ].send( JSON.stringify({
+			// 	type: 'zoom'
+			// }))
 			return true
 		}
 
@@ -185,52 +249,8 @@ class Game {
 
 
 
-	async touch_zone( x, z, altitude ){
-
-		if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( altitude ) !== 'number' ) return false
-
-		let string_id = lib.zone_id( x, z, altitude )
-
-		if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
-		
-		const pool = DB.getPool()
-
-		const sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND altitude=? LIMIT 1'
-
-		const { error, results, fields } = await pool.queryPromise( sql, [x, z, altitude])
-
-		let zone 
-
-		if( results && results[0] ){ // read
-
-			zone = new Zone( results[0] )
-			await zone.bring_online()
-
-		}else{ // create
-
-			zone = new Zone({
-				_x: x,
-				_z: z,
-				_altitude: altitude
-			})
-
-			await zone.bring_online()
-
-			const res = await zone.save()
-			// if( !res ) return false
-
-		}
-
-		this.ZONES[ zone.get_id() ] = zone
-
-		return zone
-
-	}
-
-
-
-
 }
+
 
 
 

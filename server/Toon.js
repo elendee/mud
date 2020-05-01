@@ -21,7 +21,7 @@ module.exports = class Toon extends Persistent {
 
 		this.height = 3
 
-		this.speed = 10
+		this.speed = 100
 
 		this.color = init.color || lib.random_rgb(100, 255)
 
@@ -29,7 +29,7 @@ module.exports = class Toon extends Persistent {
 		
 		this.name_attempted = init.name_attempted || Date.now() - 30000
 
-		this._altitude = init._altitude || 1
+		this._layer = typeof( init._layer ) === 'number' ? init._layer : 0
 
 		this.ref = init.ref || {}
 

@@ -40,6 +40,8 @@ const overlays = {
 			</div>
 			<div class='anim-modulo'>
 			</div>
+			<div class='zones'>
+			</div>
 		</div>`,
 	chat:`
 		<div id='chat'>
