@@ -3,6 +3,8 @@ import * as lib from '../../lib.js'
 
 import STATE from '../STATE.js'
 
+import RENDERER from '../../three/RENDERER.js'
+
 import GLOBAL from '../../GLOBAL.js'
 
 import TOONS from '../TOONS.js'
