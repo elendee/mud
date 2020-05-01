@@ -47,6 +47,7 @@ async function init_session( res ){
 
 	// window.SCENE = SCENE
 	window.TOON = new Toon( res.USER.TOON )
+	window.ZONE = ZONE
 	// window.TOON.model()
 
 	// SCENE.add( GROUND )

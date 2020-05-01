@@ -10,6 +10,8 @@ const Toon = require('./Toon.js')
 const Structure = require('./Structure.js')
 const Foliage = require('./Foliage.js')
 
+const moment = require('moment')
+
 
 class Zone extends Persistent {
 
@@ -27,7 +29,12 @@ class Zone extends Persistent {
 		this._z = typeof( init._z ) === 'number' ? init._z : init.z
 		this._layer = typeof( init._layer ) === 'number' ? init._layer :  init.layer
 
+
+		this.elevation = typeof( init.elevation ) === 'number' ? init.elevation : 1
 		this.precipitation = typeof( init.precipitation ) === 'number' ? init.precipitation : 1
+
+		this._last_growth = typeof( init._last_growth ) === 'string' ? init._last_growth : moment().format()
+		this._density_foliage = .3
 
 		this._pulses = {
 			move: false
@@ -75,7 +82,22 @@ class Zone extends Persistent {
 
 		}, GLOBAL.PULSES.MOVE )
 
-		return true
+		if( typeof( this._id ) !== 'number') {
+			log('flag', 'invalid zone id', this._id )
+			return false
+		}
+
+		const pool = DB.getPool()
+
+		const sql = 'SELECT * FROM foliage WHERE zone_key=' + this._id
+
+		const { error, results, fields } = await pool.queryPromise( sql )
+		if( error ) log('flag', 'foliage looukp  err: ', error )
+		for ( const foliage of results ){
+			let f = new Foliage( foliage )
+			this._FOLIAGE[ f.mud_id ] = f
+		}
+
 
 	}
 

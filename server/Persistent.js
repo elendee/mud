@@ -16,13 +16,15 @@ module.exports = class Persistent {
 
 	}
 
-	publish(){
+	publish( excepted ){
+
+		excepted = excepted || []
 
 		let r = {}
 
 		for( const key of Object.keys( this )){
 
-			if( typeof( key ) === 'string' && key[0] !== '_' ){
+			if( ( typeof( key ) === 'string' && key[0] !== '_' ) || excepted.includes( key ) ){
 				if( this[ key ] && this[ key ].publish && typeof( this[ key ].publish ) === 'function' ){
 					r[ key ] = this[ key ].publish()
 				}else{

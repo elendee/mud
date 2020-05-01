@@ -1,6 +1,11 @@
-class Foliage {
+const Persistent = require('./Persistent.js')
+
+
+class Foliage extends Persistent {
 
 	constructor( init ){
+
+		super( init )
 
 		init = init || {}
 
@@ -8,9 +13,9 @@ class Foliage {
 
 		this.type = init.type
 
-		this._x = init._x
-		this._y = init._y
-		this._z = init._z
+		this.x = typeof( init._x ) === 'number' ? init._x : init.x
+		this.y = typeof( init._y ) === 'number' ? init._y : init.y
+		this.z = typeof( init._z ) === 'number' ? init._z : init.z
 
 		this.scale = init.scale
 

@@ -13,6 +13,8 @@ const DB = require('./db.js')
 const Toon = require('./Toon.js')
 const Zone = require('./Zone.js')
 
+const moment = require('moment')
+
 
 class Game {
 
@@ -48,7 +50,7 @@ class Game {
 
 			for( const mud_id of Object.keys( game.ZONES ) ){
 
-				log('flag', Object.keys( game.ZONES ).length  + ' zones online')
+				log('pulses', Object.keys( game.ZONES ).length  + ' zones online')
 
 				online = true
 
@@ -149,7 +151,7 @@ class Game {
 			SOCKETS[ mud_id ].send( JSON.stringify( {
 				type: 'session_init',
 				USER: SOCKETS[ mud_id ].request.session.USER.publish(),
-				ZONE: zone.publish(),
+				ZONE: zone.publish( '_FOLIAGE' ),
 				map: MAP,
 			}) )
 
@@ -243,6 +245,69 @@ class Game {
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))
 		}
+
+	}
+
+
+
+
+	handle_command( packet, mud_id ){
+
+		if( packet.chat.match(/^\/ts$/)){
+
+			this.test_time( mud_id )
+			.catch(err=>{
+				log('flag', 'err test time: ', err )
+			})
+
+		}else if( 1 ){
+			// ........
+		}
+
+	}
+
+
+
+
+	async test_time( mud_id ){
+
+		////////////////////////////////////////////////////////////////////////
+		log('flag', 'test_time disabled')
+		return false
+		////////////////////////////////////////////////////////////////////////
+
+		const pool = DB.getPool()
+
+		const sql = 'INSERT INTO test (server_stamp) VALUES ("' + moment().format('YYYY-MM-DD hh:mm:ss') + '")'
+		// new Date().toISOString().split('.')[0]
+
+		// log('flag', moment().format() )
+		// log('flag', moment().format('YYYY-MM-DD hh:mm:ss') )
+		// log('flag', new Date().toISOString().split('.')[0] ) //+"Z" )
+
+		const { error, results, fields } = await pool.queryPromise( sql ) 
+
+		if( error ){
+			log('flag', 'test err', error )
+			return false
+		}
+
+		log('commands', 'test results id: ', results.insertId )
+
+		const retrieve = 'SELECT * FROM test WHERE id='+ results.insertId
+
+		pool.query( retrieve, function( error, results, fields ){
+			if( error ){
+				log('flag', 'errorrrrr: ', error )
+				return false
+			}
+			log('commands', 'and now res: ', results )
+
+			// IITTT WOORRRKKSS
+
+			// CREATED / EDITED / SERVER DATE ALL SAME POST-RETRIEVAL
+
+		})
 
 	}
 

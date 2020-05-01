@@ -53,6 +53,11 @@ class Zone {
 			anim_sweeper: false
 		}
 
+		this.FOLIAGE = []
+		this.STRUCTURES = []
+		this.NPCS = []
+		this.TOONS = []
+
 	}
 
 	initialize(){
@@ -109,7 +114,7 @@ class Zone {
 
 
 
-	render(){
+	render( zone_data ){
 
 		// tiles
 
@@ -137,21 +142,22 @@ class Zone {
 
 		// foliage
 
-		// let tree
-		for( let i = 0; i < 100; i++ ){
-			const tree = new Foliage()
+		// for( let i = 0; i < Object.keyszone_data._FOLIAGE.length; i++ ){
+		for( const mud_id of Object.keys( zone_data._FOLIAGE ) ){
+			const tree = new Foliage( zone_data._FOLIAGE[ mud_id ] )
+			console.log('placing: ', tree )
 			tree.model()
 			.then(res=>{
 				tree.MODEL.position.set(
-					Math.floor( Math.random() * MAP.ZONE_WIDTH ),
-					1,
-					Math.floor( Math.random() * MAP.ZONE_WIDTH ),
+					tree.x,
+					tree.y,
+					tree.z,
 				)
 				// console.log( tree.MODEL.position )
 				SCENE.add( tree.MODEL )
 			}).catch(err=>{
 				console.log('err load: ', err )
-			})
+			})			
 		}
 
 	}
