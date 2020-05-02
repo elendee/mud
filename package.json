@@ -27,7 +27,6 @@
     "express-session": "^1.17.1",
     "memorystore": "^1.6.2",
     "mkdirp": "^1.0.4",
-    "moment": "^2.25.0",
     "mysql": "^2.18.1",
     "password-validator": "^5.0.3",
     "three": "^0.115.0",

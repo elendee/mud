@@ -13,7 +13,7 @@ const DB = require('./db.js')
 const Toon = require('./Toon.js')
 const Zone = require('./Zone.js')
 
-const moment = require('moment')
+// const moment = require('moment')
 
 
 class Game {
@@ -191,6 +191,9 @@ class Game {
 		if( results && results[0] ){ // read
 
 			zone = new Zone( results[0] )
+
+			log('flag', 'db lg: ', zone._last_growth )
+
 			await zone.bring_online()
 
 		}else{ // create

@@ -272,13 +272,45 @@ function tile_from_Zpos( toon_z ){
 
 
 
+function is_iso_date( data ){
+
+	if( typeof( data ) !== 'string' || !data.match(/^\d{4}-([0]\d|1[0-2])-([0-2]\d|3[01])/)){
+		log('flag','failed ISO test', data )
+		return false
+	}
+
+	return true
+
+}
 
 
 
+function validate_number( ...vals ){
+
+	for( const num of vals ){
+		if( typeof( num ) === 'number' ) return num
+	}
+	// should never get here
+	return vals[ vals.length - 1 ]
+
+}
 
 
+function validate_seconds( ...vals ){
 
-
+	for( const val of vals ){
+		if( typeof( val ) === 'number' && val > 1000000000 )  return val
+	}
+	
+	return vals[ vals.length - 1 ]
+	// if( typeof( init._last_growth ) === 'number' && init._last_growth > 10000000 ){
+	// 	return init._last_growth
+	// }else if( typeof( init.last_growth === 'number ') && init.last_growth > 10000000 ){
+	// 	return init.last_growth
+	// }else{
+	// 	return new Date('1970').getTime()
+	// }
+}
 
 
 
@@ -303,6 +335,9 @@ module.exports = {
 	random_rgb,
 	zone_id,
 	tile_from_Zpos,
-	tile_from_Xpos
+	tile_from_Xpos,
+	is_iso_date,
+	validate_number,
+	validate_seconds
 }
 

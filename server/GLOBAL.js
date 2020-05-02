@@ -10,4 +10,8 @@ module.exports = {
 
 	TOON_START_POS: 100,
 
+	MAX_GROW_DAYS: 30,
+
+	MIN_FOLIAGE_DIST: 20
+
 }
