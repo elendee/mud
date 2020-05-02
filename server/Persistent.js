@@ -1,3 +1,5 @@
+// const lib = require('./lib.js')
+
 const uuid = require('uuid').v4
 
 module.exports = class Persistent {
@@ -7,12 +9,15 @@ module.exports = class Persistent {
 		init = init || {}
 
 		this._id = init._id || init.id
+		// lib.validate_number( init._id, init.id, undefined )
 
 		this.mud_id = init.mud_id || uuid()
 
 		this._table = init._table
 
-		this._created = init._created
+		this._created = init._created || init.created
+
+		this._edited = init._edited || init.edited
 
 	}
 

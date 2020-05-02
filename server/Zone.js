@@ -82,6 +82,8 @@ class Zone extends Persistent {
 		}
 		this._last_growth = current_ISO_ms
 
+		await this.save_foliage()
+
 		// pulses
 
 		this._pulses.move = setInterval(function(){
@@ -207,6 +209,43 @@ class Zone extends Persistent {
 		}
 
 	}
+
+
+
+	async save_foliage(){
+
+		log('flag', '-----------incomplete save_foliage')
+		return false
+
+		const pool = DB.getPool()
+
+		let value_string
+
+		const sql = 'INSERT INTO `foliage` (zone_key, type, scale, x, y, z) VALUES ' + value_string + ' ON DUPLICATE KEY UPDATE ' + full_string
+
+		log('query', 'attempting UPDATE: ', sql )
+
+		const { error, results, fields } = await pool.queryPromise( sql )
+
+		if( error || !results ){
+			if( error ){
+				log('flag', 'sql err:', error.sqlMessage )
+				return false
+			}else{
+				// throw new Error( 'UPDATE error: ', error.sqlMessage, 'attempted: ', '\nATTEMPTED: ', sql, doc._table )
+				throw new Error( 'no results: ' + sql )
+			}
+		}
+
+		log('query', 'results: ', JSON.stringify( results ) )
+
+		return {
+			msg: 'sql success',
+			id: results.insertId
+		}
+
+	}
+
 
 
 	async save(){
