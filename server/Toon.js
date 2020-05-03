@@ -25,7 +25,7 @@ module.exports = class Toon extends Persistent {
 
 		this.height = 3
 
-		this.speed = 100
+		this.speed = env.TOON_SPEED || 20
 
 		this.color = init.color || lib.random_rgb(100, 255)
 
