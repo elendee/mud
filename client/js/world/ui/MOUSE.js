@@ -21,7 +21,7 @@ import SCENE from '../../three/SCENE.js'
 
 import * as ANIMATE from '../animate.js'
 
-
+import POPUPS from './POPUPS.js'
 
 // import TARGET from './TARGET.js'
 
@@ -80,6 +80,10 @@ function click_up( e ){
 	if( e.button == 2 )  lastX = lastY = -1
 
 	ANIMATE.analog_turn( false )
+
+	for( const id of Object.keys( POPUPS ) ){
+		POPUPS[ id ].mousedown = false
+	}
 
 }
 

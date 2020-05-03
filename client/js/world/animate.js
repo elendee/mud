@@ -1,4 +1,5 @@
 import env from '../env.js'
+import * as lib from '../lib.js'
 
 import DEV from './ui/DEV.js'
 
@@ -29,6 +30,16 @@ const FORWARD = new Vector3(0, 0, 1)
 const moving_toons = []
 const rotating_toons = []
 
+
+
+function update_compass(){
+	STATE.compassing = true
+	document.getElementById('compass-arrow').style.transform = 'rotate(' + Math.floor( lib.radians_to_degrees( TOON.MODEL.rotation.y ) ) + 'deg)'
+	setTimeout(function(){
+		document.getElementById('compass-arrow').style.transform = 'rotate(' + Math.floor( lib.radians_to_degrees( TOON.MODEL.rotation.y ) ) + 'deg)'
+		STATE.compassing = false
+	}, 1000 )
+}
 
 
 function move( dir, pressed ){
@@ -98,6 +109,8 @@ function analog_turn( amount ){
 		check_stream()
 	}
 
+	if( !STATE.compassing ) update_compass()
+
 }
 
 function digital_turn( dir, pressed ){
@@ -121,7 +134,9 @@ function digital_turn( dir, pressed ){
 	}else{
 		check_stream()
 	}
-	
+
+	if( !STATE.compassing ) update_compass()
+
 }
 
 

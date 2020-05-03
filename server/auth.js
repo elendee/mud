@@ -57,42 +57,48 @@ async function login_user( request ){
 
 async function register_user( request ){
 
-	if( !request.session.USER.id && request.session.USER.level <= 0 ){ // should always be the case if routing correctly
+	// should always be the case if routing correctly
+	if( request.session.USER ){
 
-		const pool = DB.getPool()
+		if( !request.session.USER.id && request.session.USER.level <= 0 ){
 
-		const email = request.body.email.toLowerCase().trim()
-		const pw = request.body.password.trim()
+			const pool = DB.getPool()
 
-		let invalid = false
-		if( !lib.is_valid_email( email )){
-			invalid = 'invalid email'
-		}else if( !lib.is_valid_password( pw )){
-			invalid = 'invalid password'
-		}
-		if( invalid ){
-			log('flag', 'register: ', invalid )
+			const email = request.body.email.toLowerCase().trim()
+			const pw = request.body.password.trim()
+
+			let invalid = false
+			if( !lib.is_valid_email( email )){
+				invalid = 'invalid email'
+			}else if( !lib.is_valid_password( pw )){
+				invalid = 'invalid password'
+			}
+			if( invalid ){
+				log('flag', 'register: ', invalid )
+				return false
+			}
+
+			let salt = bcrypt.genSaltSync( SALT_ROUNDS )
+			let hash = bcrypt.hashSync( pw, salt )
+
+			const sql = 'INSERT INTO `users` (`email`, `password`, `level`, `confirmed`) VALUES ( ?, ?, 1, false )'
+
+			const response = pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
+
+			const user = await select_user( 'id', result.insertId )
+
+			request.session.USER = user // should be app logic: new User( res )
+
+			return true
+
+		}else{
+
+			log('flag', 'bad register attempt: ', request.session.USER )
 			return false
+
 		}
-
-		let salt = bcrypt.genSaltSync( SALT_ROUNDS )
-		let hash = bcrypt.hashSync( pw, salt )
-
-		const sql = 'INSERT INTO `users` (`email`, `password`, `level`, `confirmed`) VALUES ( ?, ?, 1, false )'
-
-		const response = pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
-
-		const user = await select_user( 'id', result.insertId )
-
-		request.session.USER = user // should be app logic: new User( res )
-
-		return true
-
 	}else{
-
-		log('flag', 'bad register attempt: ', request.session.USER )
-		return false
-
+		log('flag', 'no user')
 	}
 }
 

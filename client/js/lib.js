@@ -1,27 +1,13 @@
 
-// function clear_object(obj){
-	
-// 	while(obj.children.length > 0){ 
-// 		clear_object(obj.children[0])
-// 		obj.remove(obj.children[0]);
-// 	}
 
-// 	if(obj.geometry) obj.geometry.dispose()
+function radians_to_degrees( radians ){
+	return radians * (180/ Math.PI )
+}
 
-// 	if(obj.material){ 
-// 		//in case of map, bumpMap, normalMap, envMap ...
-// 		Object.keys(obj.material).forEach(prop => {
-// 			if(!obj.material[prop])
-// 				return         
-// 			if(typeof obj.material[prop].dispose === 'function')                                  
-// 				obj.material[prop].dispose()                                                        
-// 		})
+function degrees_to_radians( degrees ){
+	return degrees * ( Math.PI /180)
+}
 
-// 		obj.material.dispose()
-// 	}
-// }   
-
-// clear_object(scene)
 			
 			
 function random_hex( len ){
@@ -47,5 +33,7 @@ function random_hex( len ){
 
 export {
 	random_hex,
+	degrees_to_radians,
+	radians_to_degrees
 	// clear_object
 }

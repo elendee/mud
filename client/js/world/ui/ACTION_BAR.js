@@ -1,4 +1,7 @@
 
+import Popup from './Popup.js'
+import POPUPS from './POPUPS.js'
+
 const action_bar = document.getElementById('action-bar')
 
 function init(){
@@ -11,23 +14,32 @@ function init(){
 
 function init_character_buttons(){
 
+	const char_pop = new Popup({
+		id: 'character'
+	})
+	const inv_pop = new Popup({
+		id: 'inventory'
+	})
+
 	const character_wrapper = document.createElement('div')
 	character_wrapper.id = 'character-wrapper'
 
 	const character = document.createElement('div')
-	character.id = 'character'
+	character.id = 'ab-character'
 	character.classList.add('bar-button')
 	character.addEventListener('click', function(){
-		console.log(this.id + ' clicked')
+		POPUPS['character'].show()
+		// console.log(this.id + ' clicked')
 	})
 
 	character_wrapper.appendChild( character )
 
 	const inventory = document.createElement('div')
-	inventory.id = 'inventory'
+	inventory.id = 'ab-inventory'
 	inventory.classList.add('bar-button')
 	inventory.addEventListener('click', function(){
-		console.log(this.id + ' clicked')
+		POPUPS['inventory'].show()
+		// console.log(this.id + ' clicked')
 	})
 
 	character_wrapper.appendChild( inventory )

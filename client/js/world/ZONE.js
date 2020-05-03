@@ -28,6 +28,9 @@ import {
 	Mesh
 } from '../lib/three.module.js'
 
+
+import texLoader from '../three/texLoader.js'
+
 if( env.EXPOSE ){
 	window.SCENE = SCENE
 }
@@ -36,7 +39,7 @@ if( env.EXPOSE ){
 
 let new_pos, new_quat, old_pos, old_quat, needs_move, needs_rotate
 
-
+// const ground = texLoader.load('/resource/textures/grass.jpg')
 
 
 class Zone {
@@ -90,7 +93,7 @@ class Zone {
 		// TOON.HEAD.add( CAMERA )
 		TOON.MODEL.add( CAMERA )
 
-		CAMERA.position.set( 0, 150, 0 )
+		CAMERA.position.set( 0, 150, 20 )
 
 
 
@@ -121,7 +124,8 @@ class Zone {
 		const geometry = new PlaneBufferGeometry( MAP.TILE_WIDTH, MAP.TILE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
 			color: 0x222200, 
-			side: DoubleSide 
+			// map: ground,
+			// side: DoubleSide 
 		})
 
 		let tile
@@ -133,7 +137,7 @@ class Zone {
 				
 				const ground = new Mesh( geometry, material )
 				ground.receiveShadow = true
-				ground.rotation.x = Math.PI / 2
+				ground.rotation.x = -Math.PI / 2
 				ground.position.set( x * MAP.TILE_WIDTH + ( 0 ), .1, z * MAP.TILE_WIDTH  + ( 0 ))
 				SCENE.add( ground )
 

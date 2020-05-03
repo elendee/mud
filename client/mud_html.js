@@ -28,10 +28,14 @@ const overlays = {
 	alert:`
 		<div id=alert-contain></div>`,
 	world_ui: `
-		<div id='world-ui'>
-			<!--div id='world-map'></div-->
-			<div id='action-bar'></div>
-		</div>`,
+			<div id='world-map'></div>
+			<div id='compass'>
+				<div>
+					<div id='compass-arrow'></div>
+					<!--img src='/resource/images/compass-arrow.png'-->
+				</div>
+			</div>
+			<div id='action-bar'></div>`,
 	dev: `
 		<div id='dev'>
 			<div class='coords'>
