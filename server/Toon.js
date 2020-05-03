@@ -1,5 +1,4 @@
 const env = require('./.env.js')
-const Persistent = require('./Persistent.js')
 const uuid = require('uuid').v4
 const DB = require('./db.js')
 const lib = require('./lib.js')
