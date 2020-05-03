@@ -1,3 +1,4 @@
+const env = require('./.env.js')
 const DB = require('./db.js')
 const lib = require('./lib.js')
 const log = require('./log.js')
