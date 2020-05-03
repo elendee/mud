@@ -1,3 +1,5 @@
+const env = require('./.env.js')
+const uuid = require('uuid').v4
 const DB = require('./db.js')
 const lib = require('./lib.js')
 const log = require('./log.js')
@@ -25,7 +27,7 @@ module.exports = class Toon extends Persistent {
 
 		this.height = 3
 
-		this.speed = 100
+		this.speed = env.TOON_SPEED
 
 		this.color = init.color || lib.random_rgb(100, 255)
 
@@ -81,6 +83,7 @@ module.exports = class Toon extends Persistent {
 
 	}
 
+}
 
 	// publish(){
 
@@ -102,4 +105,4 @@ module.exports = class Toon extends Persistent {
 
 	// }
 
-}
+
