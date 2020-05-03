@@ -22,7 +22,7 @@ canvas#mud-flats{
     width: 40px;
     height: 40px;
     border-radius: 5px;
-    border: 1px solid wheat; 
+    border: 1px solid tan; 
     margin: 0 3px;  
 /*     cursor: pointer; */
 }
@@ -41,16 +41,16 @@ canvas#mud-flats{
     padding: 10px 10px 10px 10px;
     border-radius: 10px 10px 0 0;
     margin: -10px 10px 0 10px;
-    border: 1px solid wheat;
+    border: 1px solid tan;
     border-bottom: 0px;
 }
 
 #action-wrapper{
-    background: rgb( 30, 15, 0)
+    background: rgb( 10, 5, 0)
 }
 
 #character-wrapper{
-    background: rgb(15, 30, 00)
+    background: rgb(5, 10, 00)
 }
 
 
