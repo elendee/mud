@@ -145,7 +145,7 @@ class Zone {
 		// for( let i = 0; i < Object.keyszone_data._FLORA.length; i++ ){
 		for( const mud_id of Object.keys( zone_data._FLORA ) ){
 			const tree = new Flora( zone_data._FLORA[ mud_id ] )
-			ZONE.FLORA[ mud_id ] = tree
+			this.FLORA[ mud_id ] = tree
 			// console.log('placing: ', tree )
 			tree.model()
 			.then(res=>{
@@ -171,7 +171,7 @@ class Zone {
 
 		for( const mud_id of Object.keys( zone_data._NPCS ) ){
 			const npc = new Npc( zone_data._NPCS[ mud_id ] )
-			ZONE.NPCS[ mud_id ] = npc
+			this.NPCS[ mud_id ] = npc
 			// console.log('placing: ', npc )
 			npc.model()
 			.then(res=>{

@@ -383,7 +383,6 @@ DB.initPool(( err, pool ) => {
 	WSS.on('connection', function connection( socket, req ) {
 
 		// log('wss', 'socket connection ', req.session.USER.name )
-
 		socket.request = req
 
 		// log('wss', 'stuff...'  )///socket.request.session.save

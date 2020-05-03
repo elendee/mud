@@ -1,4 +1,4 @@
-
+const env = require('./.env.js')
 const Persistent = require('./Persistent.js')
 const uuid = require('uuid').v4
 const lib = require('./lib.js')
@@ -21,7 +21,7 @@ module.exports = class Toon extends Persistent {
 
 		this.height = 3
 
-		this.speed = 100
+		this.speed = env.TOON_SPEED
 
 		this.color = init.color || lib.random_rgb(100, 255)
 

@@ -4,6 +4,7 @@ import * as lib from '../../lib.js'
 import STATE from '../STATE.js'
 
 import RENDERER from '../../three/RENDERER.js'
+import CAMERA from '../../three/CAMERA.js'
 
 import GLOBAL from '../../GLOBAL.js'
 
