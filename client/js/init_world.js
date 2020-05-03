@@ -13,6 +13,8 @@ import ZONE from './world/ZONE.js'
 
 import RENDERER from './three/RENDERER.js'
 
+import User from './User.js'
+
 import Toon from './world/Toon.js'
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -41,12 +43,15 @@ document.addEventListener('DOMContentLoaded', function(){
 
 async function init_session( res ){
 
+	// console.log( res.USER.TOON._INVENTORY )
+
 	if( env.LOCAL )  DEV.ele.style.display = 'initial'
 
 	// websocket now bound
 
 	// window.SCENE = SCENE
-	window.TOON = new Toon( res.USER.TOON )
+	window.USER = new User( res.USER )
+	window.TOON = USER.TOON = new Toon( res.TOON )
 	if( env.EXPOSE )  window.ZONE = ZONE
 	// window.TOON.model()
 

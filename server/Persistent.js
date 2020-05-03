@@ -31,6 +31,7 @@ module.exports = class Persistent {
 
 			if( ( typeof( key ) === 'string' && key[0] !== '_' ) || excepted.includes( key ) ){
 				if( this[ key ] && this[ key ].publish && typeof( this[ key ].publish ) === 'function' ){
+					// r[ key ] = this[ key ].publish( ...excepted ) // on 2nd thought... do not pass exceptions beyond 1st scope...
 					r[ key ] = this[ key ].publish()
 				}else{
 					r[ key ] = this[ key ]

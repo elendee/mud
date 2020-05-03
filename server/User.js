@@ -6,23 +6,23 @@ const SOCKETS = require('./SOCKETS.js')
 
 const MAP = require('./MAP.js')
 
+const Persistent = require('./Persistent.js')
+
 const {
 	Vector3
 } = require('three')
 
 const uuid = require('uuid').v4
 
-module.exports = class User {
+module.exports = class User extends Persistent {
 	
 	constructor( init ){
 
+		super( init )
+
 		init = init || {}
 
-		this._id = init._id
-
 		this._needs_pulse = true
-
-		this.mud_id = init.mud_id || uuid()
 
 		this.email = init.email 
 
@@ -32,41 +32,9 @@ module.exports = class User {
 
 		this.active_avatar = init.active_avatar
 
-		this.TOON = init.TOON
+		this._TOON = init._TOON || init.TOON
 
 	}
-
-	publish(){
-
-		let r = {}
-
-		for( const key of Object.keys( this )){
-
-			if( typeof( key ) === 'string' && key[0] !== '_' ){
-				if( this[ key ] && this[ key ].publish && typeof( this[ key ].publish ) === 'function' ){
-					r[ key ] = this[ key ].publish()
-				}else{
-					r[ key ] = this[ key ]
-				}
-			}
-
-		}
-
-		return r
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
 	
 
 

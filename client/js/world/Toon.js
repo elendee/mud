@@ -30,6 +30,8 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
+		this.INVENTORY = init.INVENTORY || init._INVENTORY || {}
+
 		this.ref = init.ref = init.ref || {}
 
 		this.ref = init.ref || {}

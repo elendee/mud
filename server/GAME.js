@@ -79,34 +79,34 @@ class Game {
 
 	async init_user( socket ){
 
-		socket.request.session.USER = new User( socket.request.session.USER )
-		// log('flag', 'user id: ', socket.request.session.USER.id )
+		const pool = DB.getPool()
 
-		let mud_id = socket.request.session.USER.mud_id
+		let USER, TOON, x, z 
 
-		SOCKETS[ mud_id ] = socket
+		socket.request.session.USER = USER = new User( socket.request.session.USER )
 
-		if( socket.request.session.USER.id && !socket.request.session.USER.active_avatar ){
-			socket.send( JSON.stringify({
-				type: 'error',
-				msg: 'no avatar found<br><a href="/">back to selection</a>'
-			}))
-			return false
+		SOCKETS[ USER.mud_id ] = socket
+
+		if( USER._id ){ // auth'd users
+			if( typeof( USER.active_avatar ) === 'number' ){
+				const toon = await this.get_toon( socket.request.session.USER.active_avatar )
+				if( toon ){
+					USER.TOON = TOON = new Toon( toon )
+				}
+			}else{
+				USER.TOON = TOON = false
+			}
+		}else{ // non-auth'd users
+			USER.TOON = TOON = new Toon()
 		}
 
-		let TOON 
+		TOON.mud_id = USER.mud_id // v. important, overwrite mud_id so they share
 
-		socket.request.session.USER.TOON = TOON = new Toon( socket.request.session.USER.TOON )
-		TOON.mud_id = mud_id // v. important, overwrite mud_id so they share
-		socket.request.session.save(function(){
-			// log('flag','saved session.....')
-		})
+		await TOON.fill_inventory()
 
-		let x, z
+		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
 
 		if( TOON.camped_key ){
-
-			const pool = DB.getPool()
 
 			const sql = 'SELECT * FROM `structures` WHERE id=? LIMIT 1'
 
@@ -144,20 +144,24 @@ class Game {
 
 		if( zone ){
 
-			ROUTER.bind_user( this, mud_id )
+			ROUTER.bind_user( this, USER.mud_id )
 
-			zone._TOONS[ mud_id ] = TOON
+			zone._TOONS[ USER.mud_id ] = TOON
 
-			SOCKETS[ mud_id ].send( JSON.stringify( {
+			const user = SOCKETS[ USER.mud_id ].request.session.USER.publish()
+			// user._TOON = 
+
+			SOCKETS[ USER.mud_id ].send( JSON.stringify( {
 				type: 'session_init',
-				USER: SOCKETS[ mud_id ].request.session.USER.publish(),
+				USER: user,
+				TOON: TOON.publish('_INVENTORY'),
 				ZONE: zone.publish( '_FLORA', '_NPCS' ),
 				map: MAP,
 			}) )
 
 		}else{
 
-			SOCKETS[ mud_id ].send( JSON.stringify( {
+			SOCKETS[ USER.mud_id ].send( JSON.stringify( {
 				type: 'error',
 				msg: 'error initializing zone<br><a href="/">back to landing page</a>',
 			}) )
@@ -215,6 +219,33 @@ class Game {
 		this.ZONES[ zone.get_id() ] = zone
 
 		return zone
+
+	}
+
+
+
+
+	async get_toon( _id ){
+
+		if( !_id ){
+			log('flag', 'invalid get_toon id: ', _id )
+			return false
+		}
+
+		const pool = DB.getPool()
+
+		const toon_sql = 'SELECT * FROM avatars WHERE id=' + _id + ' LIMIT 1'
+
+		// return new Promise((resolve, reject)=>{
+
+		// })
+
+		const { error, results, fields } = await pool.query( toon_sql )
+		if( error ){
+			log('flag', 'err get_toon: ', error )
+		}
+
+		return results[0]
 
 	}
 

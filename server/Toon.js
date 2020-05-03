@@ -1,11 +1,16 @@
 const env = require('./.env.js')
 const Persistent = require('./Persistent.js')
 const uuid = require('uuid').v4
+const DB = require('./db.js')
 const lib = require('./lib.js')
+const log = require('./log.js')
 const {
 	Vector3,
 	Quaternion
 } = require('three')
+
+const Persistent = require('./Persistent.js')
+const FACTORY = require('./items/FACTORY.js')
 
 module.exports = class Toon extends Persistent {
 
@@ -16,6 +21,8 @@ module.exports = class Toon extends Persistent {
 		init = init || {}
 
 		this._table = 'avatars'
+
+		this._INVENTORY = init._INVENTORY || {}
 
 		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
 
@@ -40,24 +47,63 @@ module.exports = class Toon extends Persistent {
 	}
 
 
-	publish(){
+	async fill_inventory(){
 
-		let r = {}
+		if( typeof( this._id ) === 'number' ){
 
-		for( const key of Object.keys( this )){
+			const pool = DB.getPool()
 
-			if( typeof( key ) === 'string' && key[0] !== '_' ){
-				if( this[ key ] && this[ key ].publish && typeof( this[ key ].publish ) === 'function' ){
-					r[ key ] = this[ key ].publish()
-				}else{
-					r[ key ] = this[ key ]
-				}
+			const sql = 'SELECT * FROM items WHERE owner_key=' + this._id
+
+			const { error, results, fields } = await pool.queryPromise( sql )
+			if( error ){
+				log('flag', 'error retrieving inventory', error )
+				return false
 			}
+
+			for( const item of results ){
+				const this_item = new FACTORY( item )
+				this._INVENTORY[ this_item.mud_id ] = this_item
+			}
+
+			return true
+
+		}else{
+
+			const stick = new FACTORY({
+				type: 'melee',
+				name: 'Unwieldy Stick'
+			})
+			if( stick ){
+				this._INVENTORY[ stick.mud_id ] = stick
+			}
+
+			return true
 
 		}
 
-		return r
-
 	}
+
+}
+
+	// publish(){
+
+	// 	let r = {}
+
+	// 	for( const key of Object.keys( this )){
+
+	// 		if( typeof( key ) === 'string' && key[0] !== '_' ){
+	// 			if( this[ key ] && this[ key ].publish && typeof( this[ key ].publish ) === 'function' ){
+	// 				r[ key ] = this[ key ].publish()
+	// 			}else{
+	// 				r[ key ] = this[ key ]
+	// 			}
+	// 		}
+
+	// 	}
+
+	// 	return r
+
+	// }
 
 }
