@@ -14,6 +14,8 @@ import CHAT from './CHAT.js'
 
 import BINDS from './BINDS.js'
 
+import TARGET from './TARGET.js'
+
 import * as ANIMATE from '../animate.js'
 
 // const BAR = getBar()
@@ -140,12 +142,12 @@ function handle_keyup( e ){
 	switch( e.keyCode ){
 
 		case BINDS.global.close:
-			// HUD.step_close()
-			if( STATE.handler == 'chat' ){
+			if( STATE.handler === 'chat' ){
 				CHAT.input.blur()
-			}else{
-				// DIALOGUE.close_all()
-				// document.getElementById('info-panel').style.display = 'none'
+			}else if( STATE.handler === 'dialogue' ){
+				console.log('unhandled close dialgoue....')
+			}else if( TARGET.status_ele.style.display !== 'none' ){
+				TARGET.clear( true )
 			}
 			global_handled = true
 			break;
@@ -236,9 +238,11 @@ function handle_keyup( e ){
 
 
 
+// let step_close
 
+function init( zone ){
 
-function init(){
+	// step_close = close_func
 
 	document.addEventListener('keyup', handle_keyup )
 	document.addEventListener('keydown', handle_keydown )

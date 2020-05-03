@@ -151,7 +151,7 @@ class Game {
 			SOCKETS[ mud_id ].send( JSON.stringify( {
 				type: 'session_init',
 				USER: SOCKETS[ mud_id ].request.session.USER.publish(),
-				ZONE: zone.publish( '_FOLIAGE' ),
+				ZONE: zone.publish( '_FLORA', '_NPCS' ),
 				map: MAP,
 			}) )
 

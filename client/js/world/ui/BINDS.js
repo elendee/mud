@@ -1,3 +1,5 @@
+import env from '../../env.js'
+
 const binds = {
 
 	global: {
@@ -48,7 +50,7 @@ const binds = {
 }
 
 
-window.BINDS = binds
+if( env.EXPOSE ) window.BINDS = binds
 
 export default binds
 

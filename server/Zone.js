@@ -10,7 +10,7 @@ const SOCKETS = require('./SOCKETS.js')
 const Persistent = require('./Persistent.js')
 const Toon = require('./Toon.js')
 const Structure = require('./Structure.js')
-const Foliage = require('./Foliage.js')
+const Flora = require('./Flora.js')
 
 const {
 	Vector3
@@ -38,14 +38,14 @@ class Zone extends Persistent {
 		this.precipitation = lib.validate_number( init.precipitation, 1 )
 
 		this._last_growth = lib.validate_seconds( init._last_growth, init.last_growth, new Date('1970').getTime() )// fill_growth( init )
-		this._foliage_target = lib.validate_number( init._foliage_target, init.foliage_target, 100 )
+		this._flora_target = lib.validate_number( init._flora_target, init.flora_target, 100 )
 		this._growth_rate = lib.validate_number( init._growth_rate, init.growth_rate, 5 )
 
 		this._pulses = {
 			move: false
 		}
 
-		this._FOLIAGE = init.FOLIAGE || {}
+		this._FLORA = init.FLORA || {}
 		this._STRUCTURES = init.STRUCTURES || {}
 		this._NPCS = init.NPCS || {}
 		this._TOONS = init.TOONS || {}
@@ -69,7 +69,7 @@ class Zone extends Persistent {
 
 		// reads
 
-		await this.read_foliage()
+		await this.read_flora()
 
 		await this.read_structures()
 
@@ -77,12 +77,17 @@ class Zone extends Persistent {
 
 		const current_ISO_ms = new Date().getTime()
 		const growth_days = Math.floor( Math.min( GLOBAL.MAX_GROW_DAYS, ( current_ISO_ms - this._last_growth ) / ( 1000 * 60 * 60 * 24 ) ) )
+		let all_new_trees = []
+		let days_trees
 		for( let i = 0; i < growth_days; i++ ){
-			this.grow_day()
+			days_trees = this.grow_day()
+			if( days_trees ){
+				all_new_trees = all_new_trees.concat( days_trees )
+			}
 		}
 		this._last_growth = current_ISO_ms
 
-		await this.save_foliage()
+		if( all_new_trees.length )  await this.save_flora( all_new_trees )
 
 		// pulses
 
@@ -116,9 +121,11 @@ class Zone extends Persistent {
 
 	grow_day(){
 
-		let projection = Object.keys( this._FOLIAGE ).length + this._growth_rate
+		let projection = Object.keys( this._FLORA ).length + this._growth_rate
 
-		if( projection < this._foliage_target ){
+		let days_trees = []
+
+		if( projection < this._flora_target ){
 
 			let attempt
 			for( let i = 0; i < this._growth_rate; i++ ){
@@ -126,19 +133,24 @@ class Zone extends Persistent {
 				attempt = this.find_clearing()
 
 				if( attempt ){
-					const fol = new Foliage({
+					const fol = new Flora({
 						type: 'tree',
+						zone_key: this._id,
 						scale: .5 + Math.random(),
 						x: attempt.x,
 						y: attempt.y,
 						z: attempt.z
 					})
-					this._FOLIAGE[ fol.mud_id ] = fol
+					this._FLORA[ fol.mud_id ] = fol
+					days_trees.push( fol )
 				}
 			}
 
+			return days_trees
+
 		}else{
-			log('zone', 'growth capped', Object.keys( this._FOLIAGE ).length + '+' + this._growth_rate, this._foliage_target )
+			return false
+			log('zone', 'growth capped', Object.keys( this._FLORA ).length + '+' + this._growth_rate, this._flora_target )
 		}
 
 	}
@@ -154,13 +166,13 @@ class Zone extends Persistent {
 
 		let crnt_pos = new Vector3()
 		let bumped = false
-		for( const mud_id of Object.keys( this._FOLIAGE )){
+		for( const mud_id of Object.keys( this._FLORA )){
 			crnt_pos.set( 
-				this._FOLIAGE[ mud_id ].x, 
-				this._FOLIAGE[ mud_id ].y, 
-				this._FOLIAGE[ mud_id ].z 
+				this._FLORA[ mud_id ].x, 
+				this._FLORA[ mud_id ].y, 
+				this._FLORA[ mud_id ].z 
 			)
-			if( crnt_pos.distanceTo( pos ) < GLOBAL.MIN_FOLIAGE_DIST ){
+			if( crnt_pos.distanceTo( pos ) < GLOBAL.MIN_FLORA_DIST ){
 				bumped = true
 				continue
 			}
@@ -179,17 +191,25 @@ class Zone extends Persistent {
 	}
 
 
-	async read_foliage(){
+	purge( mud_id ){
+
+		delete this._TOONS[ mud_id ]
+		log('zone', 'purged: ', mud_id )
+
+	}
+
+
+	async read_flora(){
 
 		const pool = DB.getPool()
 
-		const sql = 'SELECT * FROM foliage WHERE zone_key=' + this._id
+		const sql = 'SELECT * FROM flora WHERE zone_key=' + this._id
 
 		const { error, results, fields } = await pool.queryPromise( sql )
-		if( error ) log('flag', 'foliage looukp  err: ', error )
-		for ( const foliage of results ){
-			let fol = new Foliage( foliage )
-			this._FOLIAGE[ fol.mud_id ] = fol
+		if( error ) log('flag', 'flora looukp  err: ', error )
+		for ( const flora of results ){
+			let fol = new Flora( flora )
+			this._FLORA[ fol.mud_id ] = fol
 		}
 
 	}
@@ -212,37 +232,72 @@ class Zone extends Persistent {
 
 
 
-	async save_foliage(){
+	async save_flora( value_sets ){
 
-		log('flag', '-----------incomplete save_foliage')
-		return false
+		// log('flag', value_sets )
+		// return true
+
+		if( !value_sets ) return true
+		if( !this._id ) return false
 
 		const pool = DB.getPool()
 
-		let value_string
+		for( let i = 0; i  < value_sets.length; i++ ){
 
-		const sql = 'INSERT INTO `foliage` (zone_key, type, scale, x, y, z) VALUES ' + value_string + ' ON DUPLICATE KEY UPDATE ' + full_string
+			let set = value_sets[ i ]
 
-		log('query', 'attempting UPDATE: ', sql )
-
-		const { error, results, fields } = await pool.queryPromise( sql )
-
-		if( error || !results ){
-			if( error ){
-				log('flag', 'sql err:', error.sqlMessage )
+			if( !set.type ){
+				log('flag', 'wot now: ', set )
 				return false
-			}else{
-				// throw new Error( 'UPDATE error: ', error.sqlMessage, 'attempted: ', '\nATTEMPTED: ', sql, doc._table )
-				throw new Error( 'no results: ' + sql )
 			}
+			// log('flag', set )
+
+			for( const key of Object.keys( set ) ){
+				// log('flag', key, set[ key ] )
+				if( typeof( set[ key ] ) === 'string' ){
+					// log('flag', 'ya', set[ key ])
+					set[ key ] = '"' + set[ key ] + '"'
+				}
+			}
+
+			let value_string = `
+			${ set.id || 'NULL' }, 
+			${ set.zone_key || 'NULL' }, 
+			${ set.type || 'NULL' }, 
+			${ set.scale || 1 }, 
+			${ set.x || 0 }, 
+			${ set.y || 0 }, 
+			${ set.z || 0 }`
+
+			let full_string = `
+			zone_key=${ this._id },
+			type=${ set.type || 'NULL' },
+			scale=${ set.scale },
+			x=${ set.x },
+			y=${ set.y },
+			z=${ set.z }`
+
+			const sql = 'INSERT INTO `flora` (id, zone_key, type, scale, x, y, z) VALUES (' + value_string + ') ON DUPLICATE KEY UPDATE ' + full_string
+
+			// log('query', 'attempting UPDATE: ', value_string, full_string )
+
+			const { error, results, fields } = await pool.queryPromise( sql )
+
+			if( error || !results ){
+				if( error ){
+					log('flag', 'sql err:', error.sqlMessage, error.sql )
+					return false
+				}else{
+					// throw new Error( 'UPDATE error: ', error.sqlMessage, 'attempted: ', '\nATTEMPTED: ', sql, doc._table )
+					throw new Error( 'no results: ' + sql )
+				}
+			}
+
+			// log('query', 'results: ', JSON.stringify( results ) )
+
 		}
 
-		log('query', 'results: ', JSON.stringify( results ) )
-
-		return {
-			msg: 'sql success',
-			id: results.insertId
-		}
+		return true
 
 	}
 
@@ -257,7 +312,7 @@ class Zone extends Persistent {
 			'layer',
 			'precipitation',
 			'elevation',
-			'foliage_target',
+			'flora_target',
 			'last_growth'
 		]
 
@@ -268,7 +323,7 @@ class Zone extends Persistent {
 			this._layer,
 			this.precipitation,
 			this.elevation,
-			this._foliage_target,
+			this._flora_target,
 			this._last_growth
 		]
 
@@ -283,9 +338,14 @@ class Zone extends Persistent {
 
 	}
 
-	close(){
+	async close(){
 
-		log('flag', 'closing zone: ', this.mud_id )
+		log('zone', 'closing: ', this.mud_id )
+		await this.save()
+		log('zone', 'closed: ', this.mud_id )
+
+		return true
+
 
 	}
 

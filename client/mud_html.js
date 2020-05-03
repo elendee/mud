@@ -48,6 +48,23 @@ const overlays = {
 			<div id='chat-content'>
 			</div>
 			<input id='chat-input' type='text' placeholder="say:">
+		</div>`,
+	target:`
+		<div id='target' class='dialogue hold-click' data-name='target'>
+			<div class='inner'>
+				<img id='target-profile' src=''>
+			</div>
+		</div>
+		<div id='status'>
+			<div id='target-health' class='bar'>
+				<div class='status'></div>
+				<div class='readout flex-wrapper'></div>
+			</div>
+			<div id='target-mana' class='bar'>
+				<div class='status'></div>
+				<div class='readout flex-wrapper'></div>
+			</div>
+			<div id='target-name'></div>
 		</div>`
 }
 
@@ -130,6 +147,7 @@ const render = function( type, request ){
 					${ overlays.alert }
 					${ overlays.world_ui }
 					${ overlays.chat }
+					${ overlays.target }
 				</body>
 			</html>`
 			break;

@@ -20,7 +20,7 @@ export default {
 
 	// },
 
-	MAX_CAM: 150,
+	MAX_CAM: 180,
 
 	MIN_CAM: 10,
 
@@ -86,7 +86,16 @@ export default {
 
 	RESOLUTION: 1,
 
-	SPEAKER: 3
+	SPEAKER: 3,
+
+	PROFILE_IMGS: {
+		unknown: 'unknown.png',
+		flora: 'flora.png',
+		toon: 'toon.png',
+		self: 'toon.png',
+		npc: 'toon.png',
+		structure: 'structure.png'
+	}
 	// SPEAKER: 80
 
 }

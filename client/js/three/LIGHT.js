@@ -49,11 +49,13 @@ const helper = new DirectionalLightHelper( directional )
 
 const hemispherical = new HemisphereLight( GLOBAL.HEMI_BACK_COL, GLOBAL.HEMI_FACE_COL, GLOBAL.HEMI_INTENSITY)
 
-window.LIGHT = {
-	directional: directional,
-	hemispherical: hemispherical,
-	spotlight: spotlight,
-	helper: helper
+if( env.EXPOSE ) {
+	window.LIGHT = {
+		directional: directional,
+		hemispherical: hemispherical,
+		spotlight: spotlight,
+		helper: helper
+	}
 }
 
 export { 

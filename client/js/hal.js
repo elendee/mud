@@ -1,8 +1,10 @@
+import env from './env.js'
+
 // import GLOBAL from '../GLOBAL.js'
 
 // import MAP from '../MAP.js'
 
-window.hal = hal
+if( env.EXPOSE ) window.hal = hal
 
 export default function hal( type, msg, time, redirect ){
 

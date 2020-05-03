@@ -6,6 +6,8 @@ import GLOBAL from '../../GLOBAL.js'
 
 import CHAT from './CHAT.js'
 
+import TARGET from './TARGET.js'
+
 import { 
 	Vector3 
 } from '../../lib/three.module.js'
@@ -19,6 +21,8 @@ import SCENE from '../../three/SCENE.js'
 
 import * as ANIMATE from '../animate.js'
 
+
+
 // import TARGET from './TARGET.js'
 
 // import * as DIALOGUE from '../ui/DIALOGUE.js'
@@ -28,6 +32,8 @@ import * as ANIMATE from '../animate.js'
 
 
 const buttons = [ 'left', 'middle', 'right' ]
+
+const clickable_types = ['toon', 'npc', 'self', 'flora', 'structure']
 
 let lastX = -1
 let lastY = -1
@@ -40,9 +46,11 @@ const toToon = new Vector3()
 const wheel_projection = new Vector3()
 
 // const head_pos = new Vector3()
+let zone
 
+function init( ZONE ){
 
-function init(){
+	zone = ZONE
 
 	RENDERER.domElement.addEventListener('mousedown', click_down )
 	RENDERER.domElement.addEventListener('mouseup', click_up )
@@ -59,7 +67,7 @@ function click_down( e ){
 
 	if( STATE.handler == 'chat' )  CHAT.input.blur()
 
-	if( e.button !== 2 )  detect_object_clicked( e )
+	if( e.button !== 2 )  detect_object_clicked( e, zone )
 
 	e.preventDefault()
 
@@ -161,12 +169,12 @@ function wheel( e ){
 		let dist1 = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		let dist2 = GLOBAL.MAX_CAM
 
-		console.log( dist1, dist2 )
+		// console.log( dist1, dist2 )
 
 		if( dist1 < dist2 && wheel_projection.y > 0 - ( window.TOON.height / 2 ) ){
 			CAMERA.position.add( toToon )
 		}else{
-			console.log('scroll back problem... ' ) // , wheel_projection
+			// console.log('scroll back block' ) // , wheel_projection
 		}
 	}
 
@@ -188,7 +196,7 @@ function wheel( e ){
 
 
 
-function detect_object_clicked( e ){
+function detect_object_clicked( e, ZONE ){
 
 	e.preventDefault();
 
@@ -210,47 +218,29 @@ function detect_object_clicked( e ){
 			if( clicked ) break
 		}
 
+		// console.log('intersects length: ', intersects.length )
+
 		if( clicked ){
 
-			// TARGET.set( clicked )
-			console.log( 'clicked: ', clicked.userData.type, clicked.userData.mud_id, clicked )
+			// console.log('what????', clicked.userData )
 
 			if( !check_distance( clicked, intersects ) ){
 				hal('error', 'too far', 2000 )
 				return false
 			}
 
-			if( clicked.userData.type === 'npc' ){
+			if( clickable_types.includes( clicked.userData.type )){
 
-				console.log('clicked npc')
+				TARGET.set( clicked, ZONE )
 
-				if( clicked.userData.popup ){
-					// POPUP.show( clicked.userData.popup )
-					// DIALOGUE.render_reticule( clicked )
-				}
+			}else{
 
-				// NPCS[ clicked.userData.mud_id ].greet()
-
-			}else if( clicked.userData.type == 'self'){
-
-				console.log( 'clicked self')
-
-				// POPUP.show('self')
-
-			}else if( clicked.userData.type == 'toon' ){
-
-				console.log('clicked toon')
-
-				// DIALOGUE.render_toon( clicked.userData )
-				// POPUP.show('toon-profile')
-
-			}else if( clicked.userData.type == 'foliage' ){
-
-				console.log('clicked foliage ')
+				console.log('unknown click type: ', clicked.userData.type )
 
 			}
 
 		}else{
+
 			// DIALOGUE.close_all()
 		}
 
@@ -269,7 +259,7 @@ function check_distance( clicked, intersects ){
 	let dist, clicked_position, required_dist
 	let type = clicked.userData.type
 
-	if( type == 'foliage' ){
+	if( type == 'flora' ){
 
 		return true
 

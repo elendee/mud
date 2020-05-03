@@ -1,4 +1,4 @@
-// const lib = require('./lib.js')
+const lib = require('./lib.js')
 
 const uuid = require('uuid').v4
 
@@ -15,13 +15,13 @@ module.exports = class Persistent {
 
 		this._table = init._table
 
-		this._created = init._created || init.created
+		this._created = lib.validate_string( init._created, undefined )
 
-		this._edited = init._edited || init.edited
+		this._edited = lib.validate_string( init._edited, undefined )
 
 	}
 
-	publish( excepted ){
+	publish( ...excepted ){
 
 		excepted = excepted || []
 

@@ -1,18 +1,18 @@
 import GLOBAL from '../../GLOBAL.js'
 
-import { 
+// import { 
 	// CylinderBufferGeometry,
 	// MeshBasicMaterial,
-	MeshLambertMaterial,
-	Mesh,
-	DoubleSide,
-	PlaneBufferGeometry
+	// MeshLambertMaterial,
+	// Mesh,
+	// DoubleSide,
+	// PlaneBufferGeometry
 	// Vector3,
 	// Group,
 	// SpriteMaterial,
 	// Sprite,
 	// RepeatWrapping
-} from '../../lib/three.module.js'
+// } from '../../lib/three.module.js'
 
 // import Loader from '../../three/texLoader.js'
 import GLTF from '../../three/GLTF.js'
@@ -44,11 +44,13 @@ let tree_mat
 
 
 
-export default class Foliage {
+export default class Flora {
 
 	constructor( init ){
 
 		init = init || {}
+
+		this.mud_id = init.mud_id
 
 		this.type = init.type
 
@@ -62,7 +64,7 @@ export default class Foliage {
 
 	model(){
 
-		const foliage = this
+		const flora = this
 
 		return new Promise((resolve, reject) => {
 
@@ -72,19 +74,20 @@ export default class Foliage {
 
 					// console.log( obj.scene.children[0].geometry )
 
-					foliage.MODEL = obj.scene
+					flora.MODEL = obj.scene
 
-					// console.log( foliage.MODEL )
-					resolve()
+					// console.log( flora.MODEL )
 
 					// tree.MODEL.position.copy( tree.ref.position )
 
 					// tree.MODEL.scale.multiplyScalar( .8 + Math.random() )
 
-					for( const child of foliage.MODEL.children ){
+					for( const child of flora.MODEL.children ){
 						child.castShadow = true
 						child.material.color.set('rgb(' + Math.floor( Math.random() * 100 ) + ',200,' + Math.floor( Math.random() * 100 ) + ')')
 					}
+
+					resolve()
 
 					// tree.MODEL.userData = {
 					// 	clickable: true,

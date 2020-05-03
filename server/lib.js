@@ -295,6 +295,16 @@ function validate_number( ...vals ){
 
 }
 
+function validate_string( ...vals ){
+
+	for( const str of vals ){
+		if( typeof( str ) === 'string' ) return str
+	}
+	// should never get here
+	return vals[ vals.length - 1 ]
+
+}
+
 
 function validate_seconds( ...vals ){
 
@@ -338,6 +348,7 @@ module.exports = {
 	tile_from_Xpos,
 	is_iso_date,
 	validate_number,
+	validate_string,
 	validate_seconds
 }
 

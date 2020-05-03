@@ -10,7 +10,7 @@ import TOONS from './TOONS.js'
 
 import Toon from './Toon.js'
 
-import Foliage from './env/Foliage.js'
+import Flora from './env/Flora.js'
 
 import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
@@ -53,17 +53,17 @@ class Zone {
 			anim_sweeper: false
 		}
 
-		this.FOLIAGE = []
-		this.STRUCTURES = []
-		this.NPCS = []
-		this.TOONS = []
+		this.FLORA = {}
+		this.STRUCTURES = {}
+		this.NPCS = {}
+		this.TOONS = {}
 
 	}
 
 	initialize(){
 
-		KEYS.init()
-		MOUSE.init()
+		KEYS.init( this )
+		MOUSE.init( this )
 		CHAT.init()
 		// DIALOGUE.init()
 
@@ -90,7 +90,7 @@ class Zone {
 		// TOON.HEAD.add( CAMERA )
 		TOON.MODEL.add( CAMERA )
 
-		CAMERA.position.set( 0, 100, 0 )
+		CAMERA.position.set( 0, 150, 0 )
 
 
 
@@ -108,7 +108,7 @@ class Zone {
 
 		CHAT.begin_pulse()
 
-		window.CAMERA = CAMERA
+		if( env.EXPOSE ) window.CAMERA = CAMERA
 
 	}
 
@@ -134,18 +134,19 @@ class Zone {
 				const ground = new Mesh( geometry, material )
 				ground.receiveShadow = true
 				ground.rotation.x = Math.PI / 2
-				ground.position.set( x * MAP.TILE_WIDTH + ( x ), .1, z * MAP.TILE_WIDTH  + ( z ))
+				ground.position.set( x * MAP.TILE_WIDTH + ( 0 ), .1, z * MAP.TILE_WIDTH  + ( 0 ))
 				SCENE.add( ground )
 
 			}	
 		}
 
-		// foliage
+		// flora
 
-		// for( let i = 0; i < Object.keyszone_data._FOLIAGE.length; i++ ){
-		for( const mud_id of Object.keys( zone_data._FOLIAGE ) ){
-			const tree = new Foliage( zone_data._FOLIAGE[ mud_id ] )
-			console.log('placing: ', tree )
+		// for( let i = 0; i < Object.keyszone_data._FLORA.length; i++ ){
+		for( const mud_id of Object.keys( zone_data._FLORA ) ){
+			const tree = new Flora( zone_data._FLORA[ mud_id ] )
+			ZONE.FLORA[ mud_id ] = tree
+			// console.log('placing: ', tree )
 			tree.model()
 			.then(res=>{
 				tree.MODEL.position.set(
@@ -153,10 +154,40 @@ class Zone {
 					tree.y,
 					tree.z,
 				)
+				// tree.MODEL.scale.multiplyScalar( tree.scale )
+				tree.MODEL.userData = {
+					clickable: true,
+					type: 'flora',
+					mud_id: mud_id
+				}
 				// console.log( tree.MODEL.position )
 				SCENE.add( tree.MODEL )
 			}).catch(err=>{
-				console.log('err load: ', err )
+				console.log('err flora load: ', err )
+			})			
+		}
+
+		// npc
+
+		for( const mud_id of Object.keys( zone_data._NPCS ) ){
+			const npc = new Npc( zone_data._NPCS[ mud_id ] )
+			ZONE.NPCS[ mud_id ] = npc
+			// console.log('placing: ', npc )
+			npc.model()
+			.then(res=>{
+				npc.MODEL.position.set(
+					npc.x,
+					npc.y,
+					npc.z,
+				)
+				npc.MODEL.userData = {
+					clickable: true,
+					type: 'npc',
+					mud_id: mud_id
+				}
+				SCENE.add( npc.MODEL )
+			}).catch(err=>{
+				console.log('err npc load: ', err )
 			})			
 		}
 

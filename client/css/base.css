@@ -5,6 +5,10 @@ body{
 /*     font-family: Courier */
 }
 
+img{
+	max-width: 100%;
+}
+
 div,
 form,
 input{
@@ -35,6 +39,7 @@ input{
 	z-index: 99999;
 	text-align: center;
 	width: 100%;
+	pointer-events: none;
 }
 
 #alert-contain .alert-msg{
@@ -47,6 +52,7 @@ input{
     max-width: 60%;
     text-align: left;
     color: black;
+    pointer-events: initial;
 }
 .alert-close{
     position: absolute;
@@ -56,6 +62,7 @@ input{
 	display: inline-block;
 	padding: 10px;
 	cursor: pointer;
+	    pointer-events: initial;
 }
 
 .ui-fader{

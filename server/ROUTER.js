@@ -178,6 +178,14 @@ module.exports = {
 
 		SOCKETS[ mud_id ].on('close', function( data ){
 
+			for( const z_id of Object.keys( GAME.ZONES )){
+				for( const t_id of Object.keys( GAME.ZONES[ z_id ]._TOONS )){
+					if( t_id ===  mud_id ){
+						GAME.ZONES[ z_id ].purge( mud_id )
+					}
+				}
+			}
+
 			if( SOCKETS[ mud_id ] )  delete SOCKETS[ mud_id ]
 
 			log('connection', 'socket close')

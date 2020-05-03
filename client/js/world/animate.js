@@ -156,13 +156,13 @@ function animate( start ){
 
 	if( typeof( start ) === 'boolean' ){
 		then = performance.now()
-		console.log('anim start', start )
+		// console.log('anim start', start )
 	}
 
 	STATE.animating = true
 
 	if( !STATE.stream_down && !moving_toons.length && !rotating_toons.length ){ // && !x && !y ....
-		console.log('anim end')
+		// console.log('anim end')
 		STATE.animating = false
 		return false
 	}

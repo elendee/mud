@@ -16,7 +16,7 @@ import DEV from './ui/DEV.js'
 
 import TOONS from './TOONS.js'
 
-window.STATE = STATE
+if( env.EXPOSE ) window.STATE = STATE
 
 export default class Toon {
 	
@@ -97,6 +97,7 @@ export default class Toon {
 
 		this.MODEL.userData = {
 			clickable: true,
+			mud_id: this.mud_id,
 			type: type,
 			website: this.website,
 			name: this.name
