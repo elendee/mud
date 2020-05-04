@@ -11,6 +11,7 @@ import TOONS from './TOONS.js'
 import Toon from './Toon.js'
 
 import Flora from './env/Flora.js'
+// import grass_mesh from './env/grass_mesh.js'
 
 import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
@@ -91,9 +92,10 @@ class Zone {
 		TOON.MODEL.position.copy( TOON.ref.position )
 
 		// TOON.HEAD.add( CAMERA )
-		TOON.MODEL.add( CAMERA )
-
-		CAMERA.position.set( 0, 150, 20 )
+		// TOON.MODEL.add( CAMERA )
+		SCENE.add( CAMERA )
+	    CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+		// CAMERA.position.set( 0, 150, 20 )
 
 
 
@@ -144,7 +146,16 @@ class Zone {
 			}	
 		}
 
-		// flora
+		// static flora
+
+		// const grass = window.GRASS = grass_mesh()
+
+		// SCENE.add( grass )
+		// SCENE.add( grass )
+		// grass.position.set( MAP.ZONE_WIDTH / 2, .5, MAP.ZONE_WIDTH / 2 )
+		// grass.scale.set( MAP.ZONE_WIDTH, 1, MAP.ZONE_WIDTH )
+
+		// dynamic flora
 
 		// for( let i = 0; i < Object.keyszone_data._FLORA.length; i++ ){
 		for( const mud_id of Object.keys( zone_data._FLORA ) ){

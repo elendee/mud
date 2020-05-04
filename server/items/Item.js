@@ -15,6 +15,8 @@ module.exports = class Item extends Persistent {
 
 		this.name = lib.validate_string( init.name, 'unknown' )
 
+		this.icon_url = lib.validate_string( init.icon_url, 'noun_question.png')
+
 		this.strength = lib.validate_number( init.strength, 0 )
 		this.defense = lib.validate_number( init.defense, 0 )
 		this.reach = lib.validate_number( init.reach, 0 )

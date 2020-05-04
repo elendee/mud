@@ -212,8 +212,11 @@ function animate( start ){
 	    window.TOON.MODEL.translateX( distance[0] )
 	    window.TOON.MODEL.translateZ( distance[1] )
 
+	    // bounds:
 	    window.TOON.MODEL.position.x = Math.min( Math.max( 0, window.TOON.MODEL.position.x ), MAP.ZONE_WIDTH )
 	    window.TOON.MODEL.position.z = Math.min( Math.max( 0, window.TOON.MODEL.position.z ), MAP.ZONE_WIDTH )
+
+	    CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
 
 		// SKYBOX.position.copy( window.TOON.MODEL.position )
 

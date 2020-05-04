@@ -55,20 +55,24 @@ function init_character_buttons(){
 
 			let item = TOON.INVENTORY[ mud_id ]
 
-			let stat = document.createElement('div')
-			stat.classList.add('stat')
+			let row = document.createElement('div')
+			row.classList.add('stat')
+			let icon = document.createElement('img')
+			icon.classList.add('icon')
+			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
+			row.appendChild( icon )
 			let stat_key = document.createElement('span')
 			stat_key.classList.add('stat-key')
 			stat_key.innerHTML = item.name
-			stat.appendChild( stat_key )
+			row.appendChild( stat_key )
 			// let stat_val = document.createElement('span')
 			// stat_val.classList.add('stat-val')
 			// stat_val.innerHTML = TOON[ key ]
 			// stat.appendChild( stat_val )
 			
-			stat.appendChild( document.createElement('br'))
+			row.appendChild( document.createElement('br'))
 			
-			inv_pop.content.appendChild( stat )
+			inv_pop.content.appendChild( row )
 
 		}
 

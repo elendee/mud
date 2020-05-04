@@ -1,3 +1,4 @@
+const env = require('./.env.js')
 const DB = require('./db.js')
 const log = require('./log.js')
 const lib = require('./lib.js')
@@ -69,25 +70,30 @@ class Zone extends Persistent {
 
 		// reads
 
-		await this.read_flora()
+		if( env.READ.FLORA )  await this.read_flora()
 
 		await this.read_structures()
 
-		// grow
+		// creates
 
-		const current_ISO_ms = new Date().getTime()
-		const growth_days = Math.floor( Math.min( GLOBAL.MAX_GROW_DAYS, ( current_ISO_ms - this._last_growth ) / ( 1000 * 60 * 60 * 24 ) ) )
-		let all_new_trees = []
-		let days_trees
-		for( let i = 0; i < growth_days; i++ ){
-			days_trees = this.grow_day()
-			if( days_trees ){
-				all_new_trees = all_new_trees.concat( days_trees )
+		if( env.READ.FLORA ){
+
+			const current_ISO_ms = new Date().getTime()
+			// how many days since last grow:
+			const growth_days = Math.floor( Math.min( GLOBAL.MAX_GROW_DAYS, ( current_ISO_ms - this._last_growth ) / ( 1000 * 60 * 60 * 24 ) ) )
+			let all_new_trees = []
+			let days_trees
+			for( let i = 0; i < growth_days; i++ ){
+				days_trees = this.grow_day()
+				if( days_trees ){
+					all_new_trees = all_new_trees.concat( days_trees )
+				}
 			}
-		}
-		this._last_growth = current_ISO_ms
+			this._last_growth = current_ISO_ms
 
-		if( all_new_trees.length )  await this.save_flora( all_new_trees )
+			if( all_new_trees.length )  await this.save_flora( all_new_trees )
+
+		}
 
 		// pulses
 

@@ -70,7 +70,8 @@ module.exports = class Toon extends Persistent {
 
 			const stick = new FACTORY({
 				type: 'melee',
-				name: 'Unwieldy Stick'
+				name: 'Unwieldy Stick',
+				icon_url: 'noun_stick.png'
 			})
 			if( stick ){
 				this._INVENTORY[ stick.mud_id ] = stick

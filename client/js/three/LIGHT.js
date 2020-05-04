@@ -13,7 +13,7 @@ import {
 
 
 
-const offset = new Vector3( 150, 150, 150 )
+const offset = new Vector3( 500, 500, 500 )
 // const offset = new Vector3( 1, 1, 1 )
 
 const directional = new DirectionalLight( 

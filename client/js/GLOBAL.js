@@ -20,9 +20,9 @@ export default {
 
 	// },
 
-	MAX_CAM: 180,
+	MAX_CAM: 300,
 
-	MIN_CAM: 10,
+	MIN_CAM: 150,
 
 	// TILE_WIDTH: 10,
 

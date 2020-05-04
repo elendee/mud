@@ -1,5 +1,7 @@
 import env from '../env.js'
 
+import Item from './Item.js'
+
 // import uuid from '../../../node_modules/uuid/dist/esm-browser/v4.js'
 
 import { 
@@ -30,7 +32,7 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
-		this.INVENTORY = init.INVENTORY || init._INVENTORY || {}
+		this.INVENTORY = false
 
 		this.ref = init.ref = init.ref || {}
 
@@ -76,6 +78,17 @@ export default class Toon {
 
 	greet(){
 		console.log( 'hi im a toon ! ')
+	}
+
+
+	init_inventory(){
+
+		this.INVENTORY = {}
+
+		for( const mud_id of Object.keys( this._INVENTORY ) ){
+			this.INVENTORY[ mud_id ] = new Item( this._INVENTORY[ mud_id ])
+		}
+
 	}
 
 

@@ -245,3 +245,21 @@ canvas#mud-flats{
 	opacity: .8;
 	margin-right: 10px;
 }
+
+#inventory.popup .stat-key{
+	color: wheat
+}
+
+.popup .stat-key,
+.popup .icon{
+	vertical-align: top;
+}
+
+.popup .stat .icon{
+	width: 30px;
+	height: 30px;
+	border-radius: 5px;
+	background: radial-gradient( grey, transparent);
+	border: 1px solid;
+	margin-right: 10px;
+}
