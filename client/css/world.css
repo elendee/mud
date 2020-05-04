@@ -225,6 +225,7 @@ canvas#mud-flats{
 	left: 2%;
 	top: 2%;
 	border: 1px solid rgb(20, 20, 20);
+	padding: 50px 5px 5px 5px;
 }
 
 .popup .title{
@@ -234,4 +235,13 @@ canvas#mud-flats{
 	color: wheat;
 	z-index: 99;
 	letter-spacing: 2px;
+}
+
+.popup .stat{
+	margin: 5px 0;
+}
+
+.popup .stat-key{
+	opacity: .8;
+	margin-right: 10px;
 }
