@@ -31,8 +31,8 @@ const binds = {
 		},
 
 		turn: {
-			left: 37,
-			right: 39
+			left: 39,
+			right: 37
 		},
 
 		// flip_cam: 70, // f

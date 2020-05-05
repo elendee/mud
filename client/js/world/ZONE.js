@@ -11,7 +11,7 @@ import TOONS from './TOONS.js'
 import Toon from './Toon.js'
 
 import Flora from './env/Flora.js'
-// import grass_mesh from './env/grass_mesh.js'
+import grass_mesh from './env/grass_mesh.js'
 
 import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
@@ -26,7 +26,9 @@ import {
 	PlaneBufferGeometry,
 	MeshLambertMaterial,
 	DoubleSide,
-	Mesh
+	Mesh,
+
+	Object3D
 } from '../lib/three.module.js'
 
 
@@ -84,12 +86,28 @@ class Zone {
 		// TOON.MODEL.position.set( 0, 0, 0 )
 
 		// TOON.MODEL.add( LIGHT.spotlight )
-		SCENE.add( LIGHT.spotlight )
-		LIGHT.spotlight.target = TOON.MODEL
 		SCENE.add( LIGHT.hemispherical )
+		// SCENE.add( LIGHT.spotlight )
+		SCENE.add( LIGHT.directional )
+		// LIGHT.directional.position.set( MAP.ZONE_WIDTH * .66, 100, MAP.ZONE_WIDTH * .66 )
+		LIGHT.directional.position.set( 
+			MAP.ZONE_WIDTH * 1.2, 
+			400, 
+			MAP.ZONE_WIDTH * 1.2 
+		)
+
+		const ltarget = new Object3D()
+		ltarget.position.set( MAP.ZONE_WIDTH / 2 , 0, MAP.ZONE_WIDTH / 2 )
+		SCENE.add( ltarget )
+		LIGHT.directional.target = ltarget
+
+		// LIGHT.spotlight.target = TOON.MODEL
 
 		SCENE.add( TOON.MODEL )
+		// SCENE.add( LIGHT.helper )
 		TOON.MODEL.position.copy( TOON.ref.position )
+
+		LIGHT.helper.position.copy( TOON.MODEL.position )
 
 		// TOON.HEAD.add( CAMERA )
 		// TOON.MODEL.add( CAMERA )
@@ -150,7 +168,6 @@ class Zone {
 
 		// const grass = window.GRASS = grass_mesh()
 
-		// SCENE.add( grass )
 		// SCENE.add( grass )
 		// grass.position.set( MAP.ZONE_WIDTH / 2, .5, MAP.ZONE_WIDTH / 2 )
 		// grass.scale.set( MAP.ZONE_WIDTH, 1, MAP.ZONE_WIDTH )

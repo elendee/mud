@@ -71,6 +71,11 @@ const overlays = {
 			<div id='target-name'></div>
 		</div>`,
 	shaders: `
+		<script id="fshader" type="x-shader/x-fragment">
+			void main(){
+				gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 )
+			}
+		</script>
 		<script id="vshader" type="x-shader/x-vertex">
 			precision highp float;
 			uniform mat4 modelViewMatrix;
@@ -97,7 +102,7 @@ const overlays = {
 
 			}
 		</script>
-		<script id="fshader" type="x-shader/x-fragment">
+		<script id="asdf" type="x-shader/x-fragment">
 			precision highp float;
 
 			uniform sampler2D map;

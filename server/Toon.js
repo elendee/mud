@@ -76,6 +76,14 @@ module.exports = class Toon extends Persistent {
 			if( stick ){
 				this._INVENTORY[ stick.mud_id ] = stick
 			}
+			const trousers = new FACTORY({
+				type: 'melee',
+				name: 'Unwieldy Trousers',
+				icon_url: 'noun_trousers.png'
+			})
+			if( trousers ){
+				this._INVENTORY[ trousers.mud_id ] = trousers
+			}
 
 			return true
 

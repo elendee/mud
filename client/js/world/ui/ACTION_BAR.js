@@ -1,6 +1,7 @@
 
 import Popup from './Popup.js'
 import POPUPS from './POPUPS.js'
+import * as MOUSE from './MOUSE.js'
 
 const action_bar = document.getElementById('action-bar')
 
@@ -60,6 +61,13 @@ function init_character_buttons(){
 			let icon = document.createElement('img')
 			icon.classList.add('icon')
 			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
+			icon.addEventListener('click', function(){
+				console.log( mud_id )
+				MOUSE.mousehold.style.display = 'initial'
+				MOUSE.mousehold.querySelector('img').src = icon.src
+				// MOUSE.mousehold.setAttribute('data-held', )
+				document.addEventListener('mousemove', mousetrack )
+			})
 			row.appendChild( icon )
 			let stat_key = document.createElement('span')
 			stat_key.classList.add('stat-key')
@@ -124,6 +132,13 @@ function init_action_buttons(){
 }
 
 
+
+
+function mousetrack(e){
+	// console.log("we be trackin", e )
+	MOUSE.mousehold.style.top = e.clientY + 'px'
+	MOUSE.mousehold.style.left = e.clientX + 'px'
+}
 
 
 export {

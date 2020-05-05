@@ -54,7 +54,7 @@ export default function(){
 	// material = new ShaderMaterial( {
 		uniforms: {
 			// "color": { value: 0xffff11 },
-			// "map": { value: new TextureLoader().load( '/resource/textures/circle.png' ) },
+			"map": { value: new TextureLoader().load( '/resource/textures/circle.png' ) },
 			"time": { value: 0.0 }
 		},
 		vertexShader: document.getElementById( 'vshader' ).textContent,

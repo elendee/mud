@@ -25,6 +25,19 @@ export default (function(){
 		false 
 	)
 
+	// renderer.shadowMapEnabled = true;
+	// renderer.shadowMapSoft = true;
+
+	// renderer.shadowCameraNear = 3;
+	// renderer.shadowCameraFar = 1000;
+	// renderer.shadowCameraFov = 50;
+
+	// renderer.shadowMapBias = 0.0039;
+	// renderer.shadowMapDarkness = 0.5;
+	// renderer.shadowMapWidth = 1024;
+	// renderer.shadowMapHeight = 1024;
+
+
 	renderer.shadowMap.enabled = true
 	renderer.shadowMap.autoUpdate = true
 // 	renderer.shadowMap.type = PCFSoftShadowMap

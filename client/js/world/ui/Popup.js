@@ -100,12 +100,14 @@ export default class Popup {
 		window.addEventListener('touchend', mouseup)
         
         this.close.addEventListener('click', () => {
+        	this.unrender()
 			this.hide()
 		})
     }
     
 	show(){
 		
+		this.unrender()
 		this.render()
 
 		this.element.style.display = 'inline-block'
@@ -115,6 +117,10 @@ export default class Popup {
 
 	hide(){
 		this.element.style.display = 'none'
+		this.content.innerHTML = ''
+	}
+
+	unrender(){
 		this.content.innerHTML = ''
 	}
 

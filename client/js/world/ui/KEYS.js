@@ -95,11 +95,13 @@ function handle_keydown( e ){
 				break;
 
 			case BINDS.world.turn.left:
-				ANIMATE.digital_turn('left', true )
+				ANIMATE.move('left', true)
+				// ANIMATE.digital_turn('left', true )
 				break;
 
 			case BINDS.world.turn.right:
-				ANIMATE.digital_turn('right', true )
+				ANIMATE.move('right', true)
+				// ANIMATE.digital_turn('right', true )
 				break;
 
 			case BINDS.world.actions.one:
@@ -196,11 +198,13 @@ function handle_keyup( e ){
 				break;
 
 			case BINDS.world.turn.left:
-				ANIMATE.digital_turn('left', false)
+				// ANIMATE.digital_turn('left', false)
+				ANIMATE.move('left', false)
 				break;
 
 			case BINDS.world.turn.right:
-				ANIMATE.digital_turn('right', false)
+				ANIMATE.move('right', false) // these should be 'move_alt', too lazy...
+				// ANIMATE.digital_turn('right', false)
 				break;
 
 			// case BINDS.world.flip_cam:

@@ -18,18 +18,23 @@ const offset = new Vector3( 500, 500, 500 )
 
 const directional = new DirectionalLight( 
 	GLOBAL.DIRECTIONAL_COLOR, 
-	GLOBAL.DIRECTIONAL_INTENSITY 
+	GLOBAL.DIRECTIONAL_INTENSITY,
+	100
 )
+
 // directional.position.copy( offset )
-// directional.castShadow = true
-// directional.shadowCameraNear = 1;
-// directional.shadowCameraFar = 200;
-// directional.shadowCameraLeft = -50;
-// directional.shadowCameraRight = 50;
-// directional.shadowCameraTop = 50;
-// directional.shadowCameraBottom = -50;
-// directional.shadowMapWidth = 2048;
-// directional.shadowMapHeight = 2048;
+directional.castShadow = true
+directional.shadow.camera.near = 1;
+directional.shadow.camera.far = 1800;
+directional.shadow.camera.left = -750;
+directional.shadow.camera.right = 750;
+directional.shadow.camera.top = 250;
+directional.shadow.camera.bottom = -250;
+directional.shadow.camera.fov = 250
+directional.shadow.mapSize.width = 2048;
+directional.shadow.mapSize.height = 2048;
+// directional.shadow.mapWidth = 2048;
+// directional.shadow.mapHeight = 2048;
 
 
 const spotlight = new SpotLight( 0xffffff )

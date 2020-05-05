@@ -150,6 +150,9 @@ canvas#mud-flats{
 }
 
 #compass{
+
+    display: none;
+
 	position: fixed;
 	top: 10px;
 	right: 10px;
@@ -256,10 +259,25 @@ canvas#mud-flats{
 }
 
 .popup .stat .icon{
+	margin-right: 10px;
+}
+
+.popup .stat .icon,
+#mousehold{
 	width: 30px;
 	height: 30px;
 	border-radius: 5px;
-	background: radial-gradient( grey, transparent);
+	background: radial-gradient( grey, black);
 	border: 1px solid;
-	margin-right: 10px;
+}
+
+#mousehold{
+	position: fixed;
+	z-index: 99;
+	width: 40px;
+	height: 40px;
+}
+
+#mousehold img{
+
 }

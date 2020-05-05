@@ -220,7 +220,7 @@ function animate( start ){
 
 		// SKYBOX.position.copy( window.TOON.MODEL.position )
 
-		LIGHT.spotlight.position.copy( window.TOON.MODEL.position ).add( LIGHT.offset )
+		// LIGHT.spotlight.position.copy( window.TOON.MODEL.position ).add( LIGHT.offset )
 
 		RENDERER.shadowMap.needsUpdate = true
 

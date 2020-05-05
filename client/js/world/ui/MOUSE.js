@@ -40,7 +40,7 @@ let lastY = -1
 let distX = 0
 let distY = 0
 
-let clearance, toon_offset, new_height
+let clearance, toon_offset, new_height, mousehold
 
 const toToon = new Vector3()
 const wheel_projection = new Vector3()
@@ -57,6 +57,13 @@ function init( ZONE ){
 	RENDERER.domElement.addEventListener('contextmenu', click_down )
 	RENDERER.domElement.addEventListener('mousemove', mouse_move )
 	RENDERER.domElement.addEventListener('mousewheel', wheel )
+
+	mousehold = document.createElement('div')
+	mousehold.id = 'mousehold'
+	let hold_img = document.createElement('img')
+	mousehold.appendChild( hold_img )
+
+	document.body.appendChild( mousehold )
 
 }
 
@@ -407,4 +414,5 @@ export {
 	detect_object_clicked,
 	recurse_for,
 	check_clickable,
+	mousehold
 }
