@@ -26,74 +26,39 @@ module.exports = class User extends Persistent {
 
 		this.email = init.email 
 
-		this.ref = {
-			position: new Vector3(),
-		}
-
 		this.active_avatar = init.active_avatar
 
 		this._TOON = init._TOON || init.TOON
 
 	}
-	
 
 
-	save( returnNewDocument ){ // same as update() but save all
+	async save(){
 
-		const user = this
+		const update_fields = [
+			'name',
+			'email',
+			'active_avatar'
+		]
 
-		const db = DB.getDB()
+		const update_vals = [ 
+			this.name, 
+			this.email,
+			this.active_avatar
+		]
 
-		if( !OID.isValid( user._id ) )  user._id = OID()
+		// if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
+		// 	log('flag', 'cannot identify user for save: ', this._x, this._z, this._layer )
+		// 	return false
+		// }
 
-		return new Promise( (resolve, reject ) => {
+		const res = await DB.update( this, update_fields, update_vals )
 
-			db.collection('users').replaceOne({
-				_id: user._id
-			}, 
-			user, 
-			{
-				upsert: true,
-				returnNewDocument: returnNewDocument
-			}, function( err, result ){
-				if( err || !result ){
-					log('flag', 'failed to update user', err )
-					reject()
-					return false
-				}
-
-				if( result.upsertedId ) user._id = result.upsertedId._id // OID 
-
-				if( result.ops[0] ){
-					for( const key in result.ops[0]){
-						user[ key] = result.ops[0][ key ]
-					}
-					resolve( result.ops[0])
-				}else{
-					reject()
-				}
-
-				// seems this always need be http session
-				// if( SOCKETS[ patron.mud_id ] ){
-				// 	SOCKETS[ patron.mud_id ].request.session.save( function( err ){
-				// 		if( err ){
-				// 			log('err saving register attempt: ', err )
-				// 			reject()
-				// 		}
-				// 		resolve( result.ops[0] )
-				// 	})
-				// }else{ 
-				// 	log('flag', 'tried to save nonexistent socket: ', mud_id )
-				// 	reject(0)
-				// }
-
-			})
-
-		})	
+		return res
 
 	}
-
 	
+
 
 }
 

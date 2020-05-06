@@ -4,6 +4,8 @@ export default {
 
 	stream_down: false,
 
+	mousehold: false,
+
 	compassing: false,
 
 	// cam_flip: false,

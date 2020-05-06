@@ -1,6 +1,6 @@
 
 import Popup from './Popup.js'
-import POPUPS from './POPUPS.js'
+// import * as POPUPS from './POPUPS.js'
 import * as MOUSE from './MOUSE.js'
 
 const action_bar = document.getElementById('action-bar')
@@ -14,6 +14,44 @@ function init(){
 	init_character_buttons()
 	
 }
+
+
+
+
+function init_action_buttons(){
+
+	const action_wrapper = document.createElement('div')
+	action_wrapper.id = 'action-wrapper'
+
+	const wrapper_liner = document.createElement('div')
+	wrapper_liner.id = 'action-liner'
+
+	for( let i = 0; i < 6; i++ ){
+		const button = document.createElement('div')
+		button.classList.add('bar-button', 'action-button')
+		if( i === 0 || i === 5 ){
+			button.classList.add('tertiary')
+		}else if( i === 1 || i === 4 ){
+			button.classList.add('secondary')
+		}else{
+			button.classList.add('primary')
+		}
+		button.addEventListener('click', function(){
+			if( STATE.mousehold ){
+				equip_item( i )
+			}else{
+				console.log('action: ', this )
+			}
+		})
+		wrapper_liner.appendChild( button )
+	}
+	action_wrapper.appendChild( wrapper_liner )
+
+	action_bar.appendChild( action_wrapper )
+
+}
+
+
 
 
 function init_character_buttons(){
@@ -63,20 +101,16 @@ function init_character_buttons(){
 			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
 			icon.addEventListener('click', function(){
 				console.log( mud_id )
+				STATE.mousehold = true
 				MOUSE.mousehold.style.display = 'initial'
 				MOUSE.mousehold.querySelector('img').src = icon.src
-				// MOUSE.mousehold.setAttribute('data-held', )
-				document.addEventListener('mousemove', mousetrack )
+				window.addEventListener('mousemove', mousetrack )
 			})
 			row.appendChild( icon )
 			let stat_key = document.createElement('span')
 			stat_key.classList.add('stat-key')
 			stat_key.innerHTML = item.name
 			row.appendChild( stat_key )
-			// let stat_val = document.createElement('span')
-			// stat_val.classList.add('stat-val')
-			// stat_val.innerHTML = TOON[ key ]
-			// stat.appendChild( stat_val )
 			
 			row.appendChild( document.createElement('br'))
 			
@@ -90,21 +124,21 @@ function init_character_buttons(){
 	character_wrapper.id = 'character-wrapper'
 
 	const character = document.createElement('div')
+	character.innerHTML = '<img src="/resource/images/icons/noun_hood.png">'
 	character.id = 'ab-character'
 	character.classList.add('bar-button')
 	character.addEventListener('click', function(){
-		POPUPS['character'].show()
-		// console.log(this.id + ' clicked')
+		char_pop.set_visible(true)
 	})
 
 	character_wrapper.appendChild( character )
 
 	const inventory = document.createElement('div')
 	inventory.id = 'ab-inventory'
+	inventory.innerHTML = '<img src="/resource/images/icons/noun_satchel.png">'
 	inventory.classList.add('bar-button')
 	inventory.addEventListener('click', function(){
-		POPUPS['inventory'].show()
-		// console.log(this.id + ' clicked')
+		inv_pop.set_visible(true)
 	})
 
 	character_wrapper.appendChild( inventory )
@@ -115,27 +149,16 @@ function init_character_buttons(){
 
 
 
+function equip_item( i ){
 
-function init_action_buttons(){
-	const action_wrapper = document.createElement('div')
-	action_wrapper.id = 'action-wrapper'
+	console.log('equipping: ', MOUSE.mousehold )
 
-	for( let i = 0; i < 4; i++ ){
-		const button = document.createElement('div')	
-		button.classList.add('bar-button', 'action-button')
-		button.addEventListener('click', function(){
-			console.log('ab ' + i + ' clicked')
-		})
-		action_wrapper.appendChild( button )
-	}
-	action_bar.appendChild( action_wrapper )
 }
 
 
 
 
 function mousetrack(e){
-	// console.log("we be trackin", e )
 	MOUSE.mousehold.style.top = e.clientY + 'px'
 	MOUSE.mousehold.style.left = e.clientX + 'px'
 }

@@ -21,7 +21,7 @@ import SCENE from '../../three/SCENE.js'
 
 import * as ANIMATE from '../animate.js'
 
-import POPUPS from './POPUPS.js'
+import * as POPUPS from './POPUPS.js'
 
 // import TARGET from './TARGET.js'
 
@@ -74,7 +74,17 @@ function click_down( e ){
 
 	if( STATE.handler == 'chat' )  CHAT.input.blur()
 
-	if( e.button !== 2 )  detect_object_clicked( e, zone )
+	if( STATE.mousehold ){
+
+		console.log("add world drop function here")
+
+	}else{
+	
+		if( e.button !== 2 )  detect_object_clicked( e, zone )		
+	
+	}
+
+
 
 	e.preventDefault()
 
@@ -88,8 +98,8 @@ function click_up( e ){
 
 	ANIMATE.analog_turn( false )
 
-	for( const id of Object.keys( POPUPS ) ){
-		POPUPS[ id ].mousedown = false
+	for( const popup of POPUPS.active ){
+		popup.mousedown = false
 	}
 
 }

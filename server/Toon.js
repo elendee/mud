@@ -42,12 +42,23 @@ module.exports = class Toon extends Persistent {
 		
 		this.ref.quaternion = this.ref.quaternion || new Quaternion()
 
+		this._eqp = {
+			hand_left: false,
+			hand_right: false,
+			waist_left: false,
+			waist_right: false,
+			back1: false,
+			back2: false
+		}
+
+		this.equipped = new Array(6)
+
 	}
 
 
 	async fill_inventory(){
 
-		if( typeof( this._id ) === 'number' ){
+		if( typeof( this._id ) === 'number' ){ // registered user
 
 			const pool = DB.getPool()
 
@@ -66,7 +77,7 @@ module.exports = class Toon extends Persistent {
 
 			return true
 
-		}else{
+		}else{  // unregistered
 
 			const stick = new FACTORY({
 				type: 'melee',
@@ -92,24 +103,68 @@ module.exports = class Toon extends Persistent {
 	}
 
 
-	// publish(){
 
-	// 	let r = {}
+	equip(){
+		for( const mud_id of Object.keys( this._INVENTORY ) ){
+			if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_left ){
+				this.equipped[0] = this._INVENTORY[ mud_id ]
+			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_right ){
+				this.equipped[1] = this._INVENTORY[ mud_id ]
+			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.waist_left ){
+				this.equipped[2] = this._INVENTORY[ mud_id ]
+			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.waist_right ){
+				this.equipped[3] = this._INVENTORY[ mud_id ]
+			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.back1 ){
+				this.equipped[4] = this._INVENTORY[ mud_id ]
+			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.back2 ){
+				this.equipped[5] = this._INVENTORY[ mud_id ]
+			}
+		}
+	}
 
-	// 	for( const key of Object.keys( this )){
 
-	// 		if( typeof( key ) === 'string' && key[0] !== '_' ){
-	// 			if( this[ key ] && this[ key ].publish && typeof( this[ key ].publish ) === 'function' ){
-	// 				r[ key ] = this[ key ].publish()
-	// 			}else{
-	// 				r[ key ] = this[ key ]
-	// 			}
-	// 		}
 
-	// 	}
+	async save(){
 
-	// 	return r
+		const update_fields = [
+			'name',
+			'height',
+			'speed',
+			'color',
+			'layer',
+			'eqp_hand_left',
+			'eqp_hand_right',
+			'eqp_waist_left',
+			'eqp_waist_left',
+			'eqp_back1',
+			'eqp_back2',
+		]
 
-	// }
+		const update_vals = [ 
+			this.name, 
+			this.height,
+			this.speed,
+			this.color,
+			this._layer,
+			this._eqp.hand_left,
+			this._eqp.hand_right,
+			this._eqp.waist_left,
+			this._eqp.waist_right,
+			this._eqp.back1,
+			this._eqp.back2,
+		]
+
+		// if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
+		// 	log('flag', 'cannot identify user for save: ', this._x, this._z, this._layer )
+		// 	return false
+		// }
+
+		const res = await DB.update( this, update_fields, update_vals )
+
+		return res
+
+	}
+
 
 }
+

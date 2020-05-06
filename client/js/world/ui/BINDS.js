@@ -44,6 +44,9 @@ const binds = {
 			four: 52
 		},
 
+		inventory: 66,
+		character: 67
+
 	},
 
 

@@ -10,7 +10,10 @@ import CHAT from './CHAT.js'
 // import * as POPUP from './POPUP.js'
 
 // import * as HUD from './HUD.js'
+
 // import { getBar } from './ACTION_BAR.js'
+
+import * as POPUPS from './POPUPS.js'
 
 import BINDS from './BINDS.js'
 
@@ -114,6 +117,14 @@ function handle_keydown( e ){
 				break;
 
 			case BINDS.world.actions.four:
+				break;
+
+			case BINDS.world.inventory:
+				POPUPS.toggle('inventory')
+				break;
+
+			case BINDS.world.character:
+				POPUPS.toggle('character')
 				break;
 
 			default: 

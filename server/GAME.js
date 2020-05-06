@@ -104,6 +104,8 @@ class Game {
 
 		await TOON.fill_inventory()
 
+		TOON.equip()
+
 		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
 
 		if( TOON.camped_key ){
