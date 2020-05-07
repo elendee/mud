@@ -225,8 +225,8 @@ function handle_keyup( e ){
 			// 	break;
 
 			case BINDS.world.actions.one:
-				ab_buttons[ 0 ].click()
-				// console.log('action one')
+				// ab_buttons[ 0 ].click()
+				console.log('action one')
 				break;
 
 			case BINDS.world.actions.two:

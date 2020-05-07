@@ -40,6 +40,7 @@ class Zone extends Persistent {
 
 		this._last_growth = lib.validate_seconds( init._last_growth, init.last_growth, new Date('1970').getTime() )// fill_growth( init )
 		this._flora_target = lib.validate_number( init._flora_target, init.flora_target, 100 )
+		this._structure_target = lib.validate_number( init._structure_target, init.structure_target, 50 )
 		this._growth_rate = lib.validate_number( init._growth_rate, init.growth_rate, 5 )
 
 		this._pulses = {
@@ -207,9 +208,13 @@ class Zone extends Persistent {
 
 	async read_flora(){
 
+		if( !this._id )  return false
+
 		const pool = DB.getPool()
 
-		const sql = 'SELECT * FROM flora WHERE zone_key=' + this._id
+		const limit = this._flora_target
+
+		const sql = 'SELECT * FROM flora WHERE zone_key=' + this._id + ' LIMIT ' + limit
 
 		const { error, results, fields } = await pool.queryPromise( sql )
 		if( error ) log('flag', 'flora looukp  err: ', error )
@@ -223,9 +228,13 @@ class Zone extends Persistent {
 
 	async read_structures(){
 
+		if( !this._id )  return false
+
 		const pool = DB.getPool()
 
-		const sql = 'SELECT * FROM structures WHERE zone_key=' + this._id
+		const limit = this._structure_target
+
+		const sql = 'SELECT * FROM structures WHERE zone_key=' + this._id + ' LIMIT ' + limit
 
 		const { error, results, fields } = await pool.queryPromise( sql )
 		if( error ) log('flag', 'structure looukp  err: ', error )

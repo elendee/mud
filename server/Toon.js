@@ -127,6 +127,8 @@ module.exports = class Toon extends Persistent {
 
 	equip( desired, slot, origin ){
 
+		log('flag', 'eqp: ', desired, slot, origin )
+
 		if( !this._INVENTORY[ desired ] ){
 			log('flag', 'invalid equip request')
 			return false 

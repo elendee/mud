@@ -3,6 +3,8 @@ import Popup from './Popup.js'
 // import * as POPUPS from './POPUPS.js'
 import * as MOUSE from './MOUSE.js'
 
+import STATE from '../STATE.js'
+
 const action_bar = document.getElementById('action-bar')
 let ab_buttons = []
 
@@ -56,14 +58,15 @@ function init_action_buttons(){
 
 		button.addEventListener('click', function(){
 			if( !STATE.mousehold ){
+				let mud_id = window.TOON.equipped[ i ]
 				if( i === 2 || i === 3 ){
 					if( window.TOON.equipped[ i ] ){
+						pickup( mud_id, ab_buttons[ i ].querySelector('img').src )
 						console.log('action: ', this )
 					}else{
 						hal('standard', 'you wave your ' + ( i === 2 ? 'left' : 'right' ) + ' hand vigorously')
 					}
 				}else{
-					let mud_id = window.TOON.equipped[ i ]
 					if( mud_id ){
 						pickup( mud_id, ab_buttons[ i ].querySelector('img').src ) 
 						STATE.origin_hold = i
