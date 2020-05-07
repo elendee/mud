@@ -21,6 +21,8 @@ import TARGET from './TARGET.js'
 
 import * as ANIMATE from '../animate.js'
 
+import { ab_buttons } from './ACTION_BAR.js'
+
 // const BAR = getBar()
 
 
@@ -223,10 +225,12 @@ function handle_keyup( e ){
 			// 	break;
 
 			case BINDS.world.actions.one:
-				console.log('action one')
+				ab_buttons[ 0 ].click()
+				// console.log('action one')
 				break;
 
 			case BINDS.world.actions.two:
+
 				console.log('action two')
 				break;
 
@@ -236,6 +240,14 @@ function handle_keyup( e ){
 
 			case BINDS.world.actions.four:
 				console.log('action four')
+				break;
+
+			case BINDS.world.actions.five:
+				console.log('action five')
+				break;
+
+			case BINDS.world.actions.six:
+				console.log('action six')
 				break;
 
 			default: 

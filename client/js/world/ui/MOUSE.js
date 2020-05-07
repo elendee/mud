@@ -60,6 +60,7 @@ function init( ZONE ){
 
 	mousehold = document.createElement('div')
 	mousehold.id = 'mousehold'
+	mousehold.setAttribute('data-held', false )
 	let hold_img = document.createElement('img')
 	mousehold.appendChild( hold_img )
 
@@ -72,14 +73,29 @@ function click_down( e ){
 
 	STATE.mousedown[ buttons[ e.button ] ] = true
 
-	if( STATE.handler == 'chat' )  CHAT.input.blur()
-
 	if( STATE.mousehold ){
 
+		mousehold.setAttribute('data-held', false )
+		mousehold.querySelector('img').src = ''
+		mousehold.style.display = 'none'
 		console.log("add world drop function here")
 
+		if( typeof( STATE.origin_hold ) === 'number' ){
+
+			window.SOCKET.send(JSON.stringify({
+				type: 'equip',
+				desired: false,
+				slot: STATE.origin_hold
+			}))
+
+			STATE.origin_hold = false
+
+		}
+
 	}else{
-	
+
+		if( STATE.handler == 'chat' )  CHAT.input.blur()
+
 		if( e.button !== 2 )  detect_object_clicked( e, zone )		
 	
 	}

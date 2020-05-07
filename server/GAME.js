@@ -104,7 +104,7 @@ class Game {
 
 		await TOON.fill_inventory()
 
-		TOON.equip()
+		TOON.render_equipped()
 
 		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
 

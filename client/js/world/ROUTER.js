@@ -143,6 +143,10 @@ const bind = function(){
 					ZONE.new_img( obj )
 					break;
 
+				case 'equip':
+					window.TOON.equip( obj.equipment )
+					break;
+
 				// case 'bot_begin_path':
 				// 	ZONE.handle_bot( obj )
 				// 	break;

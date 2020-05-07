@@ -8,6 +8,8 @@ export default {
 
 	compassing: false,
 
+	origin_hold: false,
+
 	// cam_flip: false,
 	
 	handler: 'world',

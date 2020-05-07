@@ -50,7 +50,7 @@ function toggle( id ){
 
 function apply_indexes(){
 	for( let i  = 0; i < active.length; i++ ){
-		active[ i ].element.style['z-index'] = (i+1) * 9
+		active[ i ].element.style['z-index'] = 100 + i
 	}
 }
 

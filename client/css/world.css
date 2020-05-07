@@ -8,6 +8,7 @@ canvas#mud-flats{
 }
 
 #action-bar{
+	user-select: none;
     position: fixed;
     bottom: 0px;
 /*     border: 2px solid; */
@@ -28,7 +29,7 @@ canvas#mud-flats{
 }
 .bar-button:hover{
     border: 1px solid white;
-    background: black;
+    background: radial-gradient(rgb(50, 50, 50), black);
 }
 
 .action-button{
@@ -308,7 +309,7 @@ canvas#mud-flats{
 
 #mousehold{
 	position: fixed;
-	z-index: 99;
+	z-index: 999;
 	width: 40px;
 	height: 40px;
 }

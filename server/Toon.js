@@ -10,6 +10,8 @@ const {
 const Persistent = require('./Persistent.js')
 const FACTORY = require('./items/FACTORY.js')
 
+const SOCKETS = require('./SOCKETS.js')
+
 module.exports = class Toon extends Persistent {
 
 	constructor( init ){
@@ -104,7 +106,7 @@ module.exports = class Toon extends Persistent {
 
 
 
-	equip(){
+	render_equipped(){
 		for( const mud_id of Object.keys( this._INVENTORY ) ){
 			if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_left ){
 				this.equipped[0] = this._INVENTORY[ mud_id ]
@@ -120,6 +122,34 @@ module.exports = class Toon extends Persistent {
 				this.equipped[5] = this._INVENTORY[ mud_id ]
 			}
 		}
+	}
+
+
+	equip( desired, slot, origin ){
+
+		if( !this._INVENTORY[ desired ] ){
+			log('flag', 'invalid equip request')
+			return false 
+		}
+
+		// if origin is action button, swap 
+
+			// ( currently impossible to remove action bars anyway )
+
+		// else
+
+		for( let i = 0; i < this.equipped.length; i++ ){
+			if( this.equipped[i] === desired ) this.equipped[ i ] = null
+		}
+
+		this.equipped[ slot - 1 ] = desired
+
+		SOCKETS[ this.mud_id ].send(JSON.stringify({
+			type: 'equip',
+			equipment: this.equipped
+		}))
+		SOCKETS[ this.mud_id ].request.session.save()
+
 	}
 
 

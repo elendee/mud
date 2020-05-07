@@ -13,6 +13,8 @@ import {
 	Color
 } from '../lib/three.module.js'
 
+import * as ACTION_BAR from './ui/ACTION_BAR.js'
+
 import STATE from './STATE.js'
 import DEV from './ui/DEV.js'
 
@@ -134,6 +136,20 @@ export default class Toon {
 
 		// this.HEAD.add( this.FACE )
 		// this.MODEL.add( this.HEAD )
+
+	}
+
+
+
+	equip( equipment ){
+
+		console.log( equipment )
+
+		TOON.equipped = equipment
+
+		for( let i = 0; i < equipment.length; i++ ){
+			ACTION_BAR.render_equip( i, equipment[i] )
+		}
 
 	}
 

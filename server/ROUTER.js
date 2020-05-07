@@ -130,6 +130,9 @@ module.exports = {
 					GAME.handle_chat( packet, mud_id )
 					break;
 
+				case 'equip':
+					TOON.equip( packet.held, packet.slot, packet.origin )
+					break;
 				// case 'register':
 				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )
 				// 	.catch( err => {
