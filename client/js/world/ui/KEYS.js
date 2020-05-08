@@ -1,5 +1,6 @@
 
 import env from '../../env.js'
+import hal from '../../hal.js'
 
 import STATE from '../STATE.js'
 // import SOUND from '../../SOUND.js'
@@ -229,29 +230,51 @@ function handle_keyup( e ){
 			// 	break;
 
 			case BINDS.world.actions.one:
-				console.log('slot one')
+				if( window.TOON.equipped[0] ){
+					ACTION_BAR.swap_item(0, 2)
+				}else{
+					hal('standard', 'no item to swap there', 1000)
+				}
 				break;
 
 			case BINDS.world.actions.two:
-				console.log('slot two')
+				if( window.TOON.equipped[1] ){
+					ACTION_BAR.swap_item(1, 2)
+				}else{
+					hal('standard', 'no item to swap there', 1000)
+				}
 				break;
 
 			case BINDS.world.actions.three:
-				console.log('action three')
-				ACTION_BAR.action('left')
+				if( window.TOON.equipped[2]){
+					ACTION_BAR.action('left')
+				}else{
+					hal('standard', 'you raise your left hand', 1000)
+				}
 				break;
 
 			case BINDS.world.actions.four:
-				console.log('action four')
-				ACTION_BAR.action('right')
+				if( window.TOON.equipped[3]){
+					ACTION_BAR.action('right')
+				}else{
+					hal('standard', 'you raise your right hand', 1000)
+				}
 				break;
 
 			case BINDS.world.actions.five:
-				console.log('slot five')
+				if( window.TOON.equipped[4] ){
+					ACTION_BAR.swap_item(4, 3)
+				}else{
+					hal('standard', 'no item to swap there', 1000)
+				}
 				break;
 
 			case BINDS.world.actions.six:
-				console.log('slot six')
+				if( window.TOON.equipped[5] ){
+					ACTION_BAR.swap_item(5, 3)
+				}else{
+					hal('standard', 'no item to swap there', 1000)
+				}
 				break;
 
 			default: 

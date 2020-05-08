@@ -5,6 +5,8 @@ import * as MOUSE from './MOUSE.js'
 
 import STATE from '../STATE.js'
 
+import TARGET from './TARGET.js'
+
 const action_bar = document.getElementById('action-bar')
 let ab_buttons = []
 
@@ -228,7 +230,10 @@ function action( hand ){
 
 	window.SOCKET.send(JSON.stringify({
 		type: 'action',
-		slot: hand
+		slot: hand,
+		target: {
+			// type: TARGET.target ? TARGET.target.
+		}
 	}))
 
 }

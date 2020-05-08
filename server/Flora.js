@@ -11,9 +11,11 @@ class Flora extends Persistent {
 
 		init = init || {}
 
-		this.zone_key = init.zone_key
+		this.type = 'flora'
 
-		this.type = init.type
+		this.subtype = init.subtype
+
+		this.zone_key = init.zone_key
 
 		this._table = 'flora'
 		this._created = lib.validate_string( init.created, init._created, undefined )

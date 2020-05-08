@@ -141,7 +141,7 @@ class Zone extends Persistent {
 
 				if( attempt ){
 					const fol = new Flora({
-						type: 'tree',
+						subtype: 'tree',
 						zone_key: this._id,
 						scale: .5 + Math.random(),
 						x: attempt.x,
@@ -261,10 +261,10 @@ class Zone extends Persistent {
 
 			let set = value_sets[ i ]
 
-			if( !set.type ){
-				log('flag', 'wot now: ', set )
-				return false
-			}
+			// if( !set.type ){
+			// 	log('flag', 'wot now: ', set )
+			// 	return false
+			// }
 			// log('flag', set )
 
 			for( const key of Object.keys( set ) ){
@@ -278,7 +278,7 @@ class Zone extends Persistent {
 			let value_string = `
 			${ set.id || 'NULL' }, 
 			${ set.zone_key || 'NULL' }, 
-			${ set.type || 'NULL' }, 
+			${ set.subtype || 'NULL' }, 
 			${ set.scale || 1 }, 
 			${ set.x || 0 }, 
 			${ set.y || 0 }, 
@@ -286,13 +286,13 @@ class Zone extends Persistent {
 
 			let full_string = `
 			zone_key=${ this._id },
-			type=${ set.type || 'NULL' },
+			subtype=${ set.subtype || 'NULL' },
 			scale=${ set.scale },
 			x=${ set.x },
 			y=${ set.y },
 			z=${ set.z }`
 
-			const sql = 'INSERT INTO `flora` (id, zone_key, type, scale, x, y, z) VALUES (' + value_string + ') ON DUPLICATE KEY UPDATE ' + full_string
+			const sql = 'INSERT INTO `flora` (id, zone_key, subtype, scale, x, y, z) VALUES (' + value_string + ') ON DUPLICATE KEY UPDATE ' + full_string
 
 			// log('query', 'attempting UPDATE: ', value_string, full_string )
 

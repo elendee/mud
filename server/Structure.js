@@ -4,6 +4,10 @@ class Structure {
 
 		init = init || {}
 
+		this.type = 'structure'
+
+		this.subtype = init.subtype
+
 		this.zone_key = init.zone_key
 
 		this.type = init.type

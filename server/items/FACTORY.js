@@ -1,12 +1,14 @@
 const Melee = require('./Melee.js')
 const Ranged = require('./Ranged.js')
 const Magic = require('./Magic.js')
+const Armor = require('./Armor.js')
 // const Key = require('./Key.js')
 
 const map = new Map([
 	['melee', Melee],
 	['ranged', Ranged],
 	['magic', Magic],
+	['armor', Armor]
 ])
 
 module.exports = function( item ) {

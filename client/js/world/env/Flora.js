@@ -50,13 +50,17 @@ export default class Flora {
 
 		init = init || {}
 
-		this.mud_id = init.mud_id
+		for( const key of Object.keys( init ) ){
+			this[ key ] = init[ key ]
+		}
 
-		this.type = init.type
+		// this.mud_id = init.mud_id
 
-		this.x = typeof( init.x ) === 'number' ? init.x : init._x
-		this.y = typeof( init.y ) === 'number' ? init.y : init._y
-		this.z = typeof( init.z ) === 'number' ? init.z : init._z
+		// this.type = init.type
+
+		// this.x = typeof( init.x ) === 'number' ? init.x : init._x
+		// this.y = typeof( init.y ) === 'number' ? init.y : init._y
+		// this.z = typeof( init.z ) === 'number' ? init.z : init._z
 
 		this.MODEL = false
 

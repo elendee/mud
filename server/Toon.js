@@ -20,6 +20,10 @@ module.exports = class Toon extends Persistent {
 
 		init = init || {}
 
+		this.type = 'toon'
+
+		this.subtype = init.subtype
+
 		this._table = 'avatars'
 
 		this._INVENTORY = init._INVENTORY || {}
@@ -90,9 +94,9 @@ module.exports = class Toon extends Persistent {
 				this._INVENTORY[ stick.mud_id ] = stick
 			}
 			const trousers = new FACTORY({
-				type: 'melee',
+				type: 'armor',
 				name: 'Unwieldy Trousers',
-				icon_url: 'noun_trousers.png'
+				icon_url: 'noun_trousers.png',
 			})
 			if( trousers ){
 				this._INVENTORY[ trousers.mud_id ] = trousers

@@ -28,11 +28,11 @@ export default class Toon {
 
 		init = init || {}
 
-		this.bindings = {}
-
 		for( const key of Object.keys( init ) ){
 			this[ key ] = init[ key ]
 		}
+
+		this.bindings = this.bindings || {}
 
 		this.INVENTORY = false
 
