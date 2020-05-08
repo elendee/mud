@@ -61,14 +61,14 @@ function init_action_buttons(){
 				let mud_id = window.TOON.equipped[ i ]
 				if( i === 2 || i === 3 ){
 					if( window.TOON.equipped[ i ] ){
-						pickup( mud_id, ab_buttons[ i ].querySelector('img').src )
+						MOUSE.mousehold.pickup( mud_id, ab_buttons[ i ].querySelector('img').src )
 						console.log('action: ', this )
 					}else{
 						hal('standard', 'you wave your ' + ( i === 2 ? 'left' : 'right' ) + ' hand vigorously')
 					}
 				}else{
 					if( mud_id ){
-						pickup( mud_id, ab_buttons[ i ].querySelector('img').src ) 
+						MOUSE.mousehold.pickup( mud_id, ab_buttons[ i ].querySelector('img').src ) 
 						STATE.origin_hold = i
 					}
 				}
@@ -138,7 +138,7 @@ function init_character_buttons(){
 			icon.classList.add('icon')
 			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
 			icon.addEventListener('click', function(){
-				pickup( mud_id, icon.src )
+				MOUSE.mousehold.pickup( mud_id, icon.src )
 			})
 			row.appendChild( icon )
 			let stat_key = document.createElement('span')
@@ -182,13 +182,7 @@ function init_character_buttons(){
 }
 
 
-function pickup( mud_id, src ){
-	STATE.mousehold = true
-	MOUSE.mousehold.style.display = 'initial'
-	MOUSE.mousehold.querySelector('img').src = src
-	MOUSE.mousehold.setAttribute('data-held', mud_id )
-	window.addEventListener('mousemove', mousetrack )
-}
+
 
 
 
@@ -196,13 +190,13 @@ function request_equip_item( i ){
 
 	window.SOCKET.send(JSON.stringify({
 		type: 'equip',
-		held: MOUSE.mousehold.getAttribute('data-held'),
+		held: MOUSE.mousehold.ele.getAttribute('data-held'),
 		slot: i + 1
 	}))
 
-	MOUSE.mousehold.setAttribute('data-held', false )
-	MOUSE.mousehold.querySelector('img').src = ''
-	MOUSE.mousehold.style.display = 'none'
+	MOUSE.mousehold.ele.setAttribute('data-held', false )
+	MOUSE.mousehold.ele.querySelector('img').src = ''
+	MOUSE.mousehold.ele.style.display = 'none'
 
 	STATE.mousehold = false
 
@@ -210,11 +204,6 @@ function request_equip_item( i ){
 
 
 
-
-function mousetrack(e){
-	MOUSE.mousehold.style.top = e.clientY + 'px'
-	MOUSE.mousehold.style.left = e.clientX + 'px'
-}
 
 
 
@@ -232,9 +221,26 @@ function render_equip( slot, mud_id ){
 
 }
 
+
+
+
+function action( hand ){
+
+	window.SOCKET.send(JSON.stringify({
+		type: 'action',
+		slot: hand
+	}))
+
+}
+
+
+
+
+
 export {
 	init,
 	request_equip_item,
 	render_equip,
-	ab_buttons
+	ab_buttons,
+	action
 }

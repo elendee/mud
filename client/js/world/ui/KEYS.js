@@ -19,9 +19,11 @@ import BINDS from './BINDS.js'
 
 import TARGET from './TARGET.js'
 
+// import ACTION_BAR from './ACTION_BAR.js'
+
 import * as ANIMATE from '../animate.js'
 
-import { ab_buttons } from './ACTION_BAR.js'
+import * as ACTION_BAR from './ACTION_BAR.js'
 
 // const BAR = getBar()
 
@@ -157,7 +159,9 @@ function handle_keyup( e ){
 	switch( e.keyCode ){
 
 		case BINDS.global.close:
-			if( STATE.handler === 'chat' ){
+			if( STATE.mousehold ){
+
+			}else if( STATE.handler === 'chat' ){
 				CHAT.input.blur()
 			}else if( STATE.handler === 'dialogue' ){
 				console.log('unhandled close dialgoue....')
@@ -225,29 +229,29 @@ function handle_keyup( e ){
 			// 	break;
 
 			case BINDS.world.actions.one:
-				// ab_buttons[ 0 ].click()
-				console.log('action one')
+				console.log('slot one')
 				break;
 
 			case BINDS.world.actions.two:
-
-				console.log('action two')
+				console.log('slot two')
 				break;
 
 			case BINDS.world.actions.three:
 				console.log('action three')
+				ACTION_BAR.action('left')
 				break;
 
 			case BINDS.world.actions.four:
 				console.log('action four')
+				ACTION_BAR.action('right')
 				break;
 
 			case BINDS.world.actions.five:
-				console.log('action five')
+				console.log('slot five')
 				break;
 
 			case BINDS.world.actions.six:
-				console.log('action six')
+				console.log('slot six')
 				break;
 
 			default: 

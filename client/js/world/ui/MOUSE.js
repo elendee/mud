@@ -58,15 +58,16 @@ function init( ZONE ){
 	RENDERER.domElement.addEventListener('mousemove', mouse_move )
 	RENDERER.domElement.addEventListener('mousewheel', wheel )
 
-	mousehold = document.createElement('div')
-	mousehold.id = 'mousehold'
-	mousehold.setAttribute('data-held', false )
-	let hold_img = document.createElement('img')
-	mousehold.appendChild( hold_img )
+	mousehold = (function(){
+		if( mousehold ) return mousehold
+		mousehold = new MouseHold()
+		return mousehold
+	})()
 
-	document.body.appendChild( mousehold )
+	document.body.appendChild( mousehold.ele )
 
 }
+
 
 
 function click_down( e ){
@@ -75,10 +76,7 @@ function click_down( e ){
 
 	if( STATE.mousehold ){
 
-		mousehold.setAttribute('data-held', false )
-		mousehold.querySelector('img').src = ''
-		mousehold.style.display = 'none'
-		console.log("add world drop function here")
+		mousehold.drop()
 
 		if( typeof( STATE.origin_hold ) === 'number' ){
 
@@ -407,8 +405,39 @@ function check_clickable( obj ){
 
 
 
+class MouseHold {
+	constructor( init ){
+		init = init || {}
+		this.ele = document.createElement('div')
+		this.ele.id = 'mousehold'
+		this.ele.setAttribute('data-held', false )
+		this.hold_img = document.createElement('img')
+		this.ele.appendChild( this.hold_img )		
+	}
+
+	pickup( mud_id, src ){
+		STATE.mousehold = true
+		this.ele.style.display = 'initial'
+		this.hold_img.src = src
+		this.ele.setAttribute('data-held', mud_id )
+		window.addEventListener('mousemove', mousetrack )
+	}
+
+	drop(){
+		STATE.mousehold = false
+		this.ele.style.display = 'none'
+		this.hold_img.src = ''
+		this.ele.setAttribute('data-held', false )
+		window.removeEventListener('mousemove', mousetrack )
+	}
+
+}
 
 
+function mousetrack(e){
+	mousehold.ele.style.top = e.clientY + 'px'
+	mousehold.ele.style.left = e.clientX + 'px'
+}
 
 
 

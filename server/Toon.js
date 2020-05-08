@@ -155,6 +155,23 @@ module.exports = class Toon extends Persistent {
 	}
 
 
+	action( packet ){
+
+		log('flag', 'achtung..', packet )
+
+		if( packet.slot === 'left' ){
+
+			log('flag', 'action: ', this._INVENTORY[ this.equipped[ 2 ] ])
+
+		}else if( packet.slot === 'right' ){
+
+			log('flag', 'action: ', this._INVENTORY[ this.equipped[ 3 ] ])
+
+		}
+
+	}
+
+
 
 	async save(){
 

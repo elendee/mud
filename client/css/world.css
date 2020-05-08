@@ -14,7 +14,7 @@ canvas#mud-flats{
 /*     border: 2px solid; */
     width: 100%;
     height: 45px;
-    background: rgba(255, 155, 55, .3);
+    background: linear-gradient(0deg, rgba(5, 5, 5, .8), transparent );
 /*     border-top: 1px solid wheat; */
 }
 
@@ -34,7 +34,7 @@ canvas#mud-flats{
 
 .action-button{
 	vertical-align: bottom;
-	background: radial-gradient( rgb(20, 20, 20), black)
+	background: radial-gradient( rgb(50, 50, 80), black)
 /* 	height: 100% */
 /* 	height: 20px; */
 }
@@ -46,11 +46,11 @@ canvas#mud-flats{
 .action-button.secondary{
     height: 50px;
     width: 50px;
-    border-color: rgb(50, 50, 50);
+    border-color: rgb(150, 150, 150);
 /* 	height: 150px; */
 }
 .action-button.tertiary{
-    border-color: rgb(20, 20, 20);
+    border-color: rgb(50, 50, 50);
 }
 
 
@@ -69,7 +69,9 @@ canvas#mud-flats{
 #action-wrapper{
     width: 360px;
     height: 50px;
-	left: 0px;
+	left: 50%;
+	margin-left: -180px;
+
     background: rgb( 10, 5, 0);
 /*     height: 80px; */
     bottom: 0px;

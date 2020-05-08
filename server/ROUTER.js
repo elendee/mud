@@ -133,6 +133,10 @@ module.exports = {
 				case 'equip':
 					TOON.equip( packet.held, packet.slot, packet.origin )
 					break;
+
+				case 'action':
+					TOON.action( packet )
+					break;
 				// case 'register':
 				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )
 				// 	.catch( err => {
