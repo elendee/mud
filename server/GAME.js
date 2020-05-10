@@ -297,9 +297,9 @@ class Game {
 				type: 'chat',
 				method: packet.method,
 				sender_mud_id: mud_id,
-				speaker: SOCKETS[ mud_id ].request.session.USER.TOON.name,
+				speaker: SOCKETS[ mud_id ].request.session.USER._TOON.name,
 				chat: lib.sanitize_chat( packet.chat ),
-				color: SOCKETS[ mud_id ].request.session.USER.TOON.color
+				color: SOCKETS[ mud_id ].request.session.USER._TOON.color
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))
