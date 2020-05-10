@@ -59,18 +59,18 @@ function init_action_buttons(){
 		}
 
 		button.addEventListener('click', function(){
-			if( !STATE.mousehold ){
+			if( !MOUSE.mousehold.held.mud_id ){
 				let mud_id = window.TOON.equipped[ i ]
 				if( i === 2 || i === 3 ){
 					if( window.TOON.equipped[ i ] ){
-						MOUSE.mousehold.pickup( mud_id, ab_buttons[ i ].querySelector('img').src )
+						MOUSE.mousehold.pickup( mud_id, 'action_bar' ) //ab_buttons[ i ].querySelector('img').src )
 						console.log('action: ', this )
 					}else{
 						hal('standard', 'you wave your ' + ( i === 2 ? 'left' : 'right' ) + ' hand vigorously')
 					}
 				}else{
 					if( mud_id ){
-						MOUSE.mousehold.pickup( mud_id, ab_buttons[ i ].querySelector('img').src ) 
+						MOUSE.mousehold.pickup( mud_id, 'action_bar' ) //ab_buttons[ i ].querySelector('img').src ) 
 						STATE.origin_hold = i
 					}
 				}
@@ -101,6 +101,8 @@ function init_character_buttons(){
 	})
 	char_pop.render = function(){
 
+		char_pop.content.innerHTML = ''
+
 		for( const key of Object.keys( TOON )){
 
 			if( char_display.includes( key )){
@@ -126,9 +128,13 @@ function init_character_buttons(){
 
 	}
 	const inv_pop = new Popup({
-		id: 'inventory'
+		id: 'inventory',
+		curX: 200, 
+		curY: 100
 	})
 	inv_pop.render = function(){
+
+		inv_pop.content.innerHTML = ''
 		
 		for( const mud_id of Object.keys( TOON.INVENTORY )){
 
@@ -140,7 +146,7 @@ function init_character_buttons(){
 			icon.classList.add('icon')
 			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
 			icon.addEventListener('click', function(){
-				MOUSE.mousehold.pickup( mud_id, icon.src )
+				MOUSE.mousehold.pickup( mud_id, 'inventory' )
 			})
 			row.appendChild( icon )
 			let stat_key = document.createElement('span')
@@ -192,7 +198,8 @@ function request_equip_item( i ){
 
 	window.SOCKET.send(JSON.stringify({
 		type: 'equip',
-		held: MOUSE.mousehold.ele.getAttribute('data-held'),
+		held: MOUSE.mousehold.held,
+		// MOUSE.mousehold.ele.getAttribute('data-held'),
 		slot: i + 1
 	}))
 
@@ -211,13 +218,20 @@ function request_equip_item( i ){
 
 function render_equip( slot, mud_id ){
 
+	if( typeof( slot ) !== 'number' ) return false
+
 	ab_buttons[ slot ].innerHTML = ''
 
-	if( mud_id ){
+	if( mud_id && window.TOON.INVENTORY[ mud_id ] ){
 	
 		let img = document.createElement('img')
 		img.src = '/resource/images/icons/' + window.TOON.INVENTORY[ mud_id ].icon_url
 		ab_buttons[ slot ].appendChild( img )
+
+	}else{
+
+		let img = ab_buttons[ slot ].querySelector('img')
+		if( img ) img.remove()
 
 	}
 

@@ -21,10 +21,6 @@ module.exports = {
 
 		let packet = {}
 
-
-
-
-
 		SOCKETS[ mud_id ].on('message', function( data ){
 
 			try{ 
@@ -36,7 +32,7 @@ module.exports = {
 				}
 			}
 
-			const TOON = SOCKETS[ mud_id ].request.session.USER.TOON
+			const TOON = SOCKETS[ mud_id ].request.session.USER._TOON
 
 			switch( packet.type ){
 
@@ -131,7 +127,11 @@ module.exports = {
 					break;
 
 				case 'equip':
-					TOON.equip( packet.held, packet.slot, packet.origin )
+					TOON.equip( packet.held, packet.slot )
+					break;
+
+				case 'drop':
+					TOON.drop( packet.held )
 					break;
 
 				case 'action':

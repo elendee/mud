@@ -53,6 +53,7 @@ async function init_session( res ){
 	window.USER = new User( res.USER )
 	window.TOON = USER.TOON = new Toon( res.TOON )
 	window.TOON.init_inventory()
+	window.TOON.refresh_equipped()
 	if( env.EXPOSE )  window.ZONE = ZONE
 	// window.TOON.model()
 

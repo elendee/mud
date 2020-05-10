@@ -88,23 +88,46 @@ class Game {
 		SOCKETS[ USER.mud_id ] = socket
 
 		if( USER._id ){ // auth'd users
-			if( typeof( USER.active_avatar ) === 'number' ){
-				const toon = await this.get_toon( socket.request.session.USER.active_avatar )
-				if( toon ){
-					USER.TOON = TOON = new Toon( toon )
-				}
+
+			if( typeof( USER.active_avatar ) !== 'number' ){ 
+
+				USER._TOON = TOON = false
+
 			}else{
-				USER.TOON = TOON = false
+
+				if( USER._TOON && USER._TOON._id === USER.active_avatar ){ // still have session
+
+					USER._TOON = new Toon( USER._TOON )
+
+				}else{ // no session
+
+					const toon = await this.get_toon( socket.request.session.USER.active_avatar )
+
+					if( toon ){
+
+						USER._TOON = TOON = new Toon( toon )
+					
+					}else{
+
+						USER._TOON = TOON = false
+
+					}
+
+				}
+
 			}
+
 		}else{ // non-auth'd users
-			USER.TOON = TOON = new Toon()
+
+			USER._TOON = TOON = new Toon( USER._TOON )
+
 		}
 
 		TOON.mud_id = USER.mud_id // v. important, overwrite mud_id so they share
 
-		await TOON.fill_inventory()
+		await TOON.touch_inventory()
 
-		TOON.render_equipped()
+		await TOON.touch_equipped()
 
 		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
 

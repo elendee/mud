@@ -1,6 +1,5 @@
 import env from '../env.js'
 
-import Item from './Item.js'
 
 // import uuid from '../../../node_modules/uuid/dist/esm-browser/v4.js'
 
@@ -14,11 +13,13 @@ import {
 } from '../lib/three.module.js'
 
 import * as ACTION_BAR from './ui/ACTION_BAR.js'
+import DEV from './ui/DEV.js'
+import * as MOUSE from './ui/MOUSE.js'
+import * as POPUPS from './ui/POPUPS.js'
 
 import STATE from './STATE.js'
-import DEV from './ui/DEV.js'
-
 import TOONS from './TOONS.js'
+import Item from './Item.js'
 
 if( env.EXPOSE ) window.STATE = STATE
 
@@ -83,13 +84,28 @@ export default class Toon {
 	}
 
 
-	init_inventory(){
+	init_inventory( inv ){
+
+		console.log('INV ya')
 
 		this.INVENTORY = {}
 
-		for( const mud_id of Object.keys( this._INVENTORY ) ){
-			this.INVENTORY[ mud_id ] = new Item( this._INVENTORY[ mud_id ])
+		const init = inv || this._INVENTORY
+
+		for( const mud_id of Object.keys( init ) ){
+			this.INVENTORY[ mud_id ] = new Item( init[ mud_id ])
 		}
+
+		if( inv ){
+			for( let i = 0; i < this.equipped; i++ ){
+				if( !this.INVENTORY[ this.equipped[ i ]]){
+					ACTION_BAR.render_equip( i, false )
+					// drop from action bar ..
+				}
+			}
+		}
+
+		POPUPS.get('inventory').render()
 
 	}
 
@@ -141,14 +157,19 @@ export default class Toon {
 
 
 
-	equip( equipment ){
+	refresh_equipped( equipment ){
 
-		console.log( equipment )
+		console.log( 'eqp: ', equipment )
 
-		TOON.equipped = equipment
+		TOON.equipped = equipment || TOON.equipped || new Array(6)
 
-		for( let i = 0; i < equipment.length; i++ ){
-			ACTION_BAR.render_equip( i, equipment[i] )
+		for( let i = 0; i < TOON.equipped.length; i++ ){
+			console.log('humm', TOON.equipped[i])
+			ACTION_BAR.render_equip( i, TOON.equipped[i] )
+		}
+
+		if( equipment ){ // this means it came from a transaction, not init
+			MOUSE.mousehold.drop( false )
 		}
 
 	}

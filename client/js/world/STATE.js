@@ -4,8 +4,6 @@ export default {
 
 	stream_down: false,
 
-	mousehold: false,
-
 	compassing: false,
 
 	origin_hold: false,

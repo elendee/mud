@@ -68,7 +68,7 @@ const lru_session = session({
 
 const gatekeep = function(req, res, next) {
 
-	if( req.path.match(/\/resource/) || req.path.match(/\/client/) || req.path.match(/favicon/)){
+	if( req.path.match(/\/resource/) || req.path.match(/\/client/) || req.path.match(/favicon/) ){
 
 		// log('flag', 'resource: ', req.path )
 
@@ -83,6 +83,8 @@ const gatekeep = function(req, res, next) {
 		// log('flag', 'saved to http blorble: ', hhttp_b )
 
 		// req.session.blorble = 	hhttp_b
+
+		log('flag', 'whos dis user: ', req.session.USER )
 
 		// req.session.USER = new User( req.session.USER )
 

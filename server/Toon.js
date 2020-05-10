@@ -20,13 +20,19 @@ module.exports = class Toon extends Persistent {
 
 		init = init || {}
 
+		// needs hydrations.  not sure if needed yet..
+		this._session = init._session || {
+			inventory: false,
+			equipped: false	
+		}
+
 		this.type = 'toon'
 
 		this.subtype = init.subtype
 
 		this._table = 'avatars'
 
-		this._INVENTORY = init._INVENTORY || {}
+		this._INVENTORY = init._INVENTORY
 
 		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
 
@@ -57,49 +63,72 @@ module.exports = class Toon extends Persistent {
 			back2: false
 		}
 
-		this.equipped = new Array(6)
+		this.equipped = init.equipped 
+		// new Array(6)
 
 	}
 
 
-	async fill_inventory(){
+	async touch_inventory(){
 
 		if( typeof( this._id ) === 'number' ){ // registered user
 
-			const pool = DB.getPool()
+			if( this._INVENTORY ){
 
-			const sql = 'SELECT * FROM items WHERE owner_key=' + this._id
+				return true
 
-			const { error, results, fields } = await pool.queryPromise( sql )
-			if( error ){
-				log('flag', 'error retrieving inventory', error )
-				return false
+			}else{
+
+				const pool = DB.getPool()
+
+				const sql = 'SELECT * FROM items WHERE owner_key=' + this._id
+
+				const { error, results, fields } = await pool.queryPromise( sql )
+				if( error ){
+					log('flag', 'error retrieving inventory', error )
+					return false
+				}
+
+				for( const item of results ){
+					const this_item = new FACTORY( item )
+					this._INVENTORY[ this_item.mud_id ] = this_item
+				}
+
+				return true
+
 			}
-
-			for( const item of results ){
-				const this_item = new FACTORY( item )
-				this._INVENTORY[ this_item.mud_id ] = this_item
-			}
-
-			return true
 
 		}else{  // unregistered
 
-			const stick = new FACTORY({
-				type: 'melee',
-				name: 'Unwieldy Stick',
-				icon_url: 'noun_stick.png'
-			})
-			if( stick ){
-				this._INVENTORY[ stick.mud_id ] = stick
-			}
-			const trousers = new FACTORY({
-				type: 'armor',
-				name: 'Unwieldy Trousers',
-				icon_url: 'noun_trousers.png',
-			})
-			if( trousers ){
-				this._INVENTORY[ trousers.mud_id ] = trousers
+			if( !this._INVENTORY || env.ETERNAL_NOOB ){
+
+				this._INVENTORY = {}
+
+				const stick = new FACTORY({
+					type: 'melee',
+					name: 'Unwieldy Stick',
+					icon_url: 'noun_stick.png'
+				})
+				if( stick ){
+					this._INVENTORY[ stick.mud_id ] = stick
+				}
+				const trousers = new FACTORY({
+					type: 'armor',
+					name: 'Unwieldy Trousers',
+					icon_url: 'noun_trousers.png',
+				})
+				if( trousers ){
+					this._INVENTORY[ trousers.mud_id ] = trousers
+				}
+				const belt = new FACTORY({
+					type: 'armor',
+					name: 'Unwieldy Vest',
+					icon_url: 'noun_shirt.png',
+				})
+				if( belt ){
+					this._INVENTORY[ belt.mud_id ] = belt
+				}
+
 			}
 
 			return true
@@ -110,45 +139,120 @@ module.exports = class Toon extends Persistent {
 
 
 
-	render_equipped(){
-		for( const mud_id of Object.keys( this._INVENTORY ) ){
-			if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_left ){
-				this.equipped[0] = this._INVENTORY[ mud_id ]
-			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_right ){
-				this.equipped[1] = this._INVENTORY[ mud_id ]
-			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.waist_left ){
-				this.equipped[2] = this._INVENTORY[ mud_id ]
-			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.waist_right ){
-				this.equipped[3] = this._INVENTORY[ mud_id ]
-			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.back1 ){
-				this.equipped[4] = this._INVENTORY[ mud_id ]
-			}else if( this._INVENTORY[ mud_id ]._id === this._eqp.back2 ){
-				this.equipped[5] = this._INVENTORY[ mud_id ]
+	async touch_equipped(){
+
+		// if( typeof( this._id ) === 'number' ){ // auth'd avatars
+
+			// to use the session equip or the db equip ... ?
+
+			// how to know if you HAVE session ?
+		if( Array.isArray( this.equipped ) ){
+
+			// return true
+
+		}else{
+
+			this.equipped = new Array(6)
+
+			for( const mud_id of Object.keys( this._INVENTORY ) ){
+
+				if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_left ){
+
+					this.equipped[0] = this._INVENTORY[ mud_id ]
+
+				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_right ){
+
+					this.equipped[1] = this._INVENTORY[ mud_id ]
+
+				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.waist_left ){
+
+					this.equipped[2] = this._INVENTORY[ mud_id ]
+
+				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.waist_right ){
+
+					this.equipped[3] = this._INVENTORY[ mud_id ]
+
+				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.back1 ){
+
+					this.equipped[4] = this._INVENTORY[ mud_id ]
+
+				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.back2 ){
+
+					this.equipped[5] = this._INVENTORY[ mud_id ]
+
+				}
+
 			}
+
 		}
+		
+		return this.equipped
+
 	}
 
 
-	equip( desired, slot, origin ){
+	equip( held, slot ){
 
-		log('flag', 'eqp: ', desired, slot, origin )
+		log('flag', 'eqp: ', held, slot )
 
-		if( !this._INVENTORY[ desired ] ){
-			log('flag', 'invalid equip request')
+		//////////////// init vars:
+
+		let held_id = held ? held.mud_id : false
+		// let mud_id = 
+		let origin_type = held ? held.origin : false
+		let destination = slot - 1
+
+		if( !slot || !held_id || !origin_type ){
+			log('flag', 'invalid equip req: ', held, slot )
+			return false
+		}
+
+		if( !this._INVENTORY[ held_id ] ){
+			log('flag', 'do not possess requested eqp item: ', held.mud_id )
 			return false 
 		}
 
-		// if origin is action button, swap 
-
-			// ( currently impossible to remove action bars anyway )
-
-		// else
-
-		for( let i = 0; i < this.equipped.length; i++ ){
-			if( this.equipped[i] === desired ) this.equipped[ i ] = null
+		let origin_slot
+		for(let i = 0; i < this.equipped.length; i++){
+			if( this.equipped[ i ] === held_id ){
+				origin_slot = i
+				continue
+			}
 		}
 
-		this.equipped[ slot - 1 ] = desired
+		//////////////// now equip:
+
+		if( !this.equipped[ destination ] ){ // simple equip
+
+			for(let i = 0; i < this.equipped.length; i++){
+				if( this.equipped[ i ] === held_id )  this.equipped[ i ] = false
+			}
+
+			this.equipped[ destination ] = held_id
+
+		}else if( this.equipped[ destination ] === held_id ){ // redundant, should be blocked on client
+
+			log('flag', 'redundant equip')
+
+		}else if( this.equipped[ destination ] ){ 
+
+			if( origin_type === 'action_bar' ){ // swap
+
+				
+				if( origin_slot ){
+					this.equipped[ origin_slot ] = this.equipped[ destination ]
+					this.equipped[ destination ] = held_id
+				}
+
+			}else{ // replace from inventory
+
+				this.equipped[ destination ] = held_id
+
+			}
+
+		}else{
+			log('flag', 'unhandled equip req: ', held, slot )
+		}
 
 		SOCKETS[ this.mud_id ].send(JSON.stringify({
 			type: 'equip',
@@ -156,6 +260,67 @@ module.exports = class Toon extends Persistent {
 		}))
 		SOCKETS[ this.mud_id ].request.session.save()
 
+	}
+
+
+	drop( held ){
+
+		log('flag', 'ok: ', held )
+
+		let update_eqp = false
+		let update_inv = false
+
+
+		if( held.origin === 'inventory' ){
+
+			delete this._INVENTORY[ held.mud_id ]
+
+			for( let i = 0; i < this.equipped.length; i++ ){
+				log('flag', 'eqp: ', this.equipped[i] )
+				if( this.equipped[ i ] && !this._INVENTORY[ this.equipped[ i ] ] ){
+					log('flag', 'gbye: ', this.equipped )
+					this.equipped[ i ] = undefined
+					update_eqp = true
+				}
+			}
+
+			update_inv = true
+
+		}else if( held.origin === 'action_bar' ){
+
+			let drop 
+			for( let i = 0; i < this.equipped.length; i++ ){
+				if( this.equipped[ i ] === held.mud_id )  drop = i
+			}
+
+			if( typeof( drop ) === 'number' ){
+
+				this.equipped[ drop ] = undefined
+
+				update_eqp = true
+
+			}else{
+				log('flag', 'could not find equipped item to drop: ', held.mud_id )
+			}
+
+		}else{
+			log('flag', 'unknown drop origin', held )
+		}
+
+		if( update_inv ){
+			SOCKETS[ this.mud_id ].send(JSON.stringify({
+				type: 'inventory',
+				inventory: this._INVENTORY
+			}))
+		}
+		if( update_eqp ){
+			SOCKETS[ this.mud_id ].send(JSON.stringify({
+				type: 'equip',
+				equipment: this.equipped
+			}))
+		}
+		if( update_eqp || update_inv )  SOCKETS[ this.mud_id ].request.session.save()
+	
 	}
 
 

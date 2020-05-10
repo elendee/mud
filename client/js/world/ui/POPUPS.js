@@ -2,6 +2,7 @@
 const active = window.ACTIVE_POPUPS = []
 const all = []
 
+
 function bring_to_top( popup ){
 	// console.log( 'clicked ', popup )
 	let found
@@ -48,6 +49,13 @@ function toggle( id ){
 }
 
 
+function get( id ){
+	for( const popup of all ){
+		if( id && popup.id === id ) return popup
+	}
+}
+
+
 function apply_indexes(){
 	for( let i  = 0; i < active.length; i++ ){
 		active[ i ].element.style['z-index'] = 100 + i
@@ -59,5 +67,6 @@ export {
 	bring_to_top,
 	remove,
 	toggle,
-	all
+	all,
+	get
 }

@@ -144,7 +144,11 @@ const bind = function(){
 					break;
 
 				case 'equip':
-					window.TOON.equip( obj.equipment )
+					window.TOON.refresh_equipped( obj.equipment )
+					break;
+
+				case 'inventory':
+					window.TOON.init_inventory( obj.inventory )
 					break;
 
 				// case 'bot_begin_path':

@@ -7,24 +7,17 @@ import STATE from '../STATE.js'
 
 import CHAT from './CHAT.js'
 
-// import * as DIALOGUE from './DIALOGUE.js'
-// import * as POPUP from './POPUP.js'
-
-// import * as HUD from './HUD.js'
-
-// import { getBar } from './ACTION_BAR.js'
-
 import * as POPUPS from './POPUPS.js'
 
 import BINDS from './BINDS.js'
 
 import TARGET from './TARGET.js'
 
-// import ACTION_BAR from './ACTION_BAR.js'
-
 import * as ANIMATE from '../animate.js'
 
 import * as ACTION_BAR from './ACTION_BAR.js'
+
+import * as MOUSE from './MOUSE.js'
 
 // const BAR = getBar()
 
@@ -160,8 +153,8 @@ function handle_keyup( e ){
 	switch( e.keyCode ){
 
 		case BINDS.global.close:
-			if( STATE.mousehold ){
-
+			if( MOUSE.mousehold.held.mud_id ){
+				MOUSE.mousehold.drop()
 			}else if( STATE.handler === 'chat' ){
 				CHAT.input.blur()
 			}else if( STATE.handler === 'dialogue' ){

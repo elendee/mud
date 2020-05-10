@@ -60,7 +60,7 @@ function init( ZONE ){
 
 	mousehold = (function(){
 		if( mousehold ) return mousehold
-		mousehold = new MouseHold()
+		mousehold = window.MOUSEHOLD = new MouseHold()
 		return mousehold
 	})()
 
@@ -74,19 +74,18 @@ function click_down( e ){
 
 	STATE.mousedown[ buttons[ e.button ] ] = true
 
-	if( STATE.mousehold ){
+	if( mousehold.held.mud_id ){
 
-		mousehold.drop()
+		let on_inventory = false
+		let on_action_bar = false
 
-		if( typeof( STATE.origin_hold ) === 'number' ){
+		if( !on_inventory && !on_action_bar ){
 
-			window.SOCKET.send(JSON.stringify({
-				type: 'equip',
-				desired: false,
-				slot: STATE.origin_hold
-			}))
+			mousehold.drop( true )
 
-			STATE.origin_hold = false
+		}else{
+
+			// button listeners should handle these
 
 		}
 
@@ -406,28 +405,59 @@ function check_clickable( obj ){
 
 
 class MouseHold {
+
 	constructor( init ){
 		init = init || {}
 		this.ele = document.createElement('div')
 		this.ele.id = 'mousehold'
-		this.ele.setAttribute('data-held', false )
+		this.held = {
+			mud_id: false,
+			origin: false
+		}
+		// this.ele.setAttribute('data-held', false )
 		this.hold_img = document.createElement('img')
 		this.ele.appendChild( this.hold_img )		
 	}
 
-	pickup( mud_id, src ){
-		STATE.mousehold = true
+	pickup( mud_id, origin_type ){
 		this.ele.style.display = 'initial'
-		this.hold_img.src = src
-		this.ele.setAttribute('data-held', mud_id )
+		this.hold_img.src = '/resource/images/icons/' + window.TOON.INVENTORY[ mud_id ].icon_url
+		this.held = {
+			mud_id: mud_id,
+			origin: origin_type
+		}
+		// this.ele.setAttribute('data-held', mud_id )
 		window.addEventListener('mousemove', mousetrack )
+		const ev = new CustomEvent('mousemove'); // just render icon in right place ...
+		ev.initEvent('resize');
+		window.dispatchEvent(ev); 
 	}
 
-	drop(){
-		STATE.mousehold = false
+	drop( unequip ){
+
+		if( unequip ){
+			if( mousehold.held.mud_id ){
+				let held = window.TOON.INVENTORY[ mousehold.held.mud_id ]
+				let skip = false
+				if( mousehold.held.origin === 'inventory' && held ){
+					if( !confirm('drop ' + ( held.name || held.subtype || held.type ) + '?') )  skip = true
+				}
+				if( !skip ){
+					window.SOCKET.send(JSON.stringify({
+						type: 'drop',
+						held: mousehold.held
+					}))
+				}
+			}
+		}
+
 		this.ele.style.display = 'none'
 		this.hold_img.src = ''
-		this.ele.setAttribute('data-held', false )
+		this.held = {
+			mud_id: false,
+			origin: false
+		}
+		// this.ele.setAttribute('data-held', false )
 		window.removeEventListener('mousemove', mousetrack )
 	}
 

@@ -1,4 +1,5 @@
 import * as POPUPS from './POPUPS.js'
+import * as lib from '../../lib.js'
 
 export default class Popup {
 	
@@ -15,15 +16,15 @@ export default class Popup {
 
 		const ref = this
         
-        this.w = 200;
-        this.h = 124;
-        this.topbarHeight = 16;
+        // this.w = 200;
+        // this.h = 124;
+        // this.topbarHeight = 16;
 
 		this.mousedown = false
 		this.lastX = 0
 		this.lastY = 0
-		this.curX = 100
-		this.curY = 0
+		this.curX = lib.validate_number( options.curX, 100 )
+		this.curY = lib.validate_number( options.curY, 50 )
 		this.diffX = 0
 		this.diffY = 0
         
@@ -151,7 +152,6 @@ export default class Popup {
 		}else{
 
 			_this.element.style.display = 'none'
-			_this.content.innerHTML = ''
 
 			window.removeEventListener( 'mousemove', move_active_popup )
 			window.removeEventListener( 'touchmove', move_active_popup )

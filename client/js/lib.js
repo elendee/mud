@@ -26,7 +26,25 @@ function random_hex( len ){
 }
 
 
+function validate_number( ...vals ){
 
+	for( const num of vals ){
+		if( typeof( num ) === 'number' ) return num
+	}
+	// should never get here
+	return vals[ vals.length - 1 ]
+
+}
+
+function validate_string( ...vals ){
+
+	for( const str of vals ){
+		if( typeof( str ) === 'string' ) return str
+	}
+	// should never get here
+	return vals[ vals.length - 1 ]
+
+}
 
 
 
@@ -34,6 +52,8 @@ function random_hex( len ){
 export {
 	random_hex,
 	degrees_to_radians,
-	radians_to_degrees
+	radians_to_degrees,
+	validate_number,
+	validate_string
 	// clear_object
 }
