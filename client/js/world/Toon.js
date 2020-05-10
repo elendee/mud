@@ -21,6 +21,8 @@ import STATE from './STATE.js'
 import TOONS from './TOONS.js'
 import Item from './Item.js'
 
+import TARGET from './ui/TARGET.js'
+
 if( env.EXPOSE ) window.STATE = STATE
 
 export default class Toon {
