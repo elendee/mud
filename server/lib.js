@@ -9,6 +9,11 @@ const name_schema = new p_validator()
 
 const password_schema = new p_validator()
 
+const {
+	Vector3,
+	Quaternion
+} = require('three')
+
 name_schema
 	.is().min(3)
 	.is().max(25)
@@ -261,14 +266,14 @@ function random_rgb( min, max ){
 
 
 
-function tile_from_Xpos( toon_x ){
-	return Math.max( 0, Math.floor( toon_x / MAP.ZONE_WIDTH ) )
-}
+// function tile_from_Xpos( toon_x ){
+// 	return Math.max( 0, Math.floor( toon_x / MAP.ZONE_WIDTH ) )
+// }
 
 
-function tile_from_Zpos( toon_z ){
-	return Math.max( 0, Math.floor( toon_z / MAP.ZONE_WIDTH ) )
-}
+// function tile_from_Zpos( toon_z ){
+// 	return Math.max( 0, Math.floor( toon_z / MAP.ZONE_WIDTH ) )
+// }
 
 
 
@@ -323,7 +328,90 @@ function validate_seconds( ...vals ){
 }
 
 
+const entity_map = {
+	'flora': '_FLORA',
+	'npc': '_NPCS',
+	'toon': '_TOONS',
+	'structure': '_STRUCTURES'
+}
 
+
+function validate_vec3( ...inputs ){
+
+	for( const input of inputs ){
+
+		if( input ){
+
+			if( input.isVector3 ){
+
+				return input
+
+			}else{
+
+				if( typeof( input.x ) === 'number' && typeof( input.y ) === 'number' && typeof( input.z ) === 'number' ){
+					return new Vector3(
+						input.x,
+						input.y,
+						input.z
+					)
+				}else if( typeof( input._x ) === 'number' && typeof( input._y ) === 'number' && typeof( input._z ) === 'number' ){
+					return new Vector3(
+						input._x,
+						input._y,
+						input._z
+					)
+				}
+
+			}
+		}
+
+	}
+
+	return new Vector3( 0,0,0 )
+
+}
+
+
+
+function validate_quat( ...inputs ){
+
+	for( const input of inputs ){
+
+		if( input ){
+
+			if( input.isQuaternion ){
+
+				return input
+
+			}else{
+
+				if( typeof( input.x ) === 'number' && typeof( input.y ) === 'number' && typeof( input.z ) === 'number' && typeof( input.w ) === 'number' ){
+					return new Quaternion( input.x, input.y, input.z, input.w )
+				}else if( typeof( input._x ) === 'number' && typeof( input._y ) === 'number' && typeof( input._z ) === 'number' && typeof( input._w ) === 'number' ){
+					return new Quaternion( input._x, input._y, input._z, input._w )
+				}
+				// typeof( input.x ) === 'number' ? input.x : ( typeof( input._x ) === 'number' ? input._x : 0 ),
+				// typeof( input.y ) === 'number' ? input.y : ( typeof( input._y ) === 'number' ? input._y : 0 ),
+				// typeof( input.z ) === 'number' ? input.z : ( typeof( input._z ) === 'number' ? input._z : 0 ),
+				// typeof( input.w ) === 'number' ? input.w : ( typeof( input._w ) === 'number' ? input._w : 0 )
+
+			}
+
+		}
+
+	}
+
+	return new Quaternion( 0,0,0,0 )
+
+}
+
+function get_dist( vec1, vec2 ){
+
+	if( !vec1 || !vec2 || !vec1.isVector3 || !vec2.isVector3 ) return 999999999999999999999
+
+	return vec1.distanceTo( vec2 )
+
+}
 
 
 
@@ -344,11 +432,15 @@ module.exports = {
 	random_hex,
 	random_rgb,
 	zone_id,
-	tile_from_Zpos,
-	tile_from_Xpos,
+	// tile_from_Zpos,
+	// tile_from_Xpos,
 	is_iso_date,
 	validate_number,
 	validate_string,
-	validate_seconds
+	validate_seconds,
+	validate_vec3,
+	validate_quat,
+	entity_map,
+	get_dist
 }
 

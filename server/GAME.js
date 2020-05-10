@@ -1,3 +1,5 @@
+
+const env = require('./.env.js')
 const log = require('./log.js')
 const lib = require('./lib.js')
 
@@ -81,7 +83,7 @@ class Game {
 
 		const pool = DB.getPool()
 
-		let USER, TOON, x, z 
+		let USER, TOON, x, z, zone, start_zone_id
 
 		socket.request.session.USER = USER = new User( socket.request.session.USER )
 
@@ -131,11 +133,11 @@ class Game {
 
 		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
 
-		if( TOON.camped_key ){
+		if( TOON._camped_key ){
 
 			const sql = 'SELECT * FROM `structures` WHERE id=? LIMIT 1'
 
-			const values = [ TOON.camped_key ]
+			const values = [ TOON._camped_key ]
 
 			const { error, results, fields } = await pool.queryPromise( sql, values )
 
@@ -144,28 +146,31 @@ class Game {
 				return false
 			}
 
-			if( !results || !results.length || !results[0].zone_key ){
-				log('flag', 'initializing uncamped toon')
-				x = z = 0
-			}else{
-				x = lib.tile_from_Xpos( results[0].x )
-				z = lib.tile_from_Zpos( results[0].z )
-			}
+			// if( !results || !results.length || !results[0].zone_key ){
+			// 	log('flag', 'initializing uncamped toon')
+			// 	x = z = 0
+			// }else{
+			// 	x = lib.tile_from_Xpos( results[0].x )
+			// 	z = lib.tile_from_Zpos( results[0].z )
+			// }
+			start_zone_id = TOON._camped_key
 
 		}else{ // placing an uncamped toon:
 
 			TOON.ref.position.x = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
 			TOON.ref.position.z = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
 
+			start_zone_id = env.STARTER_ZONE_ID
+
 			// probably will be Zone 0, 0 forever, but just in case:
-			x = lib.tile_from_Xpos( TOON.ref.position.x ) + 11
-			z = lib.tile_from_Zpos( TOON.ref.position.z )
+			// x = lib.tile_from_Xpos( TOON.ref.position.x ) + 11
+			// z = lib.tile_from_Zpos( TOON.ref.position.z )
 
 		}
 
 		const layer = TOON._layer
 
-		const zone = await this.touch_zone( x, z, layer )
+		zone = await this.touch_zone( 'id', start_zone_id )
 
 		if( zone ){
 
@@ -174,7 +179,8 @@ class Game {
 			zone._TOONS[ USER.mud_id ] = TOON
 
 			const user = SOCKETS[ USER.mud_id ].request.session.USER.publish()
-			// user._TOON = 
+
+			TOON._current_zone = zone.mud_id
 
 			SOCKETS[ USER.mud_id ].send( JSON.stringify( {
 				type: 'session_init',
@@ -201,36 +207,52 @@ class Game {
 
 
 
-	async touch_zone( x, z, layer ){
-
-		if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( layer ) !== 'number' ) return false
-
-		let string_id = lib.zone_id( x, z, layer )
-
-		if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
+	async touch_zone( lookup_type, id, x, z, layer, new_x, new_z, new_layer ){
 		
 		const pool = DB.getPool()
 
-		const sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND layer=? LIMIT 1'
+		let sql, values, zone
 
-		const { error, results, fields } = await pool.queryPromise( sql, [x, z, layer])
+		if( lookup_type === 'id' ){
 
-		let zone 
+			sql = 'SELECT * FROM `zones` WHERE id=? LIMIT 1'
+
+			values = [ id ]
+
+
+		}else if( lookup_type === 'coords' ){
+
+			if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( layer ) !== 'number' ) return false
+
+			let string_id = lib.zone_id( x, z, layer )
+
+			if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
+
+			sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND layer=? LIMIT 1'
+
+			values = [x, z, layer]
+
+		}
+
+		const { error, results, fields } = await pool.queryPromise( sql, values )
 
 		if( results && results[0] ){ // read
 
 			zone = new Zone( results[0] )
 
-			log('flag', 'db lg: ', zone._last_growth )
-
 			await zone.bring_online()
 
 		}else{ // create
 
+			if( !new_x || !new_z || !new_layer ){
+				log('flag', 'new zone requested without coords: ', lookup_type, id, x, z, layer )
+				return false
+			}
+
 			zone = new Zone({
-				_x: x,
-				_z: z,
-				_layer: layer
+				_x: new_x,
+				_z: new_z,
+				_layer: new_layer
 			})
 
 			// log('flag', 'why invalid: ', zone._x, zone._z, zone._layer, x, z, layer )
@@ -241,7 +263,7 @@ class Game {
 
 		}
 
-		this.ZONES[ zone.get_id() ] = zone
+		this.ZONES[ zone.mud_id ] = zone
 
 		return zone
 

@@ -440,7 +440,7 @@ class MouseHold {
 				let held = window.TOON.INVENTORY[ mousehold.held.mud_id ]
 				let skip = false
 				if( mousehold.held.origin === 'inventory' && held ){
-					if( !confirm('drop ' + ( held.name || held.subtype || held.type ) + '?') )  skip = true
+					if( !confirm('Destroy ' + ( held.name || held.subtype || held.type ) + '?') )  skip = true
 				}
 				if( !skip ){
 					window.SOCKET.send(JSON.stringify({

@@ -245,6 +245,9 @@ class Target {
 
 		this.target.MODEL.remove( this.reticule )
 
+		delete this.target
+	
+
 		RENDERER.frame( SCENE )
 
 		// delete this.parent.is_target

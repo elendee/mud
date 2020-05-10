@@ -11,6 +11,8 @@ const action_bar = document.getElementById('action-bar')
 let ab_buttons = []
 
 const char_display = ['name', 'height', 'speed']
+
+const slot_map = ['left shoulder', 'left hip', 'left hand', 'right hand', 'right hip', 'right shoulder']
 // const inv_display = []
 
 function init(){
@@ -66,7 +68,8 @@ function init_action_buttons(){
 						MOUSE.mousehold.pickup( mud_id, 'action_bar' ) //ab_buttons[ i ].querySelector('img').src )
 						console.log('action: ', this )
 					}else{
-						hal('standard', 'you wave your ' + ( i === 2 ? 'left' : 'right' ) + ' hand vigorously')
+						// hal('standard', 'you wave your ' + ( i === 2 ? 'left' : 'right' ) + ' hand vigorously')
+						hal('standard', 'nothing to unequip there', 1500)
 					}
 				}else{
 					if( mud_id ){
@@ -200,14 +203,16 @@ function request_equip_item( i ){
 		type: 'equip',
 		held: MOUSE.mousehold.held,
 		// MOUSE.mousehold.ele.getAttribute('data-held'),
-		slot: i + 1
+		slot: String( i )
 	}))
 
-	MOUSE.mousehold.ele.setAttribute('data-held', false )
-	MOUSE.mousehold.ele.querySelector('img').src = ''
-	MOUSE.mousehold.ele.style.display = 'none'
+	MOUSE.mousehold.drop()
 
-	STATE.mousehold = false
+	// MOUSE.mousehold.ele.setAttribute('data-held', false )
+	// MOUSE.mousehold.ele.querySelector('img').src = ''
+	// MOUSE.mousehold.ele.style.display = 'none'
+
+	// STATE.mousehold = false
 
 }
 
@@ -240,15 +245,20 @@ function render_equip( slot, mud_id ){
 
 
 
-function action( hand ){
+function action( slot ){
 
-	window.SOCKET.send(JSON.stringify({
-		type: 'action',
-		slot: hand,
-		target: {
-			// type: TARGET.target ? TARGET.target.
+	if( slot === 2 || slot === 3 ){
+
+		window.TOON.engage( slot )
+
+	}else{
+		if( window.TOON.equipped[ slot ] ){
+			let target = slot < 3 ? 2 : 3
+			swap_item( slot, target )
+		}else{
+			hal( 'standard', 'nothing to equip on ' + slot_map[ slot ], 1000 )
 		}
-	}))
+	}
 
 }
 

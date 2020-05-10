@@ -151,6 +151,10 @@ const bind = function(){
 					window.TOON.init_inventory( obj.inventory )
 					break;
 
+				case 'combat':
+					hal('combat', obj.msg, 2000)
+					break;
+
 				// case 'bot_begin_path':
 				// 	ZONE.handle_bot( obj )
 				// 	break;

@@ -177,6 +177,23 @@ export default class Toon {
 
 
 
+	engage( slot ){
+
+		if( !TARGET.target )  return false
+
+		window.SOCKET.send(JSON.stringify({
+			type: 'engage',
+			slot: String( slot ),
+			target: {
+				type: TARGET.target.type,
+				mud_id: TARGET.target.mud_id
+			}
+		}))
+	}
+
+
+
+
 
 	begin_intervals(){
 

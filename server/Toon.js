@@ -50,9 +50,13 @@ module.exports = class Toon extends Persistent {
 
 		this.ref = init.ref || {}
 
-		this.ref.position = this.ref.position || new Vector3()
-		
-		this.ref.quaternion = this.ref.quaternion || new Quaternion()
+		this.ref.position = lib.validate_vec3( this.ref.position )
+
+		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
+
+		this._camped_key = lib.validate_number( init._camped_key, init.camped_key, undefined )
+
+		this._current_zone = lib.validate_string( init._current_zone, undefined )
 
 		this._eqp = {
 			hand_left: false,
@@ -200,7 +204,7 @@ module.exports = class Toon extends Persistent {
 		let held_id = held ? held.mud_id : false
 		// let mud_id = 
 		let origin_type = held ? held.origin : false
-		let destination = slot - 1
+		let destination = Number( slot )
 
 		if( !slot || !held_id || !origin_type ){
 			log('flag', 'invalid equip req: ', held, slot )
@@ -324,17 +328,71 @@ module.exports = class Toon extends Persistent {
 	}
 
 
-	action( packet ){
+	engage( packet, zone ){
 
-		log('flag', 'achtung..', packet )
+		// log('flag', 'engage: ', packet, zone.mud_id )
 
-		if( packet.slot === 'left' ){
+		if( !zone || !packet.target ){
+			log('flag', 'no zone to engage', packet )
+			return false
+		}
 
-			log('flag', 'action: ', this._INVENTORY[ this.equipped[ 2 ] ])
+		let slot = Number( packet.slot )
 
-		}else if( packet.slot === 'right' ){
+		if( slot === 2 || slot === 3 ){
 
-			log('flag', 'action: ', this._INVENTORY[ this.equipped[ 3 ] ])
+			let item = this._INVENTORY[ this.equipped[ slot ] ]
+
+			let entity_set = lib.entity_map[ packet.target.type ]
+
+			let target = zone[ entity_set ][ packet.target.mud_id ]
+
+			if( !target ){
+				log('flag', 'no target found to engage', packet )
+				return false
+			}
+
+			let dist = lib.get_dist( this.ref.position, target.ref.position )
+
+			let msg
+
+			if( dist < 20 ){
+
+				// if( item ){
+
+
+
+				// }else{ // hands
+
+
+
+				// }
+
+				log('flag', 'target ', target )
+
+				let item = this._INVENTORY[ this.equipped[ slot ] ] || {}
+
+				let name = item.name || 'your ' + ( slot === 2 ? 'left' : 'right' ) + ' hand'
+
+				msg = 'You attack ' + ( target.name || target.subtype || target.type ) + ' with ' + name
+
+				// log('flag', 'action: ', this._INVENTORY[ this.equipped[ 2 ] ])
+
+			}else{
+
+				msg = 'You are too far away'
+
+				log('flag', 'too far', this.ref.position, target.ref.position, target.x, target.y, target.z, target._id )
+			}
+
+			SOCKETS[ this.mud_id ].send(JSON.stringify({
+				type: 'combat',
+				msg: msg
+			}))
+
+		}else{
+
+			log('flag', 'unknown slot type')
 
 		}
 
@@ -371,11 +429,6 @@ module.exports = class Toon extends Persistent {
 			this._eqp.back1,
 			this._eqp.back2,
 		]
-
-		// if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
-		// 	log('flag', 'cannot identify user for save: ', this._x, this._z, this._layer )
-		// 	return false
-		// }
 
 		const res = await DB.update( this, update_fields, update_vals )
 

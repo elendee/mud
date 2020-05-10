@@ -2,6 +2,7 @@ const log = require('./log.js')
 const env = require('./.env.js')
 const lib = require('./lib.js')
 const SOCKETS = require('./SOCKETS.js')
+const MAP = require('./MAP.js')
 // const PILLARS = require('./PILLARS.js')
 
 const EMIT = require('./EMIT.js')
@@ -134,8 +135,10 @@ module.exports = {
 					TOON.drop( packet.held )
 					break;
 
-				case 'action':
-					TOON.action( packet )
+				case 'engage':
+					// log('flag', 'zone id: ', zone_id )
+					let current_zone = GAME.ZONES[ TOON._current_zone ]
+					TOON.engage( packet, current_zone )
 					break;
 				// case 'register':
 				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )

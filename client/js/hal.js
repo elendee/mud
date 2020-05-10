@@ -6,9 +6,11 @@ import env from './env.js'
 
 if( env.EXPOSE ) window.hal = hal
 
+const valid_type = ['error', 'success', 'npc', 'combat']
+
 export default function hal( type, msg, time, redirect ){
 
-	if( !type || ( type !== 'error' && type !== 'success' && type !== 'npc' ) ) type = 'standard'
+	if( !type || !valid_type.includes( type ) ) type = 'standard'
 
 	const alert = document.createElement('div')
 	const alert_message = document.createElement('div')

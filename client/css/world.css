@@ -27,9 +27,11 @@ canvas#mud-flats{
     margin: 0 3px;  
 /*     cursor: pointer; */
 }
-.bar-button:hover{
+.bar-button:hover,
+.bar-button.secondary:hover,
+.bar-button.tertiary:hover{
     border: 1px solid white;
-    background: radial-gradient(rgb(50, 50, 50), black);
+/*     background: radial-gradient(rgb(50, 50, 50), black); */
 }
 
 .action-button{
@@ -46,11 +48,11 @@ canvas#mud-flats{
 .action-button.secondary{
     height: 50px;
     width: 50px;
-    border-color: rgb(150, 150, 150);
+    border: 1px solid rgb(150, 150, 150);
 /* 	height: 150px; */
 }
 .action-button.tertiary{
-    border-color: rgb(50, 50, 50);
+    border: 1px solid rgb(50, 50, 50);
 }
 
 
@@ -290,6 +292,11 @@ canvas#mud-flats{
 
 #inventory.popup .stat-key{
 	color: wheat
+}
+
+#inventory .stat .icon:hover{
+    border: 1px solid lightgrey;
+    cursor: pointer
 }
 
 .popup .stat-key,

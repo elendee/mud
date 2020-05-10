@@ -79,12 +79,27 @@ input{
     opacity: 1;
 }
 
+#alert-contain .standard{
+	color: black;
+}
+.standard .alert-close{
+	color: white;
+}
 #alert-contain .error{
-	background: rgb(200, 100, 0 );
+	background: maroon;
+	color: white;
+/* 	background: rgb(200, 100, 0 ); */
 }
 #alert-contain .success{
 	background: rgb(35, 141, 52)
 }
 #alert-contain .npc{
     background: rgb(250, 220, 150);
+}
+#alert-contain .combat{
+    background: linear-gradient( 12deg, orange, red );
+    color: black;
+}
+.combat .alert-close{
+	color: white;
 }

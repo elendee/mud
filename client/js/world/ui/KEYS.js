@@ -157,9 +157,12 @@ function handle_keyup( e ){
 				MOUSE.mousehold.drop()
 			}else if( STATE.handler === 'chat' ){
 				CHAT.input.blur()
-			}else if( STATE.handler === 'dialogue' ){
-				console.log('unhandled close dialgoue....')
-			}else if( TARGET.status_ele.style.display !== 'none' ){
+			}else if( POPUPS.active.length ){
+				POPUPS.active[ POPUPS.active.length - 1 ].set_visible( false )
+			// }else if( STATE.handler === 'dialogue' ){
+			// 	console.log('unhandled close dialgoue....')
+			}else if( TARGET.target ){
+				// TARGET.status_ele.style.display !== 'none' ){
 				TARGET.clear( true )
 			}
 			global_handled = true
@@ -223,51 +226,27 @@ function handle_keyup( e ){
 			// 	break;
 
 			case BINDS.world.actions.one:
-				if( window.TOON.equipped[0] ){
-					ACTION_BAR.swap_item(0, 2)
-				}else{
-					hal('standard', 'no item to swap there', 1000)
-				}
+				ACTION_BAR.action(0)
 				break;
 
 			case BINDS.world.actions.two:
-				if( window.TOON.equipped[1] ){
-					ACTION_BAR.swap_item(1, 2)
-				}else{
-					hal('standard', 'no item to swap there', 1000)
-				}
+				ACTION_BAR.action(1)
 				break;
 
 			case BINDS.world.actions.three:
-				if( window.TOON.equipped[2]){
-					ACTION_BAR.action('left')
-				}else{
-					hal('standard', 'you raise your left hand', 1000)
-				}
+				ACTION_BAR.action(2)
 				break;
 
 			case BINDS.world.actions.four:
-				if( window.TOON.equipped[3]){
-					ACTION_BAR.action('right')
-				}else{
-					hal('standard', 'you raise your right hand', 1000)
-				}
+				ACTION_BAR.action(3)
 				break;
 
 			case BINDS.world.actions.five:
-				if( window.TOON.equipped[4] ){
-					ACTION_BAR.swap_item(4, 3)
-				}else{
-					hal('standard', 'no item to swap there', 1000)
-				}
+				ACTION_BAR.action(4)
 				break;
 
 			case BINDS.world.actions.six:
-				if( window.TOON.equipped[5] ){
-					ACTION_BAR.swap_item(5, 3)
-				}else{
-					hal('standard', 'no item to swap there', 1000)
-				}
+				ACTION_BAR.action(5)
 				break;
 
 			default: 
