@@ -173,31 +173,42 @@ class Zone {
 		// grass.position.set( MAP.ZONE_WIDTH / 2, .5, MAP.ZONE_WIDTH / 2 )
 		// grass.scale.set( MAP.ZONE_WIDTH, 1, MAP.ZONE_WIDTH )
 
-		// dynamic flora
+		// instanced meshes
+		const forest = []
+		// const other_stuff ...
 
 		// for( let i = 0; i < Object.keyszone_data._FLORA.length; i++ ){
 		for( const mud_id of Object.keys( zone_data._FLORA ) ){
-			const tree = new Flora( zone_data._FLORA[ mud_id ] )
-			this.FLORA[ mud_id ] = tree
-			// console.log('placing: ', tree )
-			tree.model()
-			.then(res=>{
-				tree.MODEL.position.set(
-					tree.x,
-					tree.y,
-					tree.z,
-				)
-				// tree.MODEL.scale.multiplyScalar( tree.scale )
-				tree.MODEL.userData = {
-					clickable: true,
-					type: 'flora',
-					mud_id: mud_id
-				}
-				// console.log( tree.MODEL.position )
-				SCENE.add( tree.MODEL )
-			}).catch(err=>{
-				console.log('err flora load: ', err )
-			})			
+
+			if( zone_data._FLORA[ mud_id ].subtype === 'tree' ){
+
+				forest.push( zone_data._FLORA[ mud_id ])
+
+			}else{
+
+				const flora = new Flora( zone_data._FLORA[ mud_id ] )
+				this.FLORA[ mud_id ] = flora
+				// console.log('placing: ', flora )
+				flora.model()
+				.then(res=>{
+					flora.MODEL.position.set(
+						flora.x,
+						flora.y,
+						flora.z,
+					)
+					// flora.MODEL.scale.multiplyScalar( flora.scale )
+					flora.MODEL.userData = {
+						clickable: true,
+						type: 'flora',
+						mud_id: mud_id
+					}
+					// console.log( flora.MODEL.position )
+					SCENE.add( flora.MODEL )
+				}).catch(err=>{
+					console.log('err flora load: ', err )
+				})
+			}			
+
 		}
 
 		// npc

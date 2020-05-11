@@ -12,6 +12,6 @@ module.exports = {
 
 	MAX_GROW_DAYS: 30,
 
-	MIN_FLORA_DIST: 20
+	MIN_FLORA_DIST: 10
 
 }
