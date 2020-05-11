@@ -35,6 +35,7 @@ canvas#mud-flats{
 }
 
 .action-button{
+	opacity: 1;
 	vertical-align: bottom;
 	background: radial-gradient( rgb(50, 50, 80), black)
 /* 	height: 100% */
@@ -326,4 +327,11 @@ canvas#mud-flats{
 
 #mousehold img{
 
+}
+
+.cooldown{
+    opacity: 0
+}
+.cooling{
+	transition: 1s
 }

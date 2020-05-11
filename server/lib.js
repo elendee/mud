@@ -250,15 +250,24 @@ function random_hex( len ){
 }
 
 
-function random_rgb( min, max ){
+function random_rgb( ...ranges ){
 
-	if( max < min || min < 0 || max > 255 ) return 'rgb( 0, 0, 0 )'
+	let inc = 0
+	let string = 'rgb('
 
-	let r = min + Math.floor( Math.random() * ( max - min ))
-	let g = min + Math.floor( Math.random() * ( max - min ))
-	let b = min + Math.floor( Math.random() * ( max - min ))
+	for( const range of ranges ){
 
-	return 'rgb(' + r + ',' + g + ',' + b + ')'
+		if( range[1] < range[0] || range[0] < 0 || range[1] > 255 ) return 'rgb( 0, 0, 0 )'
+
+		string += range[0] + Math.floor( Math.random() * ( range[1] - range[0] )) 
+
+		inc < 2 ? string += ',' : true
+
+		inc++
+
+	}
+
+	return string + ')'
 
 }
 

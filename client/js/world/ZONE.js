@@ -144,6 +144,7 @@ class Zone {
 		const geometry = new PlaneBufferGeometry( MAP.TILE_WIDTH, MAP.TILE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
 			color: 0x222200, 
+			// color: 0xbbbbcc, 
 			// map: ground,
 			// side: DoubleSide 
 		})

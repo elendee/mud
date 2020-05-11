@@ -34,36 +34,36 @@ export default {
 	DIRECTIONAL_INTENSITY: 1,
 	DIRECTIONAL_COLOR: 0xffffff,
 
-	TARGET_DIST: 10000,
+	TARGET_DIST: 1000,
 
-	VIEW: 15000,
+	VIEW: 2000,
 
-	SKY_WIDTH: 14900,
+	// SKY_WIDTH: 14900,
 
-	SUN_DIST: 200,
+	// SUN_DIST: 200,
 
-	PLANET_DIST: 7400, // never more than half sky_width ...
+	// PLANET_DIST: 7400, // never more than half sky_width ...
 
-	PLANET_RADIUS: 200,
+	// PLANET_RADIUS: 200,
 
-	PLANET_DETAIL: 30,
+	// PLANET_DETAIL: 30,
 
-	FOG_COLOR: 0x010101,
+	FOG_COLOR: 0xffffff,
 
-	FOG_SCALAR: 0.0001,
+	FOG_SCALAR: 0.004,
 
-	GRAVITY_FIELD_BEGIN: 100000,
+	// GRAVITY_FIELD_BEGIN: 100000,
 
-	GRAVITY_FIELD_NORETURN: 10000,
+	// GRAVITY_FIELD_NORETURN: 10000,
 
-	FPS_MAP: {
-		'very_low': 10,
-		'low': 20,
-		'medium': 30,
-		'high': 60
-	},
+	// FPS_MAP: {
+	// 	'very_low': 10,
+	// 	'low': 20,
+	// 	'medium': 30,
+	// 	'high': 60
+	// },
 
-	FPS: 0,
+	// FPS: 0,
 
 	RES_MAP: {
 		'very_low': 3,

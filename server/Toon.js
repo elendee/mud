@@ -9,6 +9,7 @@ const {
 
 const Persistent = require('./Persistent.js')
 const FACTORY = require('./items/FACTORY.js')
+const Item = require('./items/Item.js')
 
 const SOCKETS = require('./SOCKETS.js')
 
@@ -36,11 +37,24 @@ module.exports = class Toon extends Persistent {
 
 		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
 
-		this.height = 3
+		this.height = lib.validate_number( init.height, 3 )
 
-		this.speed = env.TOON_SPEED || 20
+		this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
 
-		this.color = init.color || lib.random_rgb(100, 255)
+		this.health = lib.validate_number( init.health, 100 )
+
+		this._strength = lib.validate_number( init._strength, init.strength, 5 )
+		this._charisma = lib.validate_number( init._charisma, init.charisma, 5 )
+		this._perception = lib.validate_number( init._perception, init.perception, 5 )
+		this._luck = lib.validate_number( init._luck, init.luck, 5 )
+		this._intellect = lib.validate_number( init._intellect, init.intellect, 5 )
+
+		let random_seed = Math.random() * 100
+		this.color = init.color || lib.random_rgb( 
+			[ random_seed, random_seed + 150], 
+			[ random_seed, random_seed + 150], 
+			[ random_seed, random_seed + 150] 
+		)
 
 		// this.portrait = init.portrait || lib.gen_portrait()
 		
@@ -66,6 +80,16 @@ module.exports = class Toon extends Persistent {
 			back1: false,
 			back2: false
 		}
+
+		this.left_hand = init.left_hand || new Item({
+			type: 'melee',
+			name: 'left hand'
+		})
+
+		this.right_hand = init.right_hand || new Item({
+			type: 'melee',
+			name: 'right hand'
+		})
 
 		this.equipped = init.equipped 
 		// new Array(6)

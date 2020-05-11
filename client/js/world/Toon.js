@@ -1,3 +1,5 @@
+
+import * as lib from '../lib.js'
 import env from '../env.js'
 
 
@@ -39,32 +41,53 @@ export default class Toon {
 
 		this.INVENTORY = false
 
-		this.ref = init.ref = init.ref || {}
+		// this.ref = init.ref = init.ref || {}
 
 		this.ref = init.ref || {}
 
-		if( this.ref.position ){
-			this.ref.position = new Vector3(
-				this.ref.position.x,
-				this.ref.position.y,
-				this.ref.position.z,
-			)
-		}else{
-			this.ref.position = new Vector3()
-		}
+		this.ref.position = lib.validate_vec3( this.ref.position, {
+			x: 0,
+			y: 0,
+			z: 0
+		})
 
-		if( this.ref.quaternion ){
-			this.ref.quaternion = new Quaternion(
-				this.ref.quaternion._x,
-				this.ref.quaternion._y,
-				this.ref.quaternion._z,
-				this.ref.quaternion._w,
-			)
-		}else{
-			this.ref.quaternion = new Quaternion()
-		}
+		// if( this.ref.position ){
+		// 	this.ref.position = new Vector3(
+		// 		this.ref.position.x,
+		// 		this.ref.position.y,
+		// 		this.ref.position.z,
+		// 	)
+		// }else{
+		// 	this.ref.position = new Vector3()
+		// }
+
+		this.ref.quaternion = lib.validate_quat( this.ref.quaternion, {
+			x: 0,
+			y: 0,
+			z: 0,
+			w: 0
+		})
+
+		// if( this.ref.quaternion ){
+		// 	this.ref.quaternion = new Quaternion(
+		// 		this.ref.quaternion._x,
+		// 		this.ref.quaternion._y,
+		// 		this.ref.quaternion._z,
+		// 		this.ref.quaternion._w,
+		// 	)
+		// }else{
+		// 	this.ref.quaternion = new Quaternion()
+		// }
 
 		// this.height = init.height || 3
+		this.left_hand = init.left_hand ? new Item( init.left_hand ) : new Item({
+			type: 'melee',
+			name: 'left hand'
+		})
+		this.right_hand = init.right_hand ? new Item( init.right_hand ) : new Item({
+			type: 'melee',
+			name: 'right hand'
+		})
 
 		this.needs_move = init.needs_move || false
 		this.needs_rotate = init.needs_rotate || false
@@ -72,7 +95,8 @@ export default class Toon {
 		this.needs_stream = false
 
 		this.intervals = {
-			stream: false		}
+			stream: false		
+		}
 
 		// this.speed = init.speed || env.SPEED
 
@@ -227,7 +251,7 @@ export default class Toon {
 
 			}
 
-		}, 2000 )
+		}, 1500 )
 
 		
 

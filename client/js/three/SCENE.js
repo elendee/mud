@@ -18,7 +18,7 @@ export default (function(){
 	if( GLOBAL.BACKGROUND ){
 		scene.background = new Color( GLOBAL.BACKGROUND )
 	}
-	scene.fog = new FogExp2( GLOBAL.FOG_COLOR, GLOBAL.FOG_SCALAR )
+	// scene.fog = new FogExp2( GLOBAL.FOG_COLOR, GLOBAL.FOG_SCALAR )
 
 	scene.needs_render = false
 

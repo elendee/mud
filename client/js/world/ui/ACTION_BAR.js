@@ -247,18 +247,60 @@ function render_equip( slot, mud_id ){
 
 function action( slot ){
 
+	let item_id = window.TOON.equipped[ slot ]
+	let item = window.TOON.INVENTORY[ item_id ]
+
 	if( slot === 2 || slot === 3 ){
 
-		window.TOON.engage( slot )
+		if( !ab_buttons[ slot ].classList.contains('cooling') ){
+			
+			window.TOON.engage( slot )
+
+			if( !item ){
+				if( slot == 2 ){
+					item = window.TOON.left_hand
+				}else{
+					item = window.TOON.right_hand
+				}
+			}
+
+			console.log('attack: ', item )
+
+			render_cooldown( ab_buttons[ slot ], item.cooldown )
+
+		}else{
+			hal('standard', 'still on cooldown', 1500 )
+		}
 
 	}else{
-		if( window.TOON.equipped[ slot ] ){
+
+		if( item_id ){
 			let target = slot < 3 ? 2 : 3
 			swap_item( slot, target )
 		}else{
 			hal( 'standard', 'nothing to equip on ' + slot_map[ slot ], 1000 )
 		}
+
 	}
+
+}
+
+
+
+
+
+function render_cooldown( button, duration ){
+
+	button.classList.add('cooldown')
+	setTimeout(function(){
+		button.classList.add('cooling'
+	)}, 5 )
+	setTimeout(function(){
+		button.classList.remove('cooldown')
+	}, 10 )
+	setTimeout(function(){
+		button.classList.remove('cooling')
+	}, duration )
 
 }
 
