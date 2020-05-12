@@ -1,0 +1,47 @@
+{
+	"metadata": {
+		"version": 4.5,
+		"type": "Object",
+		"generator": "Object3D.toJSON"
+	},
+	"geometries": [
+		{
+			"uuid": "F0E28434-8432-4411-AF9B-56BD8F1B7C6B",
+			"type": "LatheBufferGeometry",
+			"points": [
+				{
+					"x": 0,
+					"y": 0.2
+				},
+				{
+					"x": 0.8,
+					"y": 0.1
+				},
+				{
+					"x": 1,
+					"y": -0.02
+				}],
+			"segments": 12,
+			"phiStart": 0,
+			"phiLength": 6.283185
+		}],
+	"materials": [
+		{
+			"uuid": "69B90463-2E37-4B9F-9F1A-52B3F1B9FFD5",
+			"type": "MeshLambertMaterial",
+			"color": 16777215,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true
+		}],
+	"object": {
+		"uuid": "3EAB4BEB-B445-4953-AEF6-5D478B41FAD1",
+		"type": "Mesh",
+		"name": "Lathe",
+		"layers": 1,
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"geometry": "F0E28434-8432-4411-AF9B-56BD8F1B7C6B",
+		"material": "69B90463-2E37-4B9F-9F1A-52B3F1B9FFD5"
+	}
+}

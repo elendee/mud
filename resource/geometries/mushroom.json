@@ -1,0 +1,87 @@
+{
+	"metadata": {
+		"version": 4.5,
+		"type": "Object",
+		"generator": "Object3D.toJSON"
+	},
+	"geometries": [
+		{
+			"uuid": "02E6427E-B5B0-4BA3-BD93-C12342198921",
+			"type": "CylinderBufferGeometry",
+			"radiusTop": 0.32,
+			"radiusBottom": 0.56,
+			"height": 2.7,
+			"radialSegments": 8,
+			"heightSegments": 1,
+			"openEnded": false
+		},
+		{
+			"uuid": "3D6524A2-A014-4C76-A921-4A21450133F4",
+			"type": "LatheBufferGeometry",
+			"points": [
+				{
+					"x": 0,
+					"y": -1.28
+				},
+				{
+					"x": 1.54,
+					"y": -1.18
+				},
+				{
+					"x": 1.83,
+					"y": -1.04
+				},
+				{
+					"x": 2.08,
+					"y": -0.8
+				}],
+			"segments": 12,
+			"phiStart": 0,
+			"phiLength": 6.283185
+		}],
+	"materials": [
+		{
+			"uuid": "C710BDFE-FE7B-4EA0-AF71-07E6C6088225",
+			"type": "MeshLambertMaterial",
+			"color": 16777215,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true
+		},
+		{
+			"uuid": "13C481D2-A7B0-4AA4-99E6-3F3B7B46BBA1",
+			"type": "MeshLambertMaterial",
+			"color": 16777215,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true
+		}],
+	"object": {
+		"uuid": "682A5A97-42E1-46BD-A79E-633E14001089",
+		"type": "Group",
+		"name": "Group",
+		"layers": 1,
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"children": [
+			{
+				"uuid": "B47DDBAD-13EB-4628-9BC4-228B4E8DA304",
+				"type": "Mesh",
+				"name": "Cylinder",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+				"geometry": "02E6427E-B5B0-4BA3-BD93-C12342198921",
+				"material": "C710BDFE-FE7B-4EA0-AF71-07E6C6088225"
+			},
+			{
+				"uuid": "DDA18CD6-5A54-4A5C-85E9-BE0886E38B97",
+				"type": "Mesh",
+				"name": "Lathe",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,-1,0,0,0,0,-1,0,0,0.255854,0,1],
+				"geometry": "3D6524A2-A014-4C76-A921-4A21450133F4",
+				"material": "13C481D2-A7B0-4AA4-99E6-3F3B7B46BBA1"
+			}]
+	}
+}

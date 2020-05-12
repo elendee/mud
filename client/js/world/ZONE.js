@@ -1,3 +1,4 @@
+import * as lib from '../lib.js'
 import env from '../env.js'
 
 import SCENE from '../three/SCENE.js'
@@ -10,12 +11,15 @@ import TOONS from './TOONS.js'
 
 import Toon from './Toon.js'
 
+// import BuffGeoLoader from '../three/BuffGeoLoader.js'
+
 import Flora from './env/Flora.js'
 import grass_mesh from './env/grass_mesh.js'
 
 import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
 import CHAT from './ui/CHAT.js'
+
 // import DIALOGUE from './'
 
 import * as ANIMATE from './animate.js'
@@ -27,8 +31,9 @@ import {
 	MeshLambertMaterial,
 	DoubleSide,
 	Mesh,
-
-	Object3D
+	InstancedMesh,
+	Object3D,
+	Matrix4
 } from '../lib/three.module.js'
 
 
@@ -137,7 +142,7 @@ class Zone {
 
 
 
-	render( zone_data ){
+	async render( zone_data ){
 
 		// tiles
 
@@ -165,26 +170,61 @@ class Zone {
 			}	
 		}
 
-		// static flora
 
-		// const grass = window.GRASS = grass_mesh()
 
-		// SCENE.add( grass )
-		// grass.position.set( MAP.ZONE_WIDTH / 2, .5, MAP.ZONE_WIDTH / 2 )
-		// grass.scale.set( MAP.ZONE_WIDTH, 1, MAP.ZONE_WIDTH )
+
+
 
 		// instanced meshes
-		const forest = []
-		// const other_stuff ...
+		const shrubs = new Array(1000)
+		const shrub_geometry = await lib.load('json', '/resource/geometries/tuft.json')
+
+		const shrub_material = new MeshLambertMaterial({
+			color: 'green'
+		})
+
+		console.log('shrubberies\n', shrub_geometry, shrub_material )
+
+		const matrix = new Matrix4()
+
+		const all_shrubs = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
+
+		const vector = new Vector3()
+
+		for( let i = 0; i < shrubs.length; i++ ){
+
+			lib.randomize_matrix( matrix, {
+				position: MAP.ZONE_WIDTH,
+				scale: .2
+			})
+
+			all_shrubs.setMatrixAt( i, matrix )
+
+			// const instance_geo = shrub_geometry.clone()
+			// shrubs.push( instanced_geo )
+
+		}
+
+		// forest.position.copy( window.TOON.MODEL.position )
+
+		SCENE.add( all_shrubs )
+
+
+
+
+
+
+		
+		// standard flora
 
 		// for( let i = 0; i < Object.keyszone_data._FLORA.length; i++ ){
 		for( const mud_id of Object.keys( zone_data._FLORA ) ){
 
-			if( zone_data._FLORA[ mud_id ].subtype === 'tree' ){
+			// if( zone_data._FLORA[ mud_id ].subtype === 'tree' ){
 
-				forest.push( zone_data._FLORA[ mud_id ])
+			// 	trees.push( zone_data._FLORA[ mud_id ] )
 
-			}else{
+			// }else{
 
 				const flora = new Flora( zone_data._FLORA[ mud_id ] )
 				this.FLORA[ mud_id ] = flora
@@ -200,6 +240,7 @@ class Zone {
 					flora.MODEL.userData = {
 						clickable: true,
 						type: 'flora',
+						subtype: flora.subtype,
 						mud_id: mud_id
 					}
 					// console.log( flora.MODEL.position )
@@ -207,9 +248,11 @@ class Zone {
 				}).catch(err=>{
 					console.log('err flora load: ', err )
 				})
-			}			
+			// }			
 
 		}
+
+
 
 		// npc
 

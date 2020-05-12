@@ -1,7 +1,13 @@
 import {
 	Vector3,
-	Quaternion
+	Quaternion,
+	BufferGeometry,
+
 } from './lib/three.module.js'
+
+import GLTF from './three/GLTF.js'
+import BuffGeoLoader from './three/BuffGeoLoader.js'
+import ObjectLoader from './three/ObjectLoader.js'
 
 
 function radians_to_degrees( radians ){
@@ -88,6 +94,54 @@ function validate_vec3( ...inputs ){
 
 
 
+// function glob_geometries( type ){
+
+// 	let buffer_geometry = new BufferGeometry()
+
+// 	return new Promise((resolve, reject)=>{
+
+// 		let filepath
+
+// 		if( type === 'tree' ){
+
+// 			filepath = '/resource/geometries/mypine.glb'
+
+// 			GLTF.load( filepath,
+// 			// gltf.load( '/resource/geometries/' + this.data.model_url, 
+
+// 			( obj ) => {
+
+// 				// console.log('??', obj )
+
+// 				for( const child of obj.scene.children ){
+// 					buffer_geometry.merge( child.geometry )
+// 				}
+
+// 				resolve( buffer_geometry )
+
+// 			}, (xhr) => {
+
+// 				// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+
+// 			}, ( error ) => {
+
+// 				console.log('error loading model: ', error, filepath )
+// 				reject( 'model not found', filepath )
+
+// 			})
+
+// 		}else{
+
+// 			reject('unhandled model type')
+
+// 		}
+
+// 	})
+
+// }
+
+
+
 function validate_quat( ...inputs ){
 
 	for( const input of inputs ){
@@ -122,6 +176,88 @@ function validate_quat( ...inputs ){
 
 
 
+function load( type, filepath ){
+
+	return new Promise((resolve, reject)=>{
+
+		switch ( type ){
+
+			case 'buffer_geometry':
+				BuffGeoLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found', filepath )
+				})
+
+				break;
+
+			case 'gltf':
+				GLTF.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found', filepath )
+				})
+
+				break;
+
+			case 'json':
+				ObjectLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found', filepath )
+				})
+				break;
+
+			default: 
+				reject('invalid model file request')
+				break;
+
+		}
+
+	})
+
+}
+
+
+
+
+const rando_position = new Vector3()
+// const rando_rotation = new Euler()
+const rando_quaternion = new Quaternion()
+const rando_scale = new Vector3()
+
+function randomize_matrix( matrix, options ){
+
+	rando_position.x = Math.random() * options.position
+	rando_position.y = Math.random() * options.position
+	rando_position.z = Math.random() * options.position
+
+	// rando_rotation.x = Math.random() * 2 * Math.PI
+	// rando_rotation.y = Math.random() * 2 * Math.PI
+	// rando_rotation.z = Math.random() * 2 * Math.PI
+
+	// rando_quaternion.setFromEuler( rotation )
+
+	rando_scale.x = rando_scale.y = rando_scale.z = ( 1 - options.scale ) + ( 2 * ( Math.random() * options.scale ) )
+
+	matrix.compose( rando_position, rando_quaternion, rando_scale )
+
+}
+
+
+
 export {
 	random_hex,
 	degrees_to_radians,
@@ -129,6 +265,9 @@ export {
 	validate_number,
 	validate_string,
 	validate_quat,
-	validate_vec3
+	validate_vec3,
+	// glob_geometries,
+	load,
+	randomize_matrix
 	// clear_object
 }
