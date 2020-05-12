@@ -240,9 +240,9 @@ const rando_scale = new Vector3()
 
 function randomize_matrix( matrix, options ){
 
-	rando_position.x = Math.random() * options.position
-	rando_position.y = Math.random() * options.position
-	rando_position.z = Math.random() * options.position
+	rando_position.x = options.exclude.x ? 0 : Math.random() * options.position
+	rando_position.y = options.exclude.y ? 0 : Math.random() * options.position
+	rando_position.z = options.exclude.z ? 0 : Math.random() * options.position
 
 	// rando_rotation.x = Math.random() * 2 * Math.PI
 	// rando_rotation.y = Math.random() * 2 * Math.PI

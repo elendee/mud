@@ -176,8 +176,11 @@ class Zone {
 
 
 		// instanced meshes
-		const shrubs = new Array(1000)
-		const shrub_geometry = await lib.load('json', '/resource/geometries/tuft.json')
+		const shrubs = new Array(10000)
+		// const shrub_geometry = await lib.load('json', '/resource/geometries/mushroom.json')
+		// const shrub_geometry = await lib.load('gltf', '/resource/geometries/avatar.glb')
+		// const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/suzanne_geometry.json')
+		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
 
 		const shrub_material = new MeshLambertMaterial({
 			color: 'green'
@@ -195,7 +198,10 @@ class Zone {
 
 			lib.randomize_matrix( matrix, {
 				position: MAP.ZONE_WIDTH,
-				scale: .2
+				scale: .2,
+				exclude: {
+					y: true
+				}
 			})
 
 			shrubberies.setMatrixAt( i, matrix )
