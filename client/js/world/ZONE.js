@@ -183,13 +183,11 @@ class Zone {
 			color: 'green'
 		})
 
-		console.log('shrubberies\n', shrub_geometry, shrub_material )
+		// console.log('shrubberies\n', shrub_geometry, shrub_material )
 
 		const matrix = new Matrix4()
 
-		const all_shrubs = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
-
-		const vector = new Vector3()
+		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
 
 		for( let i = 0; i < shrubs.length; i++ ){
 
@@ -198,16 +196,11 @@ class Zone {
 				scale: .2
 			})
 
-			all_shrubs.setMatrixAt( i, matrix )
-
-			// const instance_geo = shrub_geometry.clone()
-			// shrubs.push( instanced_geo )
+			shrubberies.setMatrixAt( i, matrix )
 
 		}
 
-		// forest.position.copy( window.TOON.MODEL.position )
-
-		SCENE.add( all_shrubs )
+		// SCENE.add( shrubberies )
 
 
 
