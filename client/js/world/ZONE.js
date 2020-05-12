@@ -189,6 +189,8 @@ class Zone {
 
 		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
 
+		console.log(shrubberies)
+
 		for( let i = 0; i < shrubs.length; i++ ){
 
 			lib.randomize_matrix( matrix, {
