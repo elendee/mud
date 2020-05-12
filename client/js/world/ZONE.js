@@ -200,7 +200,7 @@ class Zone {
 
 		}
 
-		// SCENE.add( shrubberies )
+		SCENE.add( shrubberies )
 
 
 
