@@ -47,7 +47,7 @@ if( env.EXPOSE ){
 
 let new_pos, new_quat, old_pos, old_quat, needs_move, needs_rotate
 
-// const ground = texLoader.load('/resource/textures/grass.jpg')
+const ground = texLoader.load('/resource/textures/grass2.jpg')
 
 
 class Zone {
@@ -148,9 +148,9 @@ class Zone {
 
 		const geometry = new PlaneBufferGeometry( MAP.TILE_WIDTH, MAP.TILE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
-			color: 0x222200, 
+			color: 0xaaaa88, 
 			// color: 0xbbbbcc, 
-			// map: ground,
+			map: ground,
 			// side: DoubleSide 
 		})
 
@@ -176,38 +176,27 @@ class Zone {
 
 
 		// instanced meshes
+		// shrubs
 		const shrubs = new Array(10000)
-		// const shrub_geometry = await lib.load('json', '/resource/geometries/mushroom.json')
-		// const shrub_geometry = await lib.load('gltf', '/resource/geometries/avatar.glb')
-		// const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/suzanne_geometry.json')
 		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
-
 		const shrub_material = new MeshLambertMaterial({
-			color: 'green'
+			color: 'rgb(20, 60, 20)'
 		})
-
-		// console.log('shrubberies\n', shrub_geometry, shrub_material )
-
 		const matrix = new Matrix4()
-
 		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
-
-		console.log(shrubberies)
-
+		shrubberies.castShadow = true
+		shrubberies.userData.clickable = true
+		shrubberies.userData.type = 'flora'
 		for( let i = 0; i < shrubs.length; i++ ){
-
 			lib.randomize_matrix( matrix, {
 				position: MAP.ZONE_WIDTH,
-				scale: .2,
+				scale: .7,
 				exclude: {
 					y: true
 				}
 			})
-
 			shrubberies.setMatrixAt( i, matrix )
-
 		}
-
 		SCENE.add( shrubberies )
 
 

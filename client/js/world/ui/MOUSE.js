@@ -200,7 +200,7 @@ function wheel( e ){
 	if( e.wheelDelta > 0 ){
 
 		let dist = wheel_projection.distanceTo( GLOBAL.ORIGIN )
-		if( dist > GLOBAL.MIN_CAM + 5 ){
+		if( dist > ( env.MIN_CAM || GLOBAL.MIN_CAM ) + 5 ){
 			// console.log( dist )
 			// CAMERA.position.add( toToon )
 			CAMERA.offset.add( toToon )
@@ -209,7 +209,7 @@ function wheel( e ){
 	}else{
 
 		let dist1 = wheel_projection.distanceTo( GLOBAL.ORIGIN )
-		let dist2 = GLOBAL.MAX_CAM
+		let dist2 = env.MAX_CAM || GLOBAL.MAX_CAM
 
 		// console.log( dist1, dist2 )
 
