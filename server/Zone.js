@@ -9,9 +9,9 @@ const MAP = require('./MAP.js')
 const SOCKETS = require('./SOCKETS.js')
 
 const Persistent = require('./Persistent.js')
-const Toon = require('./Toon.js')
+const Toon = require('./agents/Toon.js')
 const Structure = require('./Structure.js')
-const Flora = require('./Flora.js')
+const Flora = require('./agents/Flora.js')
 
 const {
 	Vector3

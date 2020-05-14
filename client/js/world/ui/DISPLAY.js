@@ -1,5 +1,7 @@
 import hal from '../../hal.js'
-import lib from '../../lib.js'
+import * as lib from '../../lib.js'
+
+import TARGET from './TARGET.js'
 
 
 class Display {
@@ -12,13 +14,93 @@ class Display {
 
 	render_combat( zone, packet ){
 
-		let target = zone[ lib.entity_map[ packet.type ]][ packet.target ]
+		// type: 'combat',
+		// success: true,
+		// attacker: data.attacker.mud_id, 
+		// attacker_health: data.attacker.health,
+		// target: data.target.mud_id,
+		// target_health: data.target.health,
+		// target_type: data.target.type,
+		// dmg: dmg
 
-		hal('standard', 'resolving combat to ' + ( target.name || target.subtype || target.type ), 2000 )
+		let msg, type
+
+		let target = zone[ lib.entity_map[ packet.target_type ] ][ packet.target ]
+
+		// handle messaging
+
+		if( packet.target === window.TOON.mud_id ){
+			if( packet.success ){
+				type = 'combat'
+				msg = lib.identify( attacker ) + ' attacks you for ' + packet.dmg
+			}else{
+				type = 'combat'
+				msg = lib.identify( attacker ) + ' misses you'
+			}
+		}else if( packet.attacker === window.TOON.mud_id ){
+			if( packet.success ){
+				type = 'combat'
+				msg = 'You attack ' + lib.identify( target ) + ' for ' + packet.dmg
+			}else{
+				type = 'combat'
+				msg = 'You attack and miss ' + lib.identify( target )
+			}
+		}
+
+		// render outcomes
+
+		if( packet.success ){
+			target.health.current = packet.target_health
+			TARGET.show_health()
+			if( TARGET.target.mud_id === packet.target ){
+
+			}else if( packet.target === window.TOON.mud_id ){
+				flash_hurt()
+				if( packet.target.health.current <= 0 ){
+					show_dead()
+				}
+			}
+		}
+
+		hal( type, msg, 2000 )
+
 
 	}
 
 }
+
+
+
+function flash_hurt(){
+
+	const flash = document.createElement('div')
+	flash.classList.add('ui-fader', 'flash-hurt')
+	document.body.appendChild( flash )
+
+	setTimeout(function(){
+		flash.style.opacity = 0
+	}, 10)
+
+	setTimeout(function(){
+		flash.remove()
+	}, 600)
+
+}
+
+
+function show_dead(){
+
+	const overlay = document.createElement('div')
+	document.body.appendChild( overlay )
+	overlay.classList.add('ui-fader', 'overlay-dead')
+	overlay.style.opacity = 0
+	setTimeout(function(){
+		overlay.style.opacity = 1
+	}, 10)
+
+}
+
+
 
 
 
@@ -27,5 +109,5 @@ let display = false
 export default (function(){
 	if( display ) return display
 	display = new Display()
-	return Display
+	return display
 })()

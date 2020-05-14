@@ -264,6 +264,13 @@ const entity_map = {
 	'structure': 'STRUCTURES'
 }
 
+
+function identify( entity ){
+
+	return ( entity.name || entity.subtype || entity.type )
+
+}
+
 export {
 	random_hex,
 	degrees_to_radians,
@@ -275,6 +282,7 @@ export {
 	// glob_geometries,
 	load,
 	randomize_matrix,
-	entity_map
+	entity_map,
+	identify
 	// clear_object
 }

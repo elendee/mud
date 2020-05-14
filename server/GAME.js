@@ -14,7 +14,7 @@ const COMBAT = require('./combat.js')
 
 const DB = require('./db.js')
 
-const Toon = require('./Toon.js')
+const Toon = require('./agents/Toon.js')
 const Zone = require('./Zone.js')
 
 // const moment = require('moment')
@@ -339,7 +339,8 @@ class Game {
 				attacker:TOON, 
 				item: item, 
 				target: target, 
-				dist: dist 
+				dist: dist,
+				// zone: zone
 			})
 
 			for( const mud_id of Object.keys( zone._TOONS )){

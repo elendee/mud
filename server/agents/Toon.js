@@ -1,19 +1,19 @@
-const env = require('./.env.js')
-const DB = require('./db.js')
-const lib = require('./lib.js')
-const log = require('./log.js')
+const env = require('../.env.js')
+const DB = require('../db.js')
+const lib = require('../lib.js')
+const log = require('../log.js')
 const {
 	Vector3,
 	Quaternion
 } = require('three')
 
-const Persistent = require('./Persistent.js')
-const FACTORY = require('./items/FACTORY.js')
-const Item = require('./items/Item.js')
+const AgentPersistent = require('./AgentPersistent.js')
+const FACTORY = require('../items/FACTORY.js')
+const Item = require('../items/Item.js')
 
-const SOCKETS = require('./SOCKETS.js')
+const SOCKETS = require('../SOCKETS.js')
 
-module.exports = class Toon extends Persistent {
+module.exports = class Toon extends AgentPersistent {
 
 	constructor( init ){
 
@@ -29,8 +29,6 @@ module.exports = class Toon extends Persistent {
 
 		this.type = 'toon'
 
-		this.subtype = init.subtype
-
 		this._table = 'avatars'
 
 		this._INVENTORY = init._INVENTORY
@@ -40,8 +38,6 @@ module.exports = class Toon extends Persistent {
 		this.height = lib.validate_number( init.height, 3 )
 
 		this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
-
-		this.health = lib.validate_number( init.health, 100 )
 
 		this._strength = lib.validate_number( init._strength, init.strength, 5 )
 		this._dexterity = lib.validate_number( init._dexterity, init.strength, 5 )
@@ -63,15 +59,7 @@ module.exports = class Toon extends Persistent {
 
 		this._layer = typeof( init._layer ) === 'number' ? init._layer : 0
 
-		this.ref = init.ref || {}
-
-		this.ref.position = lib.validate_vec3( this.ref.position )
-
-		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
-
 		this._camped_key = lib.validate_number( init._camped_key, init.camped_key, undefined )
-
-		this._current_zone = lib.validate_string( init._current_zone, undefined )
 
 		this._eqp = {
 			hand_left: false,

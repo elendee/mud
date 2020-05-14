@@ -154,8 +154,8 @@ const bind = function(){
 					break;
 
 				case 'combat':
-					console.log('combat balblbalbalblalba unfinished func ....... ', obj )
-					DISPLAY.render_combat( ZONE, obj )
+					console.log('combat resolution: ', obj.resolution )
+					DISPLAY.render_combat( ZONE, obj.resolution )
 					break;
 
 				// case 'bot_begin_path':

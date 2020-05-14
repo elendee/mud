@@ -10,25 +10,36 @@ class Resolver {
 		init = init || {}
 	}
 
-	resolve( packet ){
-		switch (packet.type) {
+	resolve( data ){
+		switch (data.type) {
 			case 'attack':
-				if( packet.item.range < packet.dist ){
+				if( data.item.range < data.dist ){
 					return {
-						msg: 'you are too far away'
+						type: 'combat',
+						success: false,
+						attacker: data.attacker.mud_id,
+						target: data.target.mud_id,
+						target_type: data.target.type
 					}
 				}else{
-					let power = ( packet.item.power || 0 ) + ( packet.attacker._strength || 0 )
-					let defense = ( packet.target._dexterity || 0 ) + interf.get_armor( packet.target )
+
+					let power = ( data.item.power || 0 ) + ( data.attacker._strength || 0 )
+					let defense = ( data.target._dexterity || 0 ) + interf.get_armor( data.target )
 					let dmg = Math.max( 0, Math.floor( Math.random() * ( power - defense ) ) )
-					packet.target.health = Math.max( 0, packet.target.health - dmg )
+
+					if( dmg >= data.target.health.current )  data.target.status = 'dead'
+
+					data.target.health.current = Math.max( 0, data.target.health.current - dmg )
+
 					return {
-						type: 'attack',
-						attacker: packet.attacker.mud_id, 
-						attacker_health: packet.attacker.health,
-						target: packet.target.mud_id,
-						target_health: packet.target.health,
-						target_type: packet.target.type,
+						type: 'combat',
+						success: true,
+						status: data.target.status,
+						attacker: data.attacker.mud_id, 
+						attacker_health: data.attacker.health.current,
+						target: data.target.mud_id,
+						target_health: data.target.health.current,
+						target_type: data.target.type,
 						dmg: dmg
 					}
 				}

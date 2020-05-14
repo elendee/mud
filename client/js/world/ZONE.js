@@ -229,15 +229,15 @@ class Zone {
 		// shrubs
 		const shrubs = new Array(10000)
 		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
-		// const shrub_material = new MeshLambertMaterial({
-			// color: 'rgb(20, 60, 20)',
-			// color: uniforms.colorB.value
-		// })
-		const shrub_material = new ShaderMaterial({
-			uniforms: uniforms,
-			// vertexShader: vertexShader(),
-			fragmentShader: fragmentShader()
+		const shrub_material = new MeshLambertMaterial({
+			color: 'rgb(20, 60, 20)',
+			color: uniforms.colorB.value
 		})
+		// const shrub_material = new ShaderMaterial({
+		// 	uniforms: uniforms,
+		// 	// vertexShader: vertexShader(),
+		// 	fragmentShader: fragmentShader()
+		// })
 		const matrix = new Matrix4()
 		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
 		shrubberies.castShadow = true

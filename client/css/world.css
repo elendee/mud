@@ -157,6 +157,10 @@ canvas#mud-flats{
 /* 	display: none; */
 }
 
+#target-health .status{
+	background: linear-gradient( black, red );
+}
+
 #status{
 	display: none;
 	position: fixed;
@@ -190,7 +194,7 @@ canvas#mud-flats{
 	height: 100%;
 }
 
-#compass{
+/* #compass{
 
     display: none;
 
@@ -227,7 +231,7 @@ canvas#mud-flats{
 
 	transition: 1s
 }
-
+ */
 
 .popup{
 	position: fixed;
@@ -334,4 +338,19 @@ canvas#mud-flats{
 }
 .cooling{
 	transition: 1s
+}
+
+.flash-hurt,
+.overlay-dead{
+	position: fixed;
+	z-index: 999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: radial-gradient( transparent, rgba( 155, 0, 0, .5) )
+}
+
+.overlay-dead{
+    background: radial-gradient( rgba(05, 05, 255, .3), rgba( 0, 0, 0, .8) )
 }

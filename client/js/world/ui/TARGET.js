@@ -146,22 +146,22 @@ class Target {
 
 	show_health(){
 
-		if( this.entropic ){
+		if( this.target ){
 
 			let percent_health  
-			if( this.entropic.health.capacity !== 0 ){
-				percent_health = this.entropic.health.current / this.entropic.health.capacity
+			if( this.target.health.capacity !== 0 ){
+				percent_health = this.target.health.current / this.target.health.capacity
 			}
-			let percent_shields
-			if( this.entropic.shields.capacity !== 0 ){
-				percent_shields = this.entropic.shields.current / this.entropic.shields.capacity
-			}
+			// let percent_shields
+			// if( this.target.shields.capacity !== 0 ){
+			// 	percent_shields = this.target.shields.current / this.target.shields.capacity
+			// }
 
-			this.shields_ele.style.width = Math.floor( percent_shields * 100 ) + '%'
+			// this.shields_ele.style.width = Math.floor( percent_shields * 100 ) + '%'
 			this.health_ele.style.width = Math.floor( percent_health * 100 ) + '%'
 
-			this.health_readout.innerHTML = this.entropic.health.current + ' / ' + this.entropic.health.capacity
-			this.shields_readout.innerHTML = this.entropic.shields.current + ' / ' + this.entropic.shields.capacity
+			this.health_readout.innerHTML = this.target.health.current + ' / ' + this.target.health.capacity
+			// this.shields_readout.innerHTML = this.target.shields.current + ' / ' + this.target.shields.capacity
 
 		}
 
