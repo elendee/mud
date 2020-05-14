@@ -1,3 +1,4 @@
+import hal from '../../hal.js'
 
 import Popup from './Popup.js'
 // import * as POPUPS from './POPUPS.js'
