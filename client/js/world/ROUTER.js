@@ -12,6 +12,8 @@ import CHAT from './ui/CHAT.js'
 
 import MAP from '../MAP.js'
 
+import DISPLAY from './ui/DISPLAY.js'
+
 const bind = function(){
 
 	return new Promise(function( resolve, reject ){
@@ -153,7 +155,7 @@ const bind = function(){
 
 				case 'combat':
 					console.log('combat balblbalbalblalba unfinished func ....... ', obj )
-					// DISPLAY.render_combat( obj.target.mud_id,  )
+					DISPLAY.render_combat( ZONE, obj )
 					break;
 
 				// case 'bot_begin_path':

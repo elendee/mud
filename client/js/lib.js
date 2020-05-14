@@ -257,6 +257,12 @@ function randomize_matrix( matrix, options ){
 }
 
 
+const entity_map = {
+	'flora': 'FLORA',
+	'npc': 'NPCS',
+	'toon': 'TOONS',
+	'structure': 'STRUCTURES'
+}
 
 export {
 	random_hex,
@@ -268,6 +274,7 @@ export {
 	validate_vec3,
 	// glob_geometries,
 	load,
-	randomize_matrix
+	randomize_matrix,
+	entity_map
 	// clear_object
 }

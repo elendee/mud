@@ -28,7 +28,7 @@ class Resolver {
 						attacker_health: packet.attacker.health,
 						target: packet.target.mud_id,
 						target_health: packet.target.health,
-						target_type: packet.target.subtype || packet.target.type,
+						target_type: packet.target.type,
 						dmg: dmg
 					}
 				}

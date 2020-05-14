@@ -1,4 +1,5 @@
-import hal from '../hal.js'
+import hal from '../../hal.js'
+import lib from '../../lib.js'
 
 
 class Display {
@@ -9,7 +10,9 @@ class Display {
 
 	}
 
-	render_combat( target, dmg ){
+	render_combat( zone, packet ){
+
+		let target = zone[ lib.entity_map[ packet.type ]][ packet.target ]
 
 		hal('standard', 'resolving combat to ' + ( target.name || target.subtype || target.type ), 2000 )
 
@@ -21,8 +24,8 @@ class Display {
 
 let display = false
 
-default export (function(){
+export default (function(){
 	if( display ) return display
 	display = new Display()
-	return display
+	return Display
 })()
