@@ -44,6 +44,7 @@ module.exports = class Toon extends Persistent {
 		this.health = lib.validate_number( init.health, 100 )
 
 		this._strength = lib.validate_number( init._strength, init.strength, 5 )
+		this._dexterity = lib.validate_number( init._dexterity, init.strength, 5 )
 		this._charisma = lib.validate_number( init._charisma, init.charisma, 5 )
 		this._perception = lib.validate_number( init._perception, init.perception, 5 )
 		this._luck = lib.validate_number( init._luck, init.luck, 5 )
@@ -83,12 +84,14 @@ module.exports = class Toon extends Persistent {
 
 		this.left_hand = init.left_hand || new Item({
 			type: 'melee',
-			name: 'left hand'
+			name: 'left hand',
+			range: 15
 		})
 
 		this.right_hand = init.right_hand || new Item({
 			type: 'melee',
-			name: 'right hand'
+			name: 'right hand',
+			range: 15
 		})
 
 		this.equipped = init.equipped 
@@ -351,76 +354,6 @@ module.exports = class Toon extends Persistent {
 	
 	}
 
-
-	engage( packet, zone ){
-
-		// log('flag', 'engage: ', packet, zone.mud_id )
-
-		if( !zone || !packet.target ){
-			log('flag', 'no zone to engage', packet )
-			return false
-		}
-
-		let slot = Number( packet.slot )
-
-		if( slot === 2 || slot === 3 ){
-
-			let item = this._INVENTORY[ this.equipped[ slot ] ]
-
-			let entity_set = lib.entity_map[ packet.target.type ]
-
-			let target = zone[ entity_set ][ packet.target.mud_id ]
-
-			if( !target ){
-				log('flag', 'no target found to engage', packet )
-				return false
-			}
-
-			let dist = lib.get_dist( this.ref.position, target.ref.position )
-
-			let msg
-
-			if( dist < 20 ){
-
-				// if( item ){
-
-
-
-				// }else{ // hands
-
-
-
-				// }
-
-				log('flag', 'target ', target )
-
-				let item = this._INVENTORY[ this.equipped[ slot ] ] || {}
-
-				let name = item.name || 'your ' + ( slot === 2 ? 'left' : 'right' ) + ' hand'
-
-				msg = 'You attack ' + ( target.name || target.subtype || target.type ) + ' with ' + name
-
-				// log('flag', 'action: ', this._INVENTORY[ this.equipped[ 2 ] ])
-
-			}else{
-
-				msg = 'You are too far away'
-
-				log('flag', 'too far', this.ref.position, target.ref.position, target.x, target.y, target.z, target._id )
-			}
-
-			SOCKETS[ this.mud_id ].send(JSON.stringify({
-				type: 'combat',
-				msg: msg
-			}))
-
-		}else{
-
-			log('flag', 'unknown slot type')
-
-		}
-
-	}
 
 
 

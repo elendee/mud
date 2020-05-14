@@ -138,7 +138,7 @@ module.exports = {
 				case 'engage':
 					// log('flag', 'zone id: ', zone_id )
 					let current_zone = GAME.ZONES[ TOON._current_zone ]
-					TOON.engage( packet, current_zone )
+					GAME.engage( TOON, packet, current_zone )
 					break;
 				// case 'register':
 				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )

@@ -10,6 +10,8 @@ const SOCKETS = require('./SOCKETS.js')
 const ROUTER = require('./ROUTER.js')
 const MAP = require('./MAP.js')
 
+const COMBAT = require('./combat.js')
+
 const DB = require('./db.js')
 
 const Toon = require('./Toon.js')
@@ -297,6 +299,63 @@ class Game {
 
 	}
 
+
+
+	engage( TOON, packet, zone ){
+
+		// log('flag', 'engage: ', packet, zone.mud_id )
+
+		if( !zone || !packet.target ){
+			log('flag', 'no zone to engage', packet )
+			return false
+		}
+
+		let slot = Number( packet.slot )
+
+		if( slot === 2 || slot === 3 ){
+
+			let item = TOON._INVENTORY[ TOON.equipped[ slot ] ]
+
+			if( !item ){
+				if( slot == 2 ) item = TOON.left_hand
+				if( slot == 3 ) item = TOON.right_hand
+			}
+
+			let entity_set = lib.entity_map[ packet.target.type ]
+
+			let target = zone[ entity_set ][ packet.target.mud_id ]
+
+			if( !target ){
+				log('flag', 'no target found to engage', packet )
+				return false
+			}
+
+			let dist = lib.get_dist( TOON.ref.position, target.ref.position )
+
+			// let name = item.name || 'your ' + ( slot === 2 ? 'left' : 'right' ) + ' hand'
+
+			let resolution = COMBAT.resolve({
+				type: 'attack',
+				attacker:TOON, 
+				item: item, 
+				target: target, 
+				dist: dist 
+			})
+
+			for( const mud_id of Object.keys( zone._TOONS )){
+				SOCKETS[ TOON.mud_id ].send(JSON.stringify({
+					type: 'combat',
+					resolution: resolution
+				}))
+			}
+
+		}else{
+
+			log('flag', 'unknown slot type')
+
+		}
+
+	}
 
 
 

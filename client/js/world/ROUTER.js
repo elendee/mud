@@ -152,7 +152,8 @@ const bind = function(){
 					break;
 
 				case 'combat':
-					hal('combat', obj.msg, 2000)
+					console.log('combat', obj )
+					hal('combat', obj.resolution.msg, 2000)
 					break;
 
 				// case 'bot_begin_path':

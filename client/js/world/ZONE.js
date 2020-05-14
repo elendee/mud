@@ -28,12 +28,16 @@ import {
 	Vector3,
 	Quaternion,
 	PlaneBufferGeometry,
+	BoxBufferGeometry,
+	BoxGeometry,
 	MeshLambertMaterial,
 	DoubleSide,
 	Mesh,
 	InstancedMesh,
 	Object3D,
-	Matrix4
+	Matrix4,
+	Color,
+	ShaderMaterial
 } from '../lib/three.module.js'
 
 
@@ -149,7 +153,7 @@ class Zone {
 		const geometry = new PlaneBufferGeometry( MAP.TILE_WIDTH, MAP.TILE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
 			color: 0xaaaa88, 
-			// color: 0xbbbbcc, 
+			// color: 0x443333, 
 			map: ground,
 			// side: DoubleSide 
 		})
@@ -172,21 +176,73 @@ class Zone {
 
 
 
+		const uniforms = {
+		    colorB: {type: 'vec3', value: new Color(0x112211)},
+		    colorA: {type: 'vec3', value: new Color(0x221122)}
+		}
 
+		function vertexShader() {
+			return `
+				void main() {
+				  gl_Position = projectionMatrix *
+				    modelViewMatrix *
+				    vec4(position,1.0);
+				}
+			`
+			// return `
+			// 	varying vec3 vUv; 
+
+			// 	void main() {
+			// 		vUv = position; 
+
+		 //    		vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+		 //    		gl_Position = projectionMatrix * modelViewPosition; 
+		 //    	}
+		 //    `
+		}
+
+		function fragmentShader(){
+			return `
+			    uniform vec3 colorA; 
+			    uniform vec3 colorB; 
+			    varying vec3 vUv;
+
+			    void main() {
+					gl_FragColor = vec4( colorA, 1.0 );			      
+			    }`  
+		}
+		// gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
+
+		// const cube_geo = new BoxBufferGeometry(10, 10, 10)
+		// // const cube_geo = new BoxGeometry(10, 10, 10)
+		// const cube_mat = new ShaderMaterial({
+		// 	uniforms: uniforms,
+		// 	vertexShader: vertexShader(),
+		// 	fragmentShader: fragmentShader()
+		// })
+		// const cube = new Mesh( cube_geo, cube_mat )
+		// SCENE.add( cube )
+		// cube.position.set( 50, 1, 10 )
 
 
 		// instanced meshes
 		// shrubs
 		const shrubs = new Array(10000)
 		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
-		const shrub_material = new MeshLambertMaterial({
-			color: 'rgb(20, 60, 20)'
+		// const shrub_material = new MeshLambertMaterial({
+			// color: 'rgb(20, 60, 20)',
+			// color: uniforms.colorB.value
+		// })
+		const shrub_material = new ShaderMaterial({
+			uniforms: uniforms,
+			// vertexShader: vertexShader(),
+			fragmentShader: fragmentShader()
 		})
 		const matrix = new Matrix4()
 		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
 		shrubberies.castShadow = true
-		shrubberies.userData.clickable = true
-		shrubberies.userData.type = 'flora'
+		// shrubberies.userData.clickable = true
+		// shrubberies.userData.type = 'flora'
 		for( let i = 0; i < shrubs.length; i++ ){
 			lib.randomize_matrix( matrix, {
 				position: MAP.ZONE_WIDTH,
@@ -206,39 +262,27 @@ class Zone {
 
 		
 		// standard flora
-
-		// for( let i = 0; i < Object.keyszone_data._FLORA.length; i++ ){
 		for( const mud_id of Object.keys( zone_data._FLORA ) ){
 
-			// if( zone_data._FLORA[ mud_id ].subtype === 'tree' ){
-
-			// 	trees.push( zone_data._FLORA[ mud_id ] )
-
-			// }else{
-
-				const flora = new Flora( zone_data._FLORA[ mud_id ] )
-				this.FLORA[ mud_id ] = flora
-				// console.log('placing: ', flora )
-				flora.model()
-				.then(res=>{
-					flora.MODEL.position.set(
-						flora.x,
-						flora.y,
-						flora.z,
-					)
-					// flora.MODEL.scale.multiplyScalar( flora.scale )
-					flora.MODEL.userData = {
-						clickable: true,
-						type: 'flora',
-						subtype: flora.subtype,
-						mud_id: mud_id
-					}
-					// console.log( flora.MODEL.position )
-					SCENE.add( flora.MODEL )
-				}).catch(err=>{
-					console.log('err flora load: ', err )
-				})
-			// }			
+			const flora = new Flora( zone_data._FLORA[ mud_id ] )
+			this.FLORA[ mud_id ] = flora
+			flora.model()
+			.then(res=>{
+				flora.MODEL.position.set(
+					flora.x,
+					flora.y,
+					flora.z,
+				)
+				flora.MODEL.userData = {
+					clickable: true,
+					type: 'flora',
+					subtype: flora.subtype,
+					mud_id: mud_id
+				}
+				SCENE.add( flora.MODEL )
+			}).catch(err=>{
+				console.log('err flora load: ', err )
+			})
 
 		}
 
