@@ -266,9 +266,7 @@ const entity_map = {
 
 
 function identify( entity ){
-
 	return ( entity.name || entity.subtype || entity.type )
-
 }
 
 export {

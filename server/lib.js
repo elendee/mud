@@ -423,7 +423,9 @@ function get_dist( vec1, vec2 ){
 }
 
 
-
+function identify( entity ){
+	return ( entity.name || entity.subtype || entity.type )
+}
 
 
 module.exports = {
@@ -452,6 +454,7 @@ module.exports = {
 	validate_vec3,
 	validate_quat,
 	entity_map,
-	get_dist
+	get_dist,
+	identify
 }
 

@@ -19,12 +19,14 @@ canvas#mud-flats{
 }
 
 .bar-button{
+	position: relative;
     display: inline-block;
     width: 40px;
     height: 40px;
     border-radius: 5px;
     border: 1px solid tan; 
     margin: 0 3px;  
+    overflow: hidden;
 /*     cursor: pointer; */
 }
 .bar-button:hover,
@@ -233,85 +235,6 @@ canvas#mud-flats{
 }
  */
 
-.popup{
-	position: fixed;
-	z-index: 99;
-	width: 400px;
-    height: 500px;
-    background: black;
-}
-
-.popup .close{
-	position: absolute;
-	z-index: 99;
-	right: 0;
-    top: 0;
-    padding: 10px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.popup .close:hover{
-	color: white;
-}
-
-.popup .topbar{
-	position: absolute;
-	z-index: 9;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 50px;
-	background: rgb(20, 20, 20);
-	cursor: grab;
-}
-
-.popup .content{
-	position: absolute;
-	width: 96%;
-	height: 96%;
-	left: 2%;
-	top: 2%;
-	border: 1px solid rgb(20, 20, 20);
-	padding: 50px 5px 5px 5px;
-	overflow-y: auto;
-}
-
-.popup .title{
-	position: absolute;
-	top: 15px;
-	left: 2%;
-	color: wheat;
-	z-index: 99;
-	letter-spacing: 2px;
-}
-
-.popup .stat{
-	margin: 5px 0;
-}
-
-.popup .stat-key{
-	opacity: .8;
-	margin-right: 10px;
-}
-
-#inventory.popup .stat-key{
-	color: wheat
-}
-
-#inventory .stat .icon:hover{
-    border: 1px solid lightgrey;
-    cursor: pointer
-}
-
-.popup .stat-key,
-.popup .icon{
-	vertical-align: top;
-}
-
-.popup .stat .icon{
-	margin-right: 10px;
-}
 
 .popup .stat .icon,
 #mousehold{
@@ -333,12 +256,6 @@ canvas#mud-flats{
 
 }
 
-.cooldown{
-    opacity: 0
-}
-.cooling{
-	transition: 1s
-}
 
 .flash-hurt,
 .overlay-dead{
@@ -353,4 +270,19 @@ canvas#mud-flats{
 
 .overlay-dead{
     background: radial-gradient( rgba(05, 05, 255, .3), rgba( 0, 0, 0, .8) )
+}
+
+.cooldown-cover{
+	position: absolute;
+    z-index: 99999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 0%;
+	background: rgba(0, 0, 0, .8);
+	transition: .2s;
+}
+
+.cooldown .cooldown-cover{
+	height: 100% !important
 }

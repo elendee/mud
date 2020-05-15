@@ -3,6 +3,14 @@ const lib = require('../lib.js')
 
 const Persistent = require('../Persistent.js')
 
+const range_map = {
+	melee: 15,
+	ranged: 75,
+	magic: 50,
+	armor: 15
+}
+
+
 module.exports = class Item extends Persistent {
 
 	constructor( init ){
@@ -21,7 +29,7 @@ module.exports = class Item extends Persistent {
 
 		this.power = lib.validate_number( init.power, 0 )
 		this.armor = lib.validate_number( init.armor, 0 )
-		this.range = lib.validate_number( init.range, 0 )
+		this.range = lib.validate_number( init.range, range_map[ this.type ], 0 )
 
 	}
 

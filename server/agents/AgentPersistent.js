@@ -16,7 +16,7 @@ class AgentPersistent extends Persistent {
 		this._created = lib.validate_string( init.created, init._created, undefined )
 		this._edited = lib.validate_string( init.edited, init._edited, undefined )
 
-		this.status = init.status || 'alive'
+		this._status = init._status || 'alive'
 
 		this.health = init.health || {}
 
@@ -29,6 +29,7 @@ class AgentPersistent extends Persistent {
 
 		this._current_zone = lib.validate_string( init._current_zone, undefined )
 
+		// straight from db vals:
 		this.x = lib.validate_number( init._x, init.x, 0 )
 		this.y = lib.validate_number( init._y, init.y, 0 )
 		this.z = lib.validate_number( init._z, init.z, 0 )
@@ -42,6 +43,10 @@ class AgentPersistent extends Persistent {
 		})
 
 		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
+
+		this.logistic = this.logistic || []
+		this.logistic = this.logistic.concat( init.logistic )
+		this.logistic.push('scale', 'type', 'x', 'y', 'z', 'ref')
 
 	}
 }

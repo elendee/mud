@@ -9,7 +9,7 @@ class AgentEphemeral {
 
 		init = init || {}
 
-		this.status = init.status || 'alive'
+		this._status = init._status || 'alive'
 
 		this.x = lib.validate_number( init._x, init.x, 0 )
 		this.y = lib.validate_number( init._y, init.y, 0 )
@@ -33,6 +33,10 @@ class AgentEphemeral {
 		}
 
 		this.scale = lib.validate_number( init.scale, .5 )
+
+		this.logistic = this.logistic || []
+		this.logistic = this.logistic.concat( init.logistic )
+		this.logistic.push('scale', 'type', 'x', 'y', 'z', 'ref')
 
 	}
 }

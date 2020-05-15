@@ -1,3 +1,5 @@
+
+import * as MOUSE from './MOUSE.js'
 import * as POPUPS from './POPUPS.js'
 import * as lib from '../../lib.js'
 
@@ -166,6 +168,71 @@ export default class Popup {
 
 	}
 
+
+
+	render_stats( obj ){
+
+		this.content.innerHTML = ''
+
+		for( const key of Object.keys( window.TOON )){
+
+			if( !window.TOON.logistic.includes( key ) ){
+
+				let this_key = window.TOON[ key ]
+
+				if( typeof this_key === 'object' ) {
+					let stat_wrapper = document.createElement('div')
+					stat_wrapper.classList.add('stat-wrapper')
+					this.content.appendChild( stat_wrapper )
+					let stat_wrap_title = document.createElement('div')
+					stat_wrap_title.classList.add('stat-key')
+					stat_wrap_title.innerHTML = '<span class="stat-wrap-title">' + key + ':</span><br>'
+					stat_wrapper.appendChild( stat_wrap_title )
+					for( const sub_key of Object.keys( window.TOON[ key ] ) ){
+						render_stat( sub_key, window.TOON[ key ][ sub_key ], stat_wrapper )
+					}
+				}else{
+					render_stat( key, window.TOON[ key ], this.content )
+				}
+				
+
+			}
+
+		}
+
+	}
+
+
+	render_inventory( INVENTORY ){
+
+		this.content.innerHTML = ''
+		
+		for( const mud_id of Object.keys( INVENTORY )){
+
+			let item = INVENTORY[ mud_id ]
+
+			let row = document.createElement('div')
+			row.classList.add('stat', item.type )
+			let icon = document.createElement('img')
+			icon.classList.add('icon')
+			icon.src = '/resource/images/icons/' + INVENTORY[ mud_id ].icon_url
+			icon.addEventListener('click', function(){
+				MOUSE.mousehold.pickup( mud_id, 'inventory' )
+			})
+			row.appendChild( icon )
+			let stat_key = document.createElement('span')
+			stat_key.classList.add('stat-key')
+			stat_key.innerHTML = item.name
+			row.appendChild( stat_key )
+			
+			row.appendChild( document.createElement('br'))
+			
+			this.content.appendChild( row )
+
+		}
+
+	}
+
 	unrender(){
 		this.content.innerHTML = ''
 	}
@@ -193,5 +260,28 @@ const move_active_popup = e => {
 	}
 
 }
+
+
+
+function render_stat( key, value, destination ){
+
+	let stat = document.createElement('div')
+	stat.classList.add('stat')
+	let stat_key = document.createElement('span')
+	stat_key.classList.add('stat-key')
+	stat_key.innerHTML = key
+	stat.appendChild( stat_key )
+	let stat_val = document.createElement('span')
+	stat_val.classList.add('stat-val')
+	stat_val.innerHTML = value
+	// window.TOON[ key ]
+	stat.appendChild( stat_val )
+	
+	stat.appendChild( document.createElement('br'))
+	
+	destination.appendChild( stat )
+
+}
+
 
 // const asdf = new Popup({id:"test"})

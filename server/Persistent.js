@@ -13,11 +13,19 @@ module.exports = class Persistent {
 
 		this.mud_id = init.mud_id || uuid()
 
+		this.type = init.type
+
+		this.subtype = init.subtype
+
 		this._table = init._table
 
 		this._created = lib.validate_string( init._created, undefined )
 
 		this._edited = lib.validate_string( init._edited, undefined )
+
+		this.logistic = []
+		this.logistic = this.logistic.concat( init.logistic )
+		this.logistic.push('logistic', 'mud_id')
 
 	}
 

@@ -102,6 +102,10 @@ export default class Toon {
 
 		this.MODEL = init.MODEL
 
+		this.logistic = this.logistic || []
+		this.logistic = this.logistic.concat( init.logistic )
+		this.logistic.push('needs_rotate', 'needs_move', 'needs_stream', 'intervals', 'MODEL', 'INVENTORY', '_INVENTORY', 'bindings')
+
 	}
 
 
@@ -111,8 +115,6 @@ export default class Toon {
 
 
 	init_inventory( inv ){
-
-		console.log('INV ya')
 
 		this.INVENTORY = {}
 
@@ -193,12 +195,9 @@ export default class Toon {
 
 	refresh_equipped( equipment ){
 
-		console.log( 'eqp: ', equipment )
-
 		TOON.equipped = equipment || TOON.equipped || new Array(6)
 
 		for( let i = 0; i < TOON.equipped.length; i++ ){
-			console.log('humm', TOON.equipped[i])
 			ACTION_BAR.render_equip( i, TOON.equipped[i] )
 		}
 

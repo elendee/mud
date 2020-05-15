@@ -11,7 +11,6 @@ import TARGET from './TARGET.js'
 const action_bar = document.getElementById('action-bar')
 let ab_buttons = []
 
-const char_display = ['name', 'height', 'speed', 'health']
 
 const slot_map = ['left shoulder', 'left hip', 'left hand', 'right hand', 'right hip', 'right shoulder']
 // const inv_display = []
@@ -35,25 +34,20 @@ function init_action_buttons(){
 	wrapper_liner.id = 'action-liner'
 
 	for( let i = 0; i < 6; i++ ){
+		
 		const button = document.createElement('div')
 		button.classList.add('bar-button', 'action-button')
+
 		if( i === 2 || i === 3 ){
+
 			button.classList.add('primary')
-			// button.addEventListener('click', function(){
-			// 	if( !STATE.mousehold ){
-			// 		if( window.TOON.equipped[ i ] ){
-			// 			console.log('action: ', this )
-			// 		}else{
-			// 			hal('standard', 'you wave your ' + ( i === 2 ? 'left' : 'right' ) + ' hand vigorously')
-			// 		}
-			// 	}
-			// })
+			
+			const cooldown = document.createElement('div')
+			cooldown.classList.add('cooldown-cover')
+			button.appendChild( cooldown )
+			
 		}else {
-			// button.addEventListener('click', function(){
-			// 	if( STATE.mousehold ){
-			// 		equip_item( i )
-			// 	}
-			// })
+		
 			if( i === 0 || i === 5 ){
 				button.classList.add('tertiary')
 			}else if( i === 1 || i === 4 ){
@@ -105,30 +99,7 @@ function init_character_buttons(){
 	})
 	char_pop.render = function(){
 
-		char_pop.content.innerHTML = ''
-
-		for( const key of Object.keys( TOON )){
-
-			if( char_display.includes( key )){
-
-				let stat = document.createElement('div')
-				stat.classList.add('stat')
-				let stat_key = document.createElement('span')
-				stat_key.classList.add('stat-key')
-				stat_key.innerHTML = key
-				stat.appendChild( stat_key )
-				let stat_val = document.createElement('span')
-				stat_val.classList.add('stat-val')
-				stat_val.innerHTML = TOON[ key ]
-				stat.appendChild( stat_val )
-				
-				stat.appendChild( document.createElement('br'))
-				
-				char_pop.content.appendChild( stat )
-
-			}
-
-		}
+		char_pop.render_stats( window.TOON )
 
 	}
 	const inv_pop = new Popup({
@@ -138,31 +109,7 @@ function init_character_buttons(){
 	})
 	inv_pop.render = function(){
 
-		inv_pop.content.innerHTML = ''
-		
-		for( const mud_id of Object.keys( TOON.INVENTORY )){
-
-			let item = TOON.INVENTORY[ mud_id ]
-
-			let row = document.createElement('div')
-			row.classList.add('stat')
-			let icon = document.createElement('img')
-			icon.classList.add('icon')
-			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
-			icon.addEventListener('click', function(){
-				MOUSE.mousehold.pickup( mud_id, 'inventory' )
-			})
-			row.appendChild( icon )
-			let stat_key = document.createElement('span')
-			stat_key.classList.add('stat-key')
-			stat_key.innerHTML = item.name
-			row.appendChild( stat_key )
-			
-			row.appendChild( document.createElement('br'))
-			
-			inv_pop.content.appendChild( row )
-
-		}
+		inv_pop.render_inventory( window.TOON.INVENTORY )
 
 	}
 
@@ -196,8 +143,6 @@ function init_character_buttons(){
 
 
 
-
-
 function request_equip_item( i ){
 
 	window.SOCKET.send(JSON.stringify({
@@ -226,7 +171,8 @@ function render_equip( slot, mud_id ){
 
 	if( typeof( slot ) !== 'number' ) return false
 
-	ab_buttons[ slot ].innerHTML = ''
+	const img = ab_buttons[ slot ].querySelector('img')
+	if( img ) img.remove()
 
 	if( mud_id && window.TOON.INVENTORY[ mud_id ] ){
 	
@@ -253,7 +199,7 @@ function action( slot ){
 
 	if( slot === 2 || slot === 3 ){
 
-		if( !ab_buttons[ slot ].classList.contains('cooling') ){
+		if( !ab_buttons[ slot ].classList.contains('cooldown') ){
 			
 			window.TOON.engage( slot )
 
@@ -294,14 +240,17 @@ function render_cooldown( button, duration ){
 
 	button.classList.add('cooldown')
 	setTimeout(function(){
-		button.classList.add('cooling'
-	)}, 5 )
-	setTimeout(function(){
 		button.classList.remove('cooldown')
-	}, 10 )
-	setTimeout(function(){
-		button.classList.remove('cooling')
 	}, duration )
+	// setTimeout(function(){
+	// 	button.classList.add('cooling'
+	// )}, 5 )
+	// setTimeout(function(){
+	// 	button.classList.remove('cooldown')
+	// }, 10 )
+	// setTimeout(function(){
+	// 	button.classList.remove('cooling')
+	// }, duration )
 
 }
 

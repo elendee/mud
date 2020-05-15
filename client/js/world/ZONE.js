@@ -86,6 +86,8 @@ class Zone {
 
 		TOON.model('self')
 
+		this.TOONS[ TOON.mud_id ] = TOON
+
 		// TOON.MODEL.position.set( 
 		// 	TOON.ref.position.x + Math.floor( Math.random() * 10 ), 
 		// 	TOON.height / 2, 

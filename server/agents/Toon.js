@@ -46,7 +46,7 @@ module.exports = class Toon extends AgentPersistent {
 		this._luck = lib.validate_number( init._luck, init.luck, 5 )
 		this._intellect = lib.validate_number( init._intellect, init.intellect, 5 )
 
-		let random_seed = Math.random() * 100
+		let random_seed = Math.floor( Math.random() * 100 )
 		this.color = init.color || lib.random_rgb( 
 			[ random_seed, random_seed + 150], 
 			[ random_seed, random_seed + 150], 
@@ -55,7 +55,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		// this.portrait = init.portrait || lib.gen_portrait()
 		
-		this.name_attempted = init.name_attempted || Date.now() - 30000
+		this._name_attempted = init._name_attempted || Date.now() - 30000
 
 		this._layer = typeof( init._layer ) === 'number' ? init._layer : 0
 
@@ -83,6 +83,9 @@ module.exports = class Toon extends AgentPersistent {
 		})
 
 		this.equipped = init.equipped 
+
+		this.logistic = this.logistic || []
+		this.logistic.push('equipped', 'right_hand', 'left_hand')
 		// new Array(6)
 
 	}
@@ -126,27 +129,57 @@ module.exports = class Toon extends AgentPersistent {
 				const stick = new FACTORY({
 					type: 'melee',
 					name: 'Unwieldy Stick',
-					icon_url: 'noun_stick.png'
+					icon_url: 'noun_stick.png',
+					power: 2
 				})
-				if( stick ){
-					this._INVENTORY[ stick.mud_id ] = stick
-				}
+				this._INVENTORY[ stick.mud_id ] = stick
+				// log('flag', 'wots worng wit me stick', stick )
 				const trousers = new FACTORY({
 					type: 'armor',
 					name: 'Unwieldy Trousers',
 					icon_url: 'noun_trousers.png',
 				})
-				if( trousers ){
-					this._INVENTORY[ trousers.mud_id ] = trousers
-				}
+				this._INVENTORY[ trousers.mud_id ] = trousers
 				const belt = new FACTORY({
 					type: 'armor',
 					name: 'Unwieldy Vest',
 					icon_url: 'noun_shirt.png',
 				})
-				if( belt ){
-					this._INVENTORY[ belt.mud_id ] = belt
+				this._INVENTORY[ belt.mud_id ] = belt
+				if( env.DEV ){
+					const megasword = new FACTORY({
+						type: 'melee',
+						name: 'Mega Sword',
+						icon_url: 'noun_short-sword.png',
+						power: 50
+					})
+					this._INVENTORY[ megasword.mud_id ] = megasword
+					const megastaff = new FACTORY({
+						type: 'magic',
+						name: 'Mega Staff',
+						icon_url: 'noun_scepter.png',
+						power: 20
+					})
+					this._INVENTORY[ megastaff.mud_id ] = megastaff
+					const megaarmor = new FACTORY({
+						type: 'armor',
+						name: 'Mega Armor',
+						icon_url: 'noun_cape.png',
+						power: 50
+					})
+					this._INVENTORY[ megaarmor.mud_id ] = megaarmor
+					const megabow = new FACTORY({
+						type: 'ranged',
+						name: 'Mega Bow',
+						icon_url: 'noun_bow.png',
+						power: 10
+					})
+					this._INVENTORY[ megabow.mud_id ] = megabow
 				}
+
+			}else{
+
+				log('toon', 'toon already has inventory')
 
 			}
 
@@ -212,7 +245,7 @@ module.exports = class Toon extends AgentPersistent {
 
 	equip( held, slot ){
 
-		log('flag', 'eqp: ', held, slot )
+		log('toon', 'eqp: ', held, slot )
 
 		//////////////// init vars:
 
@@ -251,7 +284,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		}else if( this.equipped[ destination ] === held_id ){ // redundant, should be blocked on client
 
-			log('flag', 'redundant equip')
+			log('toon', 'redundant equip')
 
 		}else if( this.equipped[ destination ] ){ 
 
@@ -284,8 +317,6 @@ module.exports = class Toon extends AgentPersistent {
 
 	drop( held ){
 
-		log('flag', 'ok: ', held )
-
 		let update_eqp = false
 		let update_inv = false
 
@@ -295,9 +326,8 @@ module.exports = class Toon extends AgentPersistent {
 			delete this._INVENTORY[ held.mud_id ]
 
 			for( let i = 0; i < this.equipped.length; i++ ){
-				log('flag', 'eqp: ', this.equipped[i] )
 				if( this.equipped[ i ] && !this._INVENTORY[ this.equipped[ i ] ] ){
-					log('flag', 'gbye: ', this.equipped )
+					log('toon', 'dropping: ', this.equipped )
 					this.equipped[ i ] = undefined
 					update_eqp = true
 				}
