@@ -96,6 +96,9 @@ input{
 #alert-contain .npc{
     background: rgb(250, 220, 150);
 }
+#alert-contain .health{
+	background: rgb( 255, 100, 100)
+}
 #alert-contain .combat{
     background: linear-gradient( 12deg, orange, red );
     color: black;

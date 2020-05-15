@@ -6,7 +6,7 @@ import env from './env.js'
 
 if( env.EXPOSE ) window.hal = hal
 
-const valid_type = ['error', 'success', 'npc', 'combat']
+const valid_type = ['error', 'success', 'npc', 'combat', 'health']
 
 export default function hal( type, msg, time, redirect ){
 

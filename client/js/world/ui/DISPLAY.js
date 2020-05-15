@@ -51,13 +51,16 @@ class Display {
 
 		if( packet.success ){
 			target.health.current = packet.target_health
-			TARGET.show_health()
 			if( TARGET.target.mud_id === packet.target ){
+				TARGET.show_health()
+				if( packet.target.health.current <= 0 ){
 
+				}
 			}else if( packet.target === window.TOON.mud_id ){
+				window.TOON.show_health()
 				flash_hurt()
 				if( packet.target.health.current <= 0 ){
-					show_dead()
+					overlay_toon_death()
 				}
 			}
 		}
@@ -88,7 +91,7 @@ function flash_hurt(){
 }
 
 
-function show_dead(){
+function overlay_toon_death(){
 
 	const overlay = document.createElement('div')
 	document.body.appendChild( overlay )

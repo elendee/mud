@@ -183,6 +183,14 @@ export default class Toon {
 
 
 
+	show_health(){
+
+		hal('health', 'toon health: ' + this.health.current, 2000 )
+
+	}
+
+
+
 	refresh_equipped( equipment ){
 
 		console.log( 'eqp: ', equipment )

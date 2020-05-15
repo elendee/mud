@@ -11,7 +11,7 @@ import TARGET from './TARGET.js'
 const action_bar = document.getElementById('action-bar')
 let ab_buttons = []
 
-const char_display = ['name', 'height', 'speed']
+const char_display = ['name', 'height', 'speed', 'health']
 
 const slot_map = ['left shoulder', 'left hip', 'left hand', 'right hand', 'right hip', 'right shoulder']
 // const inv_display = []
