@@ -9,6 +9,7 @@ body{
     background-position: 50% 100%;
 }
 
+
 form{
     display: inline-block;
     vertical-align: top;
@@ -74,4 +75,28 @@ form input::placeholder{
 #register-form input,
 #register-form input::placeholder{
     text-align: right;
+}
+
+#discord{
+    position: fixed;
+    z-index: 9;
+    color: white;
+    top: 33%;
+    left: 50%;
+    width: 300px;
+    text-align: center;
+    margin-left: -150px;
+}
+
+#discord a{
+    text-decoration: none;
+    color: #a77e33;
+/*     opacity: .5; */
+    display: inline-block;
+    border: 1px solid grey;
+    padding: 20px 40px;
+}
+
+#discord a:hover{
+    opacity: 1;
 }

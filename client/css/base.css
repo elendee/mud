@@ -15,6 +15,14 @@ input{
     box-sizing: border-box;
 }
 
+div,
+p,
+a,
+input{
+/* 	font-family: monospace; */
+/* 	letter-spacing: 1px; */
+}
+
 .flex-liner{
 	display: flex;
 	justify-content: center;

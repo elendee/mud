@@ -221,6 +221,11 @@ const render = function( type, request ){
 								<input type='submit' class='submit button'>
 							</form>
 						</div>
+						<div id='discord'>
+							<a target='_blank' href='https://discord.gg/7Dsjc9V'>
+								https://discord.gg/7Dsjc9V
+							</a>
+						</div>
 						<div id='play-contain'>
 							<form id='play-form' method='post' action='/world'>
 								<input type='hidden' name='play' value='human'>
