@@ -47,6 +47,7 @@ function move( dir, pressed ){
 		case 'forward':
 			STATE.move.forward = pressed
 			if( pressed ){
+				TOON.look_at(false, 'north')
 				STATE.stream_down = true
 				window.TOON.needs_stream = true
 				if( !STATE.animating ) animate( true )
@@ -58,6 +59,7 @@ function move( dir, pressed ){
 		case 'back':
 			STATE.move.back = pressed
 			if( pressed ){
+				TOON.look_at(false, 'south')
 				STATE.stream_down = true
 				window.TOON.needs_stream = true
 				if( !STATE.animating ) animate( true )
@@ -69,6 +71,7 @@ function move( dir, pressed ){
 		case 'left':
 			STATE.move.left = pressed
 			if( pressed ){
+				TOON.look_at(false, 'west')
 				STATE.stream_down = true
 				window.TOON.needs_stream = true
 				if( !STATE.animating ) animate( true )
@@ -80,6 +83,7 @@ function move( dir, pressed ){
 		case 'right':
 			STATE.move.right = pressed
 			if( pressed ){
+				TOON.look_at(false, 'east')
 				STATE.stream_down = true
 				window.TOON.needs_stream = true
 				if( !STATE.animating ) animate( true )
@@ -196,8 +200,8 @@ function animate( start ){
 
 	if( STATE.stream_down ){
 
-		direction[0] = Number( STATE.move.left ) - Number( STATE.move.right )
-	    direction[1] = Number( STATE.move.forward ) - Number( STATE.move.back )
+		direction[0] = Number( STATE.move.right ) - Number( STATE.move.left )
+	    direction[1] = Number( STATE.move.back ) - Number( STATE.move.forward )
 
 	    distance[0] = direction[0] * delta_seconds * window.TOON.speed
 	    distance[1] = direction[1] * delta_seconds * window.TOON.speed

@@ -113,10 +113,18 @@ class Zone {
 		LIGHT.directional.target = ltarget
 
 		// LIGHT.spotlight.target = TOON.MODEL
+		TOON.MODEL.position.copy( TOON.ref.position )
+
+		TOON.MODEL.position.y = lib.get_dimensions( TOON.MODEL ).y / 2
 
 		SCENE.add( TOON.MODEL )
+
+		// console.log( lib.get_dimensions( TOON.MODEL ) )
 		// SCENE.add( LIGHT.helper )
-		TOON.MODEL.position.copy( TOON.ref.position )
+
+		// les get dat Y attr ------------------------------
+
+		// TOON.MODEL.position.copy( TOON.ref.position )
 
 		LIGHT.helper.position.copy( TOON.MODEL.position )
 
@@ -124,6 +132,15 @@ class Zone {
 		// TOON.MODEL.add( CAMERA )
 		SCENE.add( CAMERA )
 	    CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+
+	    if( env.LOCAL && 0 ){
+			setTimeout(function(){
+				CAMERA.offset.set( -50, 50, 50 )
+				CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+				CAMERA.lookAt( window.TOON.MODEL.position )
+				RENDERER.frame( SCENE )
+			}, 1000)
+		}
 		// CAMERA.position.set( 0, 150, 20 )
 
 

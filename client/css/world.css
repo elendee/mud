@@ -153,8 +153,8 @@ canvas#mud-flats{
 	margin-top: 5%;
 	border-radius: 200px;
 	overflow: hidden;
-	border: 1px solid grey;
-		background: radial-gradient( rgba( 255, 255, 255, .1), transparent, rgba(0, 0, 0, .8) );
+	border: 1px solid lightgrey;
+	background: radial-gradient( rgba( 185, 185, 185, .5), rgba(0, 0, 0, 1) );
     
 /* 	display: none; */
 }

@@ -160,7 +160,7 @@ class Game {
 		}else{ // placing an uncamped toon:
 
 			TOON.ref.position.x = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
-			TOON.ref.position.y = TOON.height / 2
+			TOON.ref.position.y = 0
 			TOON.ref.position.z = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
 
 			start_zone_id = env.STARTER_ZONE_ID

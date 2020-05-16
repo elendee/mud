@@ -226,6 +226,8 @@ function wheel( e ){
 
 	CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
 
+	CAMERA.lookAt( window.TOON.MODEL.position )
+
 	RENDERER.frame( SCENE )
 
 	// center_camera()

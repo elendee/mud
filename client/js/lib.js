@@ -2,7 +2,7 @@ import {
 	Vector3,
 	Quaternion,
 	BufferGeometry,
-
+	Box3
 } from './lib/three.module.js'
 
 import GLTF from './three/GLTF.js'
@@ -257,6 +257,18 @@ function randomize_matrix( matrix, options ){
 }
 
 
+
+function get_dimensions( mesh ){
+	const box = new Box3()
+	box.setFromObject( mesh )
+	return {
+		x: box.max.x - box.min.x,
+		y: box.max.y - box.min.y,
+		z: box.max.z - box.min.z,
+	}
+}
+
+
 const entity_map = {
 	'flora': 'FLORA',
 	'npc': 'NPCS',
@@ -281,6 +293,7 @@ export {
 	load,
 	randomize_matrix,
 	entity_map,
-	identify
+	identify,
+	get_dimensions
 	// clear_object
 }
