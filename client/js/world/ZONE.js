@@ -196,8 +196,8 @@ class Zone {
 
 
 		const uniforms = {
-		    colorB: {type: 'vec3', value: new Color(0x112211)},
-		    colorA: {type: 'vec3', value: new Color(0x221122)}
+		    colorA: {type: 'vec3', value: new Color( 0x221122 ) },
+		    colorB: {type: 'vec3', value: new Color( 0x112211 ) },
 		}
 
 		function vertexShader() {
@@ -249,7 +249,7 @@ class Zone {
 		const shrubs = new Array(10000)
 		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
 		const shrub_material = new MeshLambertMaterial({
-			color: 'rgb(20, 60, 20)',
+			// color: 'rgb(' + Math.floor( Math.random() * 40 ) + ', 60, 20)',
 			color: uniforms.colorB.value
 		})
 		// const shrub_material = new ShaderMaterial({
@@ -269,7 +269,7 @@ class Zone {
 				exclude: {
 					y: true
 				}
-			})
+			}, 'blorb' )
 			shrubberies.setMatrixAt( i, matrix )
 		}
 		SCENE.add( shrubberies )
@@ -281,7 +281,11 @@ class Zone {
 
 		
 		// standard flora
+		let count = 0
 		for( const mud_id of Object.keys( zone_data._FLORA ) ){
+
+			if( count > 50 ) return true // until i figure out selectable InstanceMesh ....
+			count++
 
 			const flora = new Flora( zone_data._FLORA[ mud_id ] )
 			this.FLORA[ mud_id ] = flora

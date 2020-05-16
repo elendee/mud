@@ -238,11 +238,13 @@ const rando_position = new Vector3()
 const rando_quaternion = new Quaternion()
 const rando_scale = new Vector3()
 
-function randomize_matrix( matrix, options ){
+function randomize_matrix( matrix, options, blorb ){
 
 	rando_position.x = options.exclude.x ? 0 : Math.random() * options.position
 	rando_position.y = options.exclude.y ? 0 : Math.random() * options.position
 	rando_position.z = options.exclude.z ? 0 : Math.random() * options.position
+
+	if( blorb ) rando_position.y = -1
 
 	// rando_rotation.x = Math.random() * 2 * Math.PI
 	// rando_rotation.y = Math.random() * 2 * Math.PI
@@ -250,7 +252,7 @@ function randomize_matrix( matrix, options ){
 
 	// rando_quaternion.setFromEuler( rotation )
 
-	rando_scale.x = rando_scale.y = rando_scale.z = ( 1 - options.scale ) + ( 2 * ( Math.random() * options.scale ) )
+	rando_scale.x = rando_scale.y = rando_scale.z = 1 + ( 1 - options.scale ) + ( 2 * ( Math.random() * options.scale ) )
 
 	matrix.compose( rando_position, rando_quaternion, rando_scale )
 
