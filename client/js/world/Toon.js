@@ -15,6 +15,7 @@ import {
 } from '../lib/three.module.js'
 
 import RENDERER from '../three/RENDERER.js'
+import SCENE from '../three/SCENE.js'
 
 import * as ACTION_BAR from './ui/ACTION_BAR.js'
 import DEV from './ui/DEV.js'
