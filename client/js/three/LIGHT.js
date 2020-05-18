@@ -52,7 +52,11 @@ const helper = new DirectionalLightHelper( directional )
 
 
 
-const hemispherical = new HemisphereLight( GLOBAL.HEMI_BACK_COL, GLOBAL.HEMI_FACE_COL, GLOBAL.HEMI_INTENSITY )
+const hemispherical = new HemisphereLight( 
+	GLOBAL.HEMI_BACK_COL, 
+	GLOBAL.HEMI_FACE_COL, 
+	GLOBAL.HEMI_INTENSITY 
+)
 
 if( env.EXPOSE ) {
 	window.LIGHT = {

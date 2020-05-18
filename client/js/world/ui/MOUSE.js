@@ -260,6 +260,8 @@ function detect_object_clicked( e, ZONE ){
 
 	if( intersects.length > 0 ) { // 1 = skybox
 
+		console.log( intersects[0].object )
+
 		let clicked = false
 		for( const int of intersects ){
 			clicked = recurse_for( 'clickable', int.object )
@@ -269,6 +271,8 @@ function detect_object_clicked( e, ZONE ){
 		// console.log('intersects length: ', intersects.length )
 
 		if( clicked ){
+
+			// console.log('instanceId - ', clicked.instanceId )
 
 			// console.log('what????', clicked.userData )
 
@@ -351,7 +355,7 @@ function recurse_for( type, search ){
 
 	// let search = Object.assign( {}, obj )
 
-	if( type === 'clickable'){
+	if( type === 'clickable' ){
 
 		if( check_clickable( search ) ) return search
 

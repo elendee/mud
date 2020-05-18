@@ -1,10 +1,14 @@
 import GLOBAL from '../../GLOBAL.js'
 
-// import { 
+import * as lib from '../../lib.js'
+
+import Clickable from '../Clickable.js'
+
+import { 
 	// CylinderBufferGeometry,
 	// MeshBasicMaterial,
 	// MeshLambertMaterial,
-	// Mesh,
+	Mesh,
 	// DoubleSide,
 	// PlaneBufferGeometry
 	// Vector3,
@@ -12,10 +16,12 @@ import GLOBAL from '../../GLOBAL.js'
 	// SpriteMaterial,
 	// Sprite,
 	// RepeatWrapping
-// } from '../../lib/three.module.js'
+} from '../../lib/three.module.js'
 
 // import Loader from '../../three/texLoader.js'
 import GLTF from '../../three/GLTF.js'
+import BuffGeoLoader from '../../three/BuffGeoLoader.js'
+import ObjectLoader from '../../three/ObjectLoader.js'
 
 
 // GLOBALize these:
@@ -66,58 +72,53 @@ export default class Flora {
 
 	}
 
-	model(){
+	async model( init ){
 
-		const flora = this
+		if( init.mesh ){ // already instantiated
 
-		return new Promise((resolve, reject) => {
+			if( init.mesh.isMesh ){ 
 
-			GLTF.load( '/resource/geometries/mypine.glb',
+				this.MODEL = init.mesh.clone()
 
-				( obj ) => {
+				return true
 
-					// console.log( obj.scene.children[0].geometry )
+			}else if( init.mesh.isScene ){
 
-					flora.MODEL = obj.scene
-
-					// console.log( flora.MODEL )
-
-					// tree.MODEL.position.copy( tree.ref.position )
-
-					// tree.MODEL.scale.multiplyScalar( .8 + Math.random() )
-
-					for( const child of flora.MODEL.children ){
-						child.castShadow = true
-						child.material.color.set('rgb(' + Math.floor( Math.random() * 100 ) + ',200,' + Math.floor( Math.random() * 100 ) + ')')
+				this.MODEL = init.mesh.clone()
+				this.MODEL.receiveShadow = true
+				this.MODEL.castShadow = true
+				this.MODEL.rotation.y += Math.random()
+				this.MODEL.traverse(( object )=>{
+					if( object.isMesh ){
+						object.material = init.material
+						// object.material.color.set('blue') // affects all..
+						object.receiveShadow = true
+						object.castShadow = true
 					}
-
-					resolve()
-
-					// tree.MODEL.userData = {
-					// 	clickable: true,
-					// 	type: 'tree'
-					// }
-
-					// resolve( tree.MODEL )
-
-				}, (xhr) => {
-
-					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
-
-				}, ( error ) => {
-
-					console.log('err loading model: ', error )
-
-					reject()
-
 				})
 
-			})
+			}else{
+				console.log('invalid mesh passed.....', init.mesh )
+			}
 
+			if( this.MODEL ){
+				this.MODEL.userData = new Clickable( this )
+			}
 
-		// this.MODEL = new Mesh( geometries.tree, material )
-		// this.MODEL.castShadow = true
-		// this.MODEL.rotation.x = Math.PI / 2
+		}else if( init.map ){ // instantiating the prototype
+
+			const flora = this
+
+			const url = '/resource/geometries/' + lib.identify( this ) + '.json'
+
+			const scene = await lib.load('json', url )
+
+			init.map[ this.type + '_' + this.subtype ] = scene
+
+			return true
+
+		}
+		
 	}
 
 }

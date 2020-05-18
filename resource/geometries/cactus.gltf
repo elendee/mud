@@ -1,0 +1,165 @@
+{
+  "asset": {
+    "generator": "Khronos Blender glTF 2.0 I/O",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "Icosphere.004",
+      "scale": [
+        0.7254077196121216,
+        0.7254077196121216,
+        0.7254077196121216
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Icosphere.004",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2,
+            "TEXCOORD_1": 3,
+            "TEXCOORD_2": 4,
+            "TEXCOORD_3": 5,
+            "TEXCOORD_4": 6,
+            "TEXCOORD_5": 7
+          },
+          "indices": 8
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 354,
+      "max": [
+        0.9482054710388184,
+        2.823770046234131,
+        1.0761158466339111
+      ],
+      "min": [
+        -0.8483685851097107,
+        -0.19489121437072754,
+        -1.3674283027648926
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "count": 354,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5123,
+      "count": 378,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 4248,
+      "byteOffset": 0
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4248,
+      "byteOffset": 4248
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2832,
+      "byteOffset": 8496
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2832,
+      "byteOffset": 11328
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2832,
+      "byteOffset": 14160
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2832,
+      "byteOffset": 16992
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2832,
+      "byteOffset": 19824
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2832,
+      "byteOffset": 22656
+    },
+    {
+      "buffer": 0,
+      "byteLength": 756,
+      "byteOffset": 25488
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "cactus_data.bin",
+      "byteLength": 26244
+    }
+  ]
+}

@@ -6,6 +6,8 @@ import CAMERA from '../three/CAMERA.js'
 import RENDERER from '../three/RENDERER.js'
 import * as LIGHT from '../three/LIGHT.js'
 
+import * as SHADERS from './env/shaders.js'
+
 import GLOBAL from '../GLOBAL.js'
 import TOONS from './TOONS.js'
 
@@ -14,6 +16,7 @@ import Toon from './Toon.js'
 // import BuffGeoLoader from '../three/BuffGeoLoader.js'
 
 import Flora from './env/Flora.js'
+// import Npc from './Npc.js'
 import grass_mesh from './env/grass_mesh.js'
 
 import * as KEYS from './ui/KEYS.js'
@@ -25,6 +28,7 @@ import CHAT from './ui/CHAT.js'
 import * as ANIMATE from './animate.js'
 
 import {
+	Geometry,
 	Vector3,
 	Quaternion,
 	PlaneBufferGeometry,
@@ -72,6 +76,9 @@ class Zone {
 		this.STRUCTURES = {}
 		this.NPCS = {}
 		this.TOONS = {}
+
+		this.model_map = []
+		this.material_map = []
 
 	}
 
@@ -146,7 +153,7 @@ class Zone {
 
 
 		setTimeout(function(){
-			// CAMERA.lookAt( window.TOON.MODEL.position.clone().add( TOON.HEAD.position ) )
+
 			CAMERA.lookAt( TOON.MODEL.position ) 
 
 			RENDERER.frame( SCENE )
@@ -165,13 +172,28 @@ class Zone {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 	async render( zone_data ){
 
-		// tiles
+
+
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// tiles
 
 		const geometry = new PlaneBufferGeometry( MAP.TILE_WIDTH, MAP.TILE_WIDTH, 32 )
-		const material = new MeshLambertMaterial({ 
-			color: 0xaaaa88, 
+		const material = new MeshLambertMaterial({
+			color: 0xaaaa88,
 			// color: 0x443333, 
 			map: ground,
 			// side: DoubleSide 
@@ -190,67 +212,75 @@ class Zone {
 				ground.position.set( x * MAP.TILE_WIDTH + ( 0 ), .1, z * MAP.TILE_WIDTH  + ( 0 ))
 				SCENE.add( ground )
 
-			}	
+			}
 		}
 
 
 
-		const uniforms = {
-		    colorA: {type: 'vec3', value: new Color( 0x221122 ) },
-		    colorB: {type: 'vec3', value: new Color( 0x112211 ) },
-		}
-
-		function vertexShader() {
-			return `
-				void main() {
-				  gl_Position = projectionMatrix *
-				    modelViewMatrix *
-				    vec4(position,1.0);
-				}
-			`
-			// return `
-			// 	varying vec3 vUv; 
-
-			// 	void main() {
-			// 		vUv = position; 
-
-		 //    		vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-		 //    		gl_Position = projectionMatrix * modelViewPosition; 
-		 //    	}
-		 //    `
-		}
-
-		function fragmentShader(){
-			return `
-			    uniform vec3 colorA; 
-			    uniform vec3 colorB; 
-			    varying vec3 vUv;
-
-			    void main() {
-					gl_FragColor = vec4( colorA, 1.0 );			      
-			    }`  
-		}
-		// gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
-
-		// const cube_geo = new BoxBufferGeometry(10, 10, 10)
-		// // const cube_geo = new BoxGeometry(10, 10, 10)
-		// const cube_mat = new ShaderMaterial({
-		// 	uniforms: uniforms,
-		// 	vertexShader: vertexShader(),
-		// 	fragmentShader: fragmentShader()
-		// })
-		// const cube = new Mesh( cube_geo, cube_mat )
-		// SCENE.add( cube )
-		// cube.position.set( 50, 1, 10 )
 
 
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// foliage
+
+		await this.instantiate_instanced_meshes()
+
+
+
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// flora
+
+		await this.create_entity_prototypes('flora', zone_data )	
+
+		this.instantiate_entities( this.FLORA, zone_data._FLORA, Flora )
+
+		// await this.create_entity_prototypes('npc', zone_data )	
+
+		// this.instantiate_entities( this.NPCS, zone_data._NPCS, Npc )
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// npc
+
+		// for( const mud_id of Object.keys( zone_data._NPCS ) ){
+		// 	const npc = new Npc( zone_data._NPCS[ mud_id ] )
+		// 	this.NPCS[ mud_id ] = npc
+		// 	// console.log('placing: ', npc )
+		// 	npc.model()
+		// 	.then(res=>{
+		// 		npc.MODEL.position.set(
+		// 			npc.x,
+		// 			npc.y,
+		// 			npc.z,
+		// 		)
+		// 		npc.MODEL.userData = {
+		// 			clickable: true,
+		// 			type: 'npc',
+		// 			mud_id: mud_id
+		// 		}
+		// 		SCENE.add( npc.MODEL )
+		// 	}).catch(err=>{
+		// 		console.log('err npc load: ', err )
+		// 	})			
+		// }
+
+	}
+
+
+
+
+	async instantiate_instanced_meshes(){
 		// instanced meshes
 		// shrubs
-		const shrubs = new Array(10000)
+		const uniforms = SHADERS.uniforms
+		const shrubs = new Array(2000)
 		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
+		// const shrub_material = new ShaderMaterial({
+		// 	uniforms: SHADERS.uniforms,
+		// 	fragmentShader: SHADERS.baseFragmentShader(),
+		// 	// vertexShader: SHADERS.baseVertexShader(),
+		// })
 		const shrub_material = new MeshLambertMaterial({
 			// color: 'rgb(' + Math.floor( Math.random() * 40 ) + ', 60, 20)',
-			color: uniforms.colorB.value
+			color: 'rgb( 60, 60, 20)',
+			// color: uniforms.colorB.value
 		})
 		// const shrub_material = new ShaderMaterial({
 		// 	uniforms: uniforms,
@@ -260,8 +290,9 @@ class Zone {
 		const matrix = new Matrix4()
 		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
 		shrubberies.castShadow = true
-		// shrubberies.userData.clickable = true
-		// shrubberies.userData.type = 'flora'
+		shrubberies.userData.clickable = true
+		shrubberies.userData.type = 'flora'
+		shrubberies.userData.subtype = 'foliage'
 		for( let i = 0; i < shrubs.length; i++ ){
 			lib.randomize_matrix( matrix, {
 				position: MAP.ZONE_WIDTH,
@@ -273,69 +304,107 @@ class Zone {
 			shrubberies.setMatrixAt( i, matrix )
 		}
 		SCENE.add( shrubberies )
+	}
 
 
 
 
 
+	async create_entity_prototypes( type, zone_data ){
 
-		
-		// standard flora
-		let count = 0
-		for( const mud_id of Object.keys( zone_data._FLORA ) ){
+		const zone = this
 
-			if( count > 50 ) return true // until i figure out selectable InstanceMesh ....
-			count++
+		const model_inits = []
+		let entity, entity_address
 
-			const flora = new Flora( zone_data._FLORA[ mud_id ] )
-			this.FLORA[ mud_id ] = flora
-			flora.model()
-			.then(res=>{
-				flora.MODEL.position.set(
-					flora.x,
-					flora.y,
-					flora.z,
-				)
-				flora.MODEL.userData = {
-					clickable: true,
-					type: 'flora',
-					subtype: flora.subtype,
-					mud_id: mud_id
+		switch( type ){
+
+			case 'flora':
+
+				for( const mud_id of Object.keys( zone_data._FLORA ) ){
+
+					entity = zone_data._FLORA[ mud_id ]
+
+					if( entity.subtype ){
+
+						entity_address = entity.type + '_' + entity.subtype
+
+						if( !zone.model_map[ entity_address ] ){
+
+							zone.model_map[ entity_address ] = 'awaiting'
+
+							const one_time_model = new Flora( entity )
+							model_inits.push( one_time_model.model({
+									map: zone.model_map 
+								}) 
+							)
+
+						}
+
+						if( !zone.material_map[ entity_address ] ){
+
+							zone.material_map[ entity_address ] = new ShaderMaterial({
+								uniforms: SHADERS.uniforms,
+								fragmentShader: SHADERS.sampleFragment(),
+								vertexShader: SHADERS.baseVertexShader(),
+							})
+
+							// zone.material_map[ entity_address ] = new MeshLambertMaterial({
+							// 	color: 'rgb(10, 20, 5)'
+							// })
+
+						}
+
+					}
+
 				}
-				SCENE.add( flora.MODEL )
-			}).catch(err=>{
-				console.log('err flora load: ', err )
-			})
 
-		}
+				// const meshes = 
+				await Promise.all( model_inits )
 
+				return true
 
+				break;
 
-		// npc
+			default: break;
 
-		for( const mud_id of Object.keys( zone_data._NPCS ) ){
-			const npc = new Npc( zone_data._NPCS[ mud_id ] )
-			this.NPCS[ mud_id ] = npc
-			// console.log('placing: ', npc )
-			npc.model()
-			.then(res=>{
-				npc.MODEL.position.set(
-					npc.x,
-					npc.y,
-					npc.z,
-				)
-				npc.MODEL.userData = {
-					clickable: true,
-					type: 'npc',
-					mud_id: mud_id
-				}
-				SCENE.add( npc.MODEL )
-			}).catch(err=>{
-				console.log('err npc load: ', err )
-			})			
 		}
 
 	}
+
+
+
+
+	instantiate_entities( dest_group, source_group, base_class ){
+
+		for( const mud_id of Object.keys( source_group )){
+
+			const entity = new base_class( source_group[ mud_id ])
+
+			const model_key = entity.type + '_' + entity.subtype
+
+			let this_mesh = this.model_map[ model_key ]
+			let this_material = this.material_map[ model_key ]
+
+			if( this_mesh || mesh ){
+				entity.model({
+					mesh: this_mesh,
+					material: this_material
+				})
+				.catch( err => { console.log('err cloning mesh: ', err ) })
+			}
+
+			dest_group[ entity.mud_id ] = entity
+
+			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
+
+			SCENE.add( entity.MODEL )
+
+		}
+	}
+
+
+
 
 
 

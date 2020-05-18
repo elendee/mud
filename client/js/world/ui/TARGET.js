@@ -31,13 +31,14 @@ import {
 
 
 
-const reticule_map = texLoader.load('/resource/textures/reticule_map2.png')
+const reticule_map = texLoader.load('/resource/textures/circle.png')
 const geo = new PlaneBufferGeometry(10, 10, 1)
 const material = new MeshLambertMaterial({
-	// color: 0xffff55,
+	color: 0xffff55,
 	map: reticule_map,
 	side: DoubleSide,
-	transparent: true
+	transparent: true,
+	opacity: .6
 })
 const reticule = new Mesh( geo, material )
 reticule.rotation.x = Math.PI / 2
@@ -127,9 +128,13 @@ class Target {
 
 			this.show_health()
 
+		}else if( userData.subtype === 'foliage' ){
+
+			console.log('foliage:', clicked )
+
 		}else{
 
-			console.log('no target')
+			console.log('no target: ', clicked )
 
 			this.last_rendered = false
 
@@ -200,12 +205,12 @@ class Target {
 		// max = Math.max( max, 15 )
 		this.reticule.scale.set( Math.max( .5, bbox_size_vector.x / 8 ) , Math.max( .5, bbox_size_vector.z / 8 ), 1 )
 
-		console.log( this.reticule.scale )
+		// console.log( this.reticule.scale )
 		// this.reticule.scale.set( 1, 1, 1 )
 
 		// console.log(' bbox: ', bbox_size_vector )
 
-		this.reticule.position.set( 0, this.target.MODEL.position.y + .3, 0 )
+		this.reticule.position.set( 0, -this.target.MODEL.position.y + .2, 0 )
 			// this.target.MODEL.position.x,
 			// this.target.MODEL.position.y + 5,
 			// this.target.MODEL.position.z
