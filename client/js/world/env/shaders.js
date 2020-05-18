@@ -52,7 +52,7 @@ function sampleFragment(){
 
 		void main() {
 			vec2 st = gl_FragCoord.xy/1000.;
-			gl_FragColor = vec4(st.x,st.y,1.,1.0);
+			gl_FragColor = vec4(st.x,st.y,u_mouse.x,1.0);
 		}`
 }
 

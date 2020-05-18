@@ -54,18 +54,6 @@ export default (function(){
 	renderer.domElement.id = 'mud-flats'
 	renderer.domElement.tabindex = 1
 
-	renderer.onWindowResize = function(){
-
-		CAMERA.aspect = window.innerWidth / window.innerHeight
-		CAMERA.updateProjectionMatrix()
-
-		renderer.setSize( 
-			window.innerWidth / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], 
-			window.innerHeight / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], 
-			false 
-		)
-
-	}
 
 	renderer.frame = function( scene ){
 

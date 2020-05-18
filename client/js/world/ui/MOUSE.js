@@ -150,59 +150,21 @@ function orient_patron( x, y, e ){
 }
 
 
-// function adjust_camera_altitude( y ){
-
-// 	toon_offset = window.TOON.height / 2
-// 	let above_ground = CAMERA.position.y > -toon_offset + 1
-
-// 	if( y < 0 ){
-
-// 		if( above_ground ){
-// 			CAMERA.position.y += ( y / 2 )	
-// 		}
-
-// 	}else{
-
-// 		wheel_projection.copy( CAMERA.position )
-// 		wheel_projection.y += ( y / 2 )
-
-// 		if( wheel_projection.distanceTo( GLOBAL.ORIGIN ) < GLOBAL.MAX_CAM ){
-// 			CAMERA.position.y += ( y / 2 )	
-// 			CAMERA.lookAt( GLOBAL.ORIGIN )
-// 		}
-
-// 	}
-
-// }
-
-function center_camera(){
-
-	// head_pos.copy( window.TOON.MODEL.position ).add( window.TOON.HEAD.position )
-
-	// CAMERA.lookAt( head_pos )
-	// CAMERA.lookAt( window.TOON.MODEL.position )
-
-}
-
 
 function wheel( e ){
 
 	if( STATE.stream_down || STATE.mousedown.left || STATE.mousedown.right || STATE.mousedown.middle )  return false
 
-	// toToon.subVectors( GLOBAL.ORIGIN, CAMERA.position ).normalize().multiplyScalar( 5.5 )
 	toToon.subVectors( GLOBAL.ORIGIN, CAMERA.offset ).normalize().multiplyScalar( 5.5 )
 
 	if( e.wheelDelta < 0 ) toToon.multiplyScalar( -1 )
 
-	// wheel_projection.copy( CAMERA.position ).add( toToon )
 	wheel_projection.copy( CAMERA.offset ).add( toToon )
 
 	if( e.wheelDelta > 0 ){
 
 		let dist = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		if( dist > ( env.MIN_CAM || GLOBAL.MIN_CAM ) + 5 ){
-			// console.log( dist )
-			// CAMERA.position.add( toToon )
 			CAMERA.offset.add( toToon )
 		}
 
@@ -211,26 +173,19 @@ function wheel( e ){
 		let dist1 = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		let dist2 = env.MAX_CAM || GLOBAL.MAX_CAM
 
-		// console.log( dist1, dist2 )
 
 		if( dist1 < dist2 && wheel_projection.y > 0 - ( window.TOON.height / 2 ) ){
-			// CAMERA.position.add( toToon )
 			CAMERA.offset.add( toToon )
 		}else{
-			// console.log('scroll back block' ) // , wheel_projection
 		}
 
 	}
-
-	// CAMERA.rotation.z = Math.PI
 
 	CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
 
 	CAMERA.lookAt( window.TOON.MODEL.position )
 
 	RENDERER.frame( SCENE )
-
-	// center_camera()
 
 }
 

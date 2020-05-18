@@ -17,6 +17,10 @@ import User from './User.js'
 
 import Toon from './world/Toon.js'
 
+
+
+
+
 document.addEventListener('DOMContentLoaded', function(){
 
 	ACTION_BAR.init()
@@ -77,3 +81,9 @@ async function init_session( res ){
 	return true
 
 }
+
+
+
+
+
+

@@ -109,9 +109,9 @@ class Zone {
 		SCENE.add( LIGHT.directional )
 		// LIGHT.directional.position.set( MAP.ZONE_WIDTH * .66, 100, MAP.ZONE_WIDTH * .66 )
 		LIGHT.directional.position.set( 
-			MAP.ZONE_WIDTH * 1.2, 
-			400, 
-			MAP.ZONE_WIDTH * 1.2 
+			MAP.ZONE_WIDTH, 
+			501, 
+			MAP.ZONE_WIDTH 
 		)
 
 		const ltarget = new Object3D()
@@ -343,15 +343,15 @@ class Zone {
 
 						if( !zone.material_map[ entity_address ] ){
 
-							zone.material_map[ entity_address ] = new ShaderMaterial({
-								uniforms: SHADERS.uniforms,
-								fragmentShader: SHADERS.sampleFragment(),
-								vertexShader: SHADERS.baseVertexShader(),
-							})
-
-							// zone.material_map[ entity_address ] = new MeshLambertMaterial({
-							// 	color: 'rgb(10, 20, 5)'
+							// zone.material_map[ entity_address ] = new ShaderMaterial({
+							// 	uniforms: SHADERS.uniforms,
+							// 	fragmentShader: SHADERS.sampleFragment(),
+							// 	vertexShader: SHADERS.baseVertexShader(),
 							// })
+
+							zone.material_map[ entity_address ] = new MeshLambertMaterial({
+								color: 'rgb(10, 20, 5)'
+							})
 
 						}
 
@@ -539,6 +539,23 @@ class Zone {
 
 }
 
+
+
+
+
+RENDERER.onWindowResize = function(){
+
+	CAMERA.aspect = window.innerWidth / window.innerHeight
+	CAMERA.updateProjectionMatrix()
+
+	RENDERER.setSize( 
+		window.innerWidth / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], 
+		window.innerHeight / GLOBAL.RES_MAP[ GLOBAL.RES_KEY ], 
+		false 
+	)
+
+	RENDERER.frame( SCENE )
+}
 
 
 
