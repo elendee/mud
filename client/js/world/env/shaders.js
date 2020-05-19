@@ -24,10 +24,16 @@ function baseVertexShader() {
 		void main() {
 		  gl_Position = projectionMatrix *
 		    modelViewMatrix *
-		    vec4(position,1.0);
+		    vec4(position,1.);
 		}
+
 `
 	// return `
+	// 	void main() {
+	// 	  gl_Position = gl_Position;
+	// 	}
+	// `
+	// return 
 	// 	varying vec3 vUv; 
 
 	// 	void main() {

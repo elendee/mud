@@ -30,18 +30,18 @@ import {
 } from '../../lib/three.module.js'
 
 
-
+const reticule_size = 10
 const reticule_map = texLoader.load('/resource/textures/circle.png')
-const geo = new PlaneBufferGeometry(10, 10, 1)
+const geo = new PlaneBufferGeometry( reticule_size, reticule_size, 1)
 const material = new MeshLambertMaterial({
 	color: 0xffff55,
 	map: reticule_map,
-	side: DoubleSide,
+	// side: DoubleSide,
 	transparent: true,
 	opacity: .6
 })
 const reticule = new Mesh( geo, material )
-reticule.rotation.x = Math.PI / 2
+reticule.rotation.x = -Math.PI / 2
 
 
 
@@ -181,42 +181,22 @@ class Target {
 		}
 
 		if( this.last_rendered === this.target.mud_id ){
-			console.log('reduncdant click')
+			console.log('redundant click')
 			return false
 		}
 
-		// object.children[0].
-
-		// for( const child of this.target.MODEL.children ){
-		// 	child.material.opacity = .3
-		// 	child.material.transparent = true
-		// }
-
-		// this.parent = this.target
-
-		// console.log( this.target )
-
-		// this.parent.is_target = true
-
 		let bbox_size_vector = new Vector3()
 		new Box3().setFromObject( this.target.MODEL ).getSize( bbox_size_vector )
-		// let max = Math.max( bbox_size_vector.x, bbox_size_vector.y ) * 1.5
-		// max = Math.min( max, 400 )
-		// max = Math.max( max, 15 )
-		this.reticule.scale.set( Math.max( .5, bbox_size_vector.x / 8 ) , Math.max( .5, bbox_size_vector.z / 8 ), 1 )
 
-		// console.log( this.reticule.scale )
-		// this.reticule.scale.set( 1, 1, 1 )
+		// reticule rotated 90deg, so z === y 
+		this.reticule.scale.x = Math.ceil( ( bbox_size_vector.x / this.target.MODEL.scale.x ) / reticule_size )
+		this.reticule.scale.y = Math.ceil( ( bbox_size_vector.z / this.target.MODEL.scale.z ) / reticule_size )
 
-		// console.log(' bbox: ', bbox_size_vector )
+		const wpos = new Vector3()
+		this.target.MODEL.getWorldPosition( wpos )
 
-		this.reticule.position.set( 0, -this.target.MODEL.position.y + .2, 0 )
-			// this.target.MODEL.position.x,
-			// this.target.MODEL.position.y + 5,
-			// this.target.MODEL.position.z
-		 // )
+		this.reticule.position.set( 0, ( wpos.y / this.target.MODEL.scale.y ) + .01, 0 )
 		this.target.MODEL.add( this.reticule )
-
 
 		// SOUND.play( SOUND.ui.blip[0] )
 

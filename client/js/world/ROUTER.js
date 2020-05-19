@@ -52,7 +52,7 @@ const bind = function(){
 			switch( obj.type ){
 
 				case 'session_init':
-					// console.log('got init: ', obj )
+					console.log('got init: ', obj )
 					for( const key of Object.keys( obj.map )){
 						MAP[ key ] = obj.map[ key ]
 					}

@@ -55,23 +55,23 @@
 
 .popup .stat{
 	margin: 5px 0;
+    border-bottom: 1px solid rgb(20, 20, 20);
+/* 	border: 1px solid; */
+}
+
+.popup .content>.stat,
+.popup .stat-wrapper{
+/* 	padding: 0 10px; */
+/* 	border: 1px solid gold; */
 }
 
 .popup .stat-key{
 /* 	opacity: .8; */
     color: wheat;
-	margin-right: 10px;
+/* 	margin-right: 10px; */
+/* 	border: 1px solid red; */
+    margin-left: 10px;
 }
-
-/* .popup .stat-wrapper .stat-key{
-	border: 1px solid gold;
-}
- */
-.popup .stat-wrapper{
-	padding: 3px;
-}
-
-
 
 .popup .stat-wrapper .stat{
 	margin-left: 10px;
@@ -98,6 +98,11 @@
 	margin-right: 10px;
 }
 
+.popup .stat-val{
+	float: right;
+	margin-right: 10px;
+}
+
 .popup .melee .icon{
 	border: 1px solid rgb(180, 80, 80);
 }
@@ -112,4 +117,13 @@
 
 .popup .ranged .icon{
 	border: 1px solid rgb(120, 180, 120);
+}
+
+.stat-color{
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	border: 1px solid grey;
+	box-shadow: inset 0px 0px 4px black;
+	border-radius: 3px;
 }

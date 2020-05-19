@@ -39,12 +39,15 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
 
-		this._strength = lib.validate_number( init._strength, init.strength, 5 )
-		this._dexterity = lib.validate_number( init._dexterity, init.strength, 5 )
-		this._charisma = lib.validate_number( init._charisma, init.charisma, 5 )
-		this._perception = lib.validate_number( init._perception, init.perception, 5 )
-		this._luck = lib.validate_number( init._luck, init.luck, 5 )
-		this._intellect = lib.validate_number( init._intellect, init.intellect, 5 )
+		this._stats = init._stats || {}
+
+		this._stats.strength = lib.validate_number( this._stats.strength, 5 )
+		this._stats.vitality = lib.validate_number( this._stats.vitality, 5 )
+		this._stats.dexterity = lib.validate_number( this._stats.strength, 5 )
+		this._stats.charisma = lib.validate_number( this._stats.charisma, 5 )
+		this._stats.perception = lib.validate_number( this._stats.perception, 5 )
+		this._stats.luck = lib.validate_number( this._stats.luck, 5 )
+		this._stats.intellect = lib.validate_number( this._stats.intellect, 5 )
 
 		let random_seed = Math.floor( Math.random() * 100 )
 		this.color = init.color || lib.random_rgb( 

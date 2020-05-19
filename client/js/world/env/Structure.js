@@ -1,12 +1,15 @@
-export default class Structure {
+
+import Entity from './Entity.js'
+
+export default class Structure extends Entity{
 
 	constructor( init ){
 
+		super( init )
+
 		init = init || {}
 
-		for( const key of Object.keys( init ) ){
-			this[ key ] = init[ key ]
-		}
+		this.type = 'structure'
 
 	}
 

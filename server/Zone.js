@@ -10,7 +10,7 @@ const SOCKETS = require('./SOCKETS.js')
 
 const Persistent = require('./Persistent.js')
 const Toon = require('./agents/Toon.js')
-const Structure = require('./Structure.js')
+const Structure = require('./agents/Structure.js')
 const Flora = require('./agents/Flora.js')
 
 const {
@@ -34,9 +34,10 @@ class Zone extends Persistent {
 		this._z = lib.validate_number( init._z, init.z, 0 )
 		this._layer = lib.validate_number( init._layer, init.layer, 0 )
 
-
 		this.elevation = lib.validate_number( this.elevation, 1 )
 		this.precipitation = lib.validate_number( init.precipitation, 1 )
+
+		this.available_flora = init.available_flora || this.generate_available_flora()
 
 		this._last_growth = lib.validate_seconds( init._last_growth, init.last_growth, new Date('1970').getTime() )// fill_growth( init )
 		this._flora_target = lib.validate_number( init._flora_target, init.flora_target, 100 )
@@ -73,7 +74,7 @@ class Zone extends Persistent {
 
 		if( env.READ.FLORA )  await this.read_flora()
 
-		await this.read_structures()
+		if( env.READ.STRUCTURES )  await this.read_structures()
 
 		// creates
 
@@ -86,6 +87,7 @@ class Zone extends Persistent {
 			let days_trees
 			for( let i = 0; i < growth_days; i++ ){
 				days_trees = this.grow_day()
+				// log('flag', 'growday: ', days_trees )
 				if( days_trees ){
 					all_new_trees = all_new_trees.concat( days_trees )
 				}
@@ -94,7 +96,11 @@ class Zone extends Persistent {
 
 			if( all_new_trees.length )  await this.save_flora( all_new_trees )
 
+			log('flag', 'just made:', all_new_trees.length )
+
 		}
+
+
 
 		// pulses
 
@@ -134,20 +140,15 @@ class Zone extends Persistent {
 
 		if( projection < this._flora_target ){
 
-			let attempt
+			let vector_attempt
 			for( let i = 0; i < this._growth_rate; i++ ){
 				
-				attempt = this.find_clearing()
+				vector_attempt = this.find_clearing()
 
-				if( attempt ){
-					const fol = new Flora({
-						subtype: 'tree',
-						zone_key: this._id,
-						scale: .5 + Math.random(),
-						x: attempt.x,
-						y: attempt.y,
-						z: attempt.z
-					})
+				if( vector_attempt ){
+
+					const fol = this.grow_new_flora( vector_attempt )
+
 					this._FLORA[ fol.mud_id ] = fol
 					days_trees.push( fol )
 				}
@@ -198,6 +199,35 @@ class Zone extends Persistent {
 	}
 
 
+	grow_new_flora( vector ){
+
+		const rand_radial = 10 + Math.floor( Math.random() * 20 )
+		const rand_vertical = 20 + Math.floor( Math.random() * 30 )
+
+		const flora = new Flora({
+			subtype: this.available_flora[ Math.floor( Math.random() * this.available_flora.length ) ],
+			_zone_key: this._id,
+			scale: .5 + Math.random(),
+			x: vector.x,
+			y: vector.y,
+			z: vector.z,
+			width: rand_radial,
+			length: rand_radial,
+			height: rand_vertical,
+		})
+
+		return flora
+
+	}
+
+
+	generate_available_flora(){
+
+		return ['pine', 'oak']
+
+	}
+
+
 	purge( mud_id ){
 
 		delete this._TOONS[ mud_id ]
@@ -232,12 +262,13 @@ class Zone extends Persistent {
 
 		const pool = DB.getPool()
 
-		const limit = this._structure_target
+		// const limit = this._structure_target
 
-		const sql = 'SELECT * FROM structures WHERE zone_key=' + this._id + ' LIMIT ' + limit
+		const sql = 'SELECT * FROM structures WHERE zone_key=' + this._id 
 
 		const { error, results, fields } = await pool.queryPromise( sql )
 		if( error ) log('flag', 'structure looukp  err: ', error )
+		// log('flag', 'results: ', results )
 		for ( const structure of results ){
 			let struct = new Structure( structure )
 			this._STRUCTURES[ struct.mud_id ] = struct
@@ -275,28 +306,36 @@ class Zone extends Persistent {
 				}
 			}
 
-			let value_string = `
+			let insert_string = `
 			${ set.id || 'NULL' }, 
-			${ set.zone_key || 'NULL' }, 
+			${ set._zone_key || 'NULL' }, 
 			${ set.subtype || 'NULL' }, 
 			${ set.scale || 1 }, 
-			${ set.x || 0 }, 
-			${ set.y || 0 }, 
-			${ set.z || 0 }`
+			${ set.x || 9999 }, 
+			${ set.y || 9999 }, 
+			${ set.z || 9999 },
+			${ set.width || 'NULL' },
+			${ set.height || 'NULL' },
+			${ set.length || 'NULL' }
+			`
 
-			let full_string = `
+			let update_string = `
 			zone_key=${ this._id },
 			subtype=${ set.subtype || 'NULL' },
 			scale=${ set.scale },
 			x=${ set.x },
 			y=${ set.y },
-			z=${ set.z }`
+			z=${ set.z },
+			width=${ set.width },
+			height=${ set.height },
+			length=${ set.length }
+			`
 
-			const sql = 'INSERT INTO `flora` (id, zone_key, subtype, scale, x, y, z) VALUES (' + value_string + ') ON DUPLICATE KEY UPDATE ' + full_string
+			const sql = 'INSERT INTO `flora` (id, zone_key, subtype, scale, x, y, z, width, height, length) VALUES (' + insert_string + ') ON DUPLICATE KEY UPDATE ' + update_string
 
-			// log('query', 'attempting UPDATE: ', value_string, full_string )
+			// log('query', 'attempting UPDATE: ', insert_string, update_string )
 
-			const { error, results, fields } = await pool.queryPromise( sql )
+			const { error, results, fields } = await pool.queryPromise( sql ) // blorb massive await for loop ...
 
 			if( error || !results ){
 				if( error ){
@@ -328,7 +367,7 @@ class Zone extends Persistent {
 			'precipitation',
 			'elevation',
 			'flora_target',
-			'last_growth'
+			'last_growth',
 		]
 
 		const update_vals = [ 
@@ -339,7 +378,7 @@ class Zone extends Persistent {
 			this.precipitation,
 			this.elevation,
 			this._flora_target,
-			this._last_growth
+			this._last_growth,
 		]
 
 		if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){

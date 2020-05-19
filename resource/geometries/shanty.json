@@ -1,0 +1,170 @@
+{
+	"metadata": {
+		"version": 4.5,
+		"type": "Object",
+		"generator": "Object3D.toJSON"
+	},
+	"geometries": [
+		{
+			"uuid": "71E17878-A9C4-4343-AF55-3283F464DEBA",
+			"type": "BoxBufferGeometry",
+			"width": 1.16,
+			"height": 1,
+			"depth": 1,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		},
+		{
+			"uuid": "56F6B529-FEE9-4B2D-8EC9-60C3C8935E0A",
+			"type": "BoxBufferGeometry",
+			"width": 4.3,
+			"height": 0.16,
+			"depth": 4.06,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		},
+		{
+			"uuid": "E36366B2-F06F-4701-9429-7D79F1BF0D80",
+			"type": "BoxBufferGeometry",
+			"width": 4.5,
+			"height": 0.26,
+			"depth": 0.56,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		},
+		{
+			"uuid": "563D0ED9-01EC-4483-BF9A-EBDA82558198",
+			"type": "BoxBufferGeometry",
+			"width": 3.06,
+			"height": 3.62,
+			"depth": 4.2,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		}],
+	"materials": [
+		{
+			"uuid": "1150920B-A965-4BC7-ADD5-905A9E8EE9D2",
+			"type": "MeshStandardMaterial",
+			"color": 3083276,
+			"roughness": 1,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "6157E083-79D4-425C-BB78-EA81A0258E0D",
+			"type": "MeshStandardMaterial",
+			"color": 15614990,
+			"roughness": 1,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "AB1BC02C-32C8-49B5-9A75-3E34FD502BFE",
+			"type": "MeshLambertMaterial",
+			"color": 6050368,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		}],
+	"object": {
+		"uuid": "5FC9ACA9-2A93-474D-AA32-FACC76551914",
+		"type": "Scene",
+		"name": "Scene",
+		"layers": 1,
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"children": [
+			{
+				"uuid": "F076BCF0-4320-4E03-A187-1222AAC916F4",
+				"type": "Mesh",
+				"name": "Box",
+				"castShadow": true,
+				"receiveShadow": true,
+				"layers": 1,
+				"matrix": [3.035553,0,0,0,0,2.066488,-2.223557,0,0,2.223557,2.066488,0,-0.073135,3.824368,0,1],
+				"geometry": "71E17878-A9C4-4343-AF55-3283F464DEBA",
+				"material": "1150920B-A965-4BC7-ADD5-905A9E8EE9D2"
+			},
+			{
+				"uuid": "05678D0E-983D-44CF-A0B9-1031B6925FA5",
+				"type": "Mesh",
+				"name": "Box",
+				"castShadow": true,
+				"receiveShadow": true,
+				"layers": 1,
+				"matrix": [1,0,0,0,0,0.737319,0.675545,0,0,-0.675545,0.737319,0,0,4.697112,1.399091,1],
+				"geometry": "56F6B529-FEE9-4B2D-8EC9-60C3C8935E0A",
+				"material": "6157E083-79D4-425C-BB78-EA81A0258E0D"
+			},
+			{
+				"uuid": "FACAA2B4-BBF7-4160-90B3-033CB94D1D80",
+				"type": "Mesh",
+				"name": "Box",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,0.683711,-0.729752,0,0,0.729752,0.683711,0,0,4.697112,-1.403475,1],
+				"geometry": "56F6B529-FEE9-4B2D-8EC9-60C3C8935E0A",
+				"material": "6157E083-79D4-425C-BB78-EA81A0258E0D"
+			},
+			{
+				"uuid": "1C212203-F3EB-4F74-9AFF-4AFAEC4872F8",
+				"type": "Mesh",
+				"name": "Box",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,6.241956,0,1],
+				"geometry": "E36366B2-F06F-4701-9429-7D79F1BF0D80",
+				"material": "AB1BC02C-32C8-49B5-9A75-3E34FD502BFE"
+			},
+			{
+				"uuid": "35B0A028-5007-4301-8193-76888A8DEE4C",
+				"type": "Mesh",
+				"name": "Box",
+				"castShadow": true,
+				"receiveShadow": true,
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-0.120692,1.668881,0,1],
+				"geometry": "563D0ED9-01EC-4483-BF9A-EBDA82558198",
+				"material": "1150920B-A965-4BC7-ADD5-905A9E8EE9D2"
+			}],
+		"background": 11184810,
+		"fog": {
+			"type": "Fog",
+			"color": 11184810,
+			"near": 0.1,
+			"far": 50
+		}
+	}
+}

@@ -188,8 +188,8 @@ class Game {
 			SOCKETS[ USER.mud_id ].send( JSON.stringify( {
 				type: 'session_init',
 				USER: user,
-				TOON: TOON.publish('_INVENTORY'),
-				ZONE: zone.publish( '_FLORA', '_NPCS' ),
+				TOON: TOON.publish('_INVENTORY', '_stats' ),
+				ZONE: zone.publish( '_FLORA', '_NPCS', '_STRUCTURES' ),
 				map: MAP,
 			}) )
 
@@ -267,6 +267,12 @@ class Game {
 		}
 
 		this.ZONES[ zone.mud_id ] = zone
+
+		// let keys = []
+		// for( const key of Object.keys( this.ZONES[ zone.mud_id ]._FLORA ) ){
+		// 	keys.push[ key ]
+		// }
+		// log('flag', 'returning new keys -- ' , Object.keys( this.ZONES[ zone.mud_id ]._FLORA ) )
 
 		return zone
 

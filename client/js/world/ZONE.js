@@ -16,6 +16,7 @@ import Toon from './Toon.js'
 // import BuffGeoLoader from '../three/BuffGeoLoader.js'
 
 import Flora from './env/Flora.js'
+import Structure from './env/Structure.js'
 // import Npc from './Npc.js'
 import grass_mesh from './env/grass_mesh.js'
 
@@ -228,11 +229,23 @@ class Zone {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// flora
 
-		await this.create_entity_prototypes('flora', zone_data )	
+		await this.prototype_entities('flora', zone_data )	
 
 		this.instantiate_entities( this.FLORA, zone_data._FLORA, Flora )
 
-		// await this.create_entity_prototypes('npc', zone_data )	
+
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// structures
+
+		await this.prototype_entities('structures', zone_data )	
+
+		this.instantiate_entities( this.STRUCTURES, zone_data._STRUCTURES, Structure )
+
+
+
+
+		// await this.prototype_entities('npc', zone_data )	
 
 		// this.instantiate_entities( this.NPCS, zone_data._NPCS, Npc )
 
@@ -268,107 +281,125 @@ class Zone {
 
 	async instantiate_instanced_meshes(){
 		// instanced meshes
-		// shrubs
 		const uniforms = SHADERS.uniforms
-		const shrubs = new Array(2000)
-		const shrub_geometry = await lib.load('buffer_geometry', '/resource/geometries/pine-piece.json')
+		const rocks = new Array(2000)
+		const rock_group = await lib.load('obj', '/resource/geometries/rock.obj')
+
 		// const shrub_material = new ShaderMaterial({
 		// 	uniforms: SHADERS.uniforms,
 		// 	fragmentShader: SHADERS.baseFragmentShader(),
-		// 	// vertexShader: SHADERS.baseVertexShader(),
+		// 	vertexShader: SHADERS.baseVertexShader(),
 		// })
-		const shrub_material = new MeshLambertMaterial({
+		const rock_material = new MeshLambertMaterial({
 			// color: 'rgb(' + Math.floor( Math.random() * 40 ) + ', 60, 20)',
-			color: 'rgb( 60, 60, 20)',
 			// color: uniforms.colorB.value
+			color: 'rgb( 43, 45, 40)',
 		})
-		// const shrub_material = new ShaderMaterial({
-		// 	uniforms: uniforms,
-		// 	// vertexShader: vertexShader(),
-		// 	fragmentShader: fragmentShader()
-		// })
+
 		const matrix = new Matrix4()
-		const shrubberies = new InstancedMesh( shrub_geometry, shrub_material, shrubs.length )
-		shrubberies.castShadow = true
-		shrubberies.userData.clickable = true
-		shrubberies.userData.type = 'flora'
-		shrubberies.userData.subtype = 'foliage'
-		for( let i = 0; i < shrubs.length; i++ ){
+		const rocks_mesh = new InstancedMesh( rock_group.children[0].geometry, rock_material, rocks.length )
+		// const rocks = new InstancedMesh( double, rock_material, shrubs.length )
+		rocks_mesh.castShadow = true
+		rocks_mesh.userData.clickable = true
+		rocks_mesh.userData.type = 'flora'
+		rocks_mesh.userData.subtype = 'foliage'
+		for( let i = 0; i < rocks.length; i++ ){
 			lib.randomize_matrix( matrix, {
 				position: MAP.ZONE_WIDTH,
-				scale: .7,
+				init_scale: .2,
+				scale_range: .2,
 				exclude: {
-					y: true
+					y: false
 				}
 			}, 'blorb' )
-			shrubberies.setMatrixAt( i, matrix )
+			rocks_mesh.setMatrixAt( i, matrix )
 		}
-		SCENE.add( shrubberies )
+		SCENE.add( rocks_mesh )
 	}
 
 
 
 
 
-	async create_entity_prototypes( type, zone_data ){
+	async prototype_entities( type, zone_data ){
 
 		const zone = this
 
 		const model_inits = []
-		let entity, entity_address
+		let entity, entity_address, base_class, group, color
 
 		switch( type ){
 
 			case 'flora':
 
-				for( const mud_id of Object.keys( zone_data._FLORA ) ){
+				base_class = Flora
 
-					entity = zone_data._FLORA[ mud_id ]
+				group = zone_data._FLORA
 
-					if( entity.subtype ){
+				color = 'rgb(10, 20, 5)'
 
-						entity_address = entity.type + '_' + entity.subtype
+				break;
 
-						if( !zone.model_map[ entity_address ] ){
+			case 'structures':
 
-							zone.model_map[ entity_address ] = 'awaiting'
+				base_class = Structure
 
-							const one_time_model = new Flora( entity )
-							model_inits.push( one_time_model.model({
-									map: zone.model_map 
-								}) 
-							)
+				group = zone_data._STRUCTURES
 
-						}
-
-						if( !zone.material_map[ entity_address ] ){
-
-							// zone.material_map[ entity_address ] = new ShaderMaterial({
-							// 	uniforms: SHADERS.uniforms,
-							// 	fragmentShader: SHADERS.sampleFragment(),
-							// 	vertexShader: SHADERS.baseVertexShader(),
-							// })
-
-							zone.material_map[ entity_address ] = new MeshLambertMaterial({
-								color: 'rgb(10, 20, 5)'
-							})
-
-						}
-
-					}
-
-				}
-
-				// const meshes = 
-				await Promise.all( model_inits )
-
-				return true
+				color = 'rgb(35, 35, 15)'
 
 				break;
 
 			default: break;
 
 		}
+
+		for( const mud_id of Object.keys( group ) ){
+
+			entity = group[ mud_id ]
+
+			if( entity.subtype ){
+
+				entity_address = entity.type + '_' + entity.subtype
+
+				if( !zone.model_map[ entity_address ] ){
+
+					zone.model_map[ entity_address ] = 'awaiting'
+
+					if( !zone.material_map[ entity_address ] ){
+
+						// zone.material_map[ entity_address ] = new ShaderMaterial({
+						// 	uniforms: SHADERS.uniforms,
+						// 	fragmentShader: SHADERS.sampleFragment(),
+						// 	vertexShader: SHADERS.baseVertexShader(),
+						// 	// clipping: true,
+						// 	// lights: true
+						// })
+
+						zone.material_map[ entity_address ] = new MeshLambertMaterial({
+							color: color
+						})
+
+					}
+
+					const one_time_model = new base_class( entity )
+					model_inits.push( one_time_model.proto({
+							model_map: zone.model_map,
+							address: entity_address
+							// prototype_mesh: zone.model_map[ entity_address ]
+						}) 
+					)
+
+				}
+
+			}
+
+		}
+
+		// const meshes = 
+		await Promise.all( model_inits )
+
+		return true
 
 	}
 
@@ -377,30 +408,47 @@ class Zone {
 
 	instantiate_entities( dest_group, source_group, base_class ){
 
+		if( !this.count )  this.count = 0
+
+
 		for( const mud_id of Object.keys( source_group )){
+
+			this.count++
+
+			// if( this.count >  50 ) return true
 
 			const entity = new base_class( source_group[ mud_id ])
 
 			const model_key = entity.type + '_' + entity.subtype
 
-			let this_mesh = this.model_map[ model_key ]
-			let this_material = this.material_map[ model_key ]
+			let proto_mesh = this.model_map[ model_key ]
+			let proto_material = this.material_map[ model_key ]
 
-			if( this_mesh || mesh ){
+			if( proto_mesh ){
 				entity.model({
-					mesh: this_mesh,
-					material: this_material
+					proto_mesh: proto_mesh,
+					proto_material: proto_material
 				})
 				.catch( err => { console.log('err cloning mesh: ', err ) })
+			}else{
+				console.log('no mesh found for: ', model_key )
 			}
 
 			dest_group[ entity.mud_id ] = entity
+
+			if( !entity.MODEL ){
+				console.log('failed to make model: ', lib.identify( entity ))
+				return false
+			}
 
 			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
 
 			SCENE.add( entity.MODEL )
 
 		}
+
+		console.log("count?? ", this.count )
+
 	}
 
 

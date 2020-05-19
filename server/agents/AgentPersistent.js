@@ -42,6 +42,10 @@ class AgentPersistent extends Persistent {
 			z: this.z
 		})
 
+		this.width = lib.validate_number( init.width, 5 )
+		this.height = lib.validate_number( init.height, 5 )
+		this.length = lib.validate_number( init.length, 5 )
+
 		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
 
 		this.logistic = this.logistic || []

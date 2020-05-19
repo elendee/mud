@@ -1,13 +1,15 @@
 import {
 	Vector3,
+	Euler,
 	Quaternion,
 	BufferGeometry,
 	Box3
 } from './lib/three.module.js'
 
-import GLTF from './three/GLTF.js'
-import BuffGeoLoader from './three/BuffGeoLoader.js'
-import ObjectLoader from './three/ObjectLoader.js'
+import GLTF from './three/loader_GLTF.js'
+import BuffGeoLoader from './three/loader_BuffGeoLoader.js'
+import ObjectLoader from './three/loader_ObjectLoader.js'
+import OBJLoader from './three/loader_OBJLoader.js'
 
 
 function radians_to_degrees( radians ){
@@ -178,6 +180,8 @@ function validate_quat( ...inputs ){
 
 function load( type, filepath ){
 
+	console.log('model load: ', type, filepath )
+
 	return new Promise((resolve, reject)=>{
 
 		switch ( type ){
@@ -220,6 +224,18 @@ function load( type, filepath ){
 				})
 				break;
 
+			case 'obj':
+				OBJLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found', filepath )
+				})
+				break;
+
 			default: 
 				reject('invalid model file request')
 				break;
@@ -234,7 +250,7 @@ function load( type, filepath ){
 
 
 const rando_position = new Vector3()
-// const rando_rotation = new Euler()
+const rando_rotation = new Euler()
 const rando_quaternion = new Quaternion()
 const rando_scale = new Vector3()
 
@@ -246,13 +262,13 @@ function randomize_matrix( matrix, options, blorb ){
 
 	if( blorb ) rando_position.y = -1
 
-	// rando_rotation.x = Math.random() * 2 * Math.PI
-	// rando_rotation.y = Math.random() * 2 * Math.PI
-	// rando_rotation.z = Math.random() * 2 * Math.PI
+	rando_rotation.x = Math.random() * 2 * Math.PI
+	rando_rotation.y = Math.random() * 2 * Math.PI
+	rando_rotation.z = Math.random() * 2 * Math.PI
 
-	// rando_quaternion.setFromEuler( rotation )
+	rando_quaternion.setFromEuler( rando_rotation )
 
-	rando_scale.x = rando_scale.y = rando_scale.z = 1 + ( 1 - options.scale ) + ( 2 * ( Math.random() * options.scale ) )
+	rando_scale.x = rando_scale.y = rando_scale.z = options.init_scale + ( 1 - options.scale_range ) + ( 2 * ( Math.random() * options.scale_range ) )
 
 	matrix.compose( rando_position, rando_quaternion, rando_scale )
 
