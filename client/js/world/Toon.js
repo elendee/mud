@@ -269,6 +269,8 @@ export default class Toon {
 
 			const dir = new Vector3()
 
+			console.log( direction )
+
 			if( direction === 'north' ){
 				dir.set( 0, 0, -10 )
 			}else if( direction === 'east'){
