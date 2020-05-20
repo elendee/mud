@@ -43,62 +43,86 @@ function update_compass(){
 
 
 function move( dir, pressed ){
-	switch( dir ){
-		case 'forward':
-			STATE.move.forward = pressed
-			if( pressed ){
+
+	if( dir == 'forward' ){
+
+		STATE.move.forward = pressed
+		if( pressed ){
+			if( STATE.move.left ){
+				TOON.look_at(false, 'northwest')
+			}else if( STATE.move.right ){
+				TOON.look_at(false, 'northeast')
+			}else{
 				TOON.look_at(false, 'north')
-				STATE.stream_down = true
-				window.TOON.needs_stream = true
-				if( !STATE.animating ) animate( true )
-			}else{
-				check_stream()
 			}
-			break;
+			STATE.stream_down = true
+			window.TOON.needs_stream = true
+			if( !STATE.animating ) animate( true )
+		}else{
+			check_stream()
+		}
 
-		case 'back':
-			STATE.move.back = pressed
-			if( pressed ){
+	}else if( dir == 'back' ){
+
+		STATE.move.back = pressed
+		if( pressed ){
+			if( STATE.move.left ){
+				TOON.look_at(false, 'southwest')
+			}else if( STATE.move.right ){
+				TOON.look_at(false, 'southeast')
+			}else{
 				TOON.look_at(false, 'south')
-				STATE.stream_down = true
-				window.TOON.needs_stream = true
-				if( !STATE.animating ) animate( true )
-			}else{
-				check_stream()
 			}
-			break;
+			STATE.stream_down = true
+			window.TOON.needs_stream = true
+			if( !STATE.animating ) animate( true )
+		}else{
+			check_stream()
+		}
 
-		case 'left':
-			STATE.move.left = pressed
-			if( pressed ){
+	}else if( dir == 'left' ){
+
+		STATE.move.left = pressed
+		if( pressed ){
+			if( STATE.move.forward ){
+				TOON.look_at(false, 'northwest')
+			}else if( STATE.move.back ){
+				TOON.look_at(false, 'southwest')
+			}else{
 				TOON.look_at(false, 'west')
-				STATE.stream_down = true
-				window.TOON.needs_stream = true
-				if( !STATE.animating ) animate( true )
-			}else{
-				check_stream()
 			}
-			break;
+			STATE.stream_down = true
+			window.TOON.needs_stream = true
+			if( !STATE.animating ) animate( true )
+		}else{
+			check_stream()
+		}
 
-		case 'right':
-			STATE.move.right = pressed
-			if( pressed ){
+	}else if( dir == 'right' ){
+
+		STATE.move.right = pressed
+		if( pressed ){
+			if( STATE.move.forward ){
+				TOON.look_at(false, 'northeast')
+			}else if( STATE.move.back ){
+				TOON.look_at(false, 'southeast')
+			}else{
 				TOON.look_at(false, 'east')
-				STATE.stream_down = true
-				window.TOON.needs_stream = true
-				if( !STATE.animating ) animate( true )
-			}else{
-				check_stream()
 			}
-			break;
+			STATE.stream_down = true
+			window.TOON.needs_stream = true
+			if( !STATE.animating ) animate( true )
+		}else{
+			check_stream()
+		}
 
-		case 'cancel':
-			STATE.rotate.right = STATE.rotate.left = STATE.move.forward = STATE.move.back = false
-			STATE.stream_down = false
-			break;
+	}else if( dir == 'cancel' ){
 
-		default: break;
+		STATE.rotate.right = STATE.rotate.left = STATE.move.forward = STATE.move.back = false
+		STATE.stream_down = false
+
 	}
+
 }
 
 

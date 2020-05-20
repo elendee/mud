@@ -39,16 +39,6 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
 
-		this._stats = init._stats || {}
-
-		this._stats.strength = lib.validate_number( this._stats.strength, 5 )
-		this._stats.vitality = lib.validate_number( this._stats.vitality, 5 )
-		this._stats.dexterity = lib.validate_number( this._stats.strength, 5 )
-		this._stats.charisma = lib.validate_number( this._stats.charisma, 5 )
-		this._stats.perception = lib.validate_number( this._stats.perception, 5 )
-		this._stats.luck = lib.validate_number( this._stats.luck, 5 )
-		this._stats.intellect = lib.validate_number( this._stats.intellect, 5 )
-
 		let random_seed = Math.floor( Math.random() * 100 )
 		this.color = init.color || lib.random_rgb( 
 			[ random_seed, random_seed + 150], 
@@ -386,6 +376,14 @@ module.exports = class Toon extends AgentPersistent {
 			'speed',
 			'color',
 			'layer',
+			'vitality',
+			'strength',
+			'dexterity',
+			'charisma',
+			'perception',
+			'luck',
+			'intellect',
+			'camped_key',
 			'eqp_hand_left',
 			'eqp_hand_right',
 			'eqp_waist_left',
@@ -400,6 +398,14 @@ module.exports = class Toon extends AgentPersistent {
 			this.speed,
 			this.color,
 			this._layer,
+			this._stats.vitality,
+			this._stats.strength,
+			this._stats.dexterity,
+			this._stats.charisma,
+			this._stats.perception,
+			this._stats.luck,
+			this._stats.intellect,
+			this._camped_key,
 			this._eqp.hand_left,
 			this._eqp.hand_right,
 			this._eqp.waist_left,

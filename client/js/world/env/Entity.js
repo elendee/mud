@@ -65,7 +65,7 @@ export default class Entity {
 
 	}
 
-	async model( init ){
+	model( init ){
 
 		if( init.proto_mesh.isMesh ){ 
 
@@ -75,13 +75,9 @@ export default class Entity {
 
 			this.MODEL.userData = new Clickable( this )
 
-			return true
-
 		}else if( init.proto_mesh.isScene ){
 
 			console.log( 'bad, collapse to object, ', lib.identify( this ) )
-
-			return true
 
 		}else{
 			console.log('invalid mesh passed.....', init.proto_mesh )
@@ -101,7 +97,17 @@ export default class Entity {
 			z: this.length / bbox.z
 		}
 
+		// scale
+
+		if( this.type === 'flora' )  ratio.z *= ( bbox.z / bbox.x )
+
 		this.MODEL.scale.set( ratio.x, ratio.y, ratio.z )
+		this.MODEL.rotation.y += Math.random() * Math.PI
+
+		// rotation
+
+		// grr, bends target reticule into ground ..
+		// if( this.subtype === 'pine' )  this.MODEL.rotation.z += Math.random() * .3 
 
 	}
 

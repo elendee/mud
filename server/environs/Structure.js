@@ -1,10 +1,10 @@
 const lib = require('../lib.js')
 const log = require('../log.js')
 
-const AgentPersistent = require('./AgentPersistent.js')
+const EnvironPersistent = require('./EnvironPersistent.js')
 
 
-class Structure extends AgentPersistent {
+class Structure extends EnvironPersistent {
 
 	constructor( init ){
 

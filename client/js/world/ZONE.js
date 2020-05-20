@@ -408,12 +408,11 @@ class Zone {
 
 	instantiate_entities( dest_group, source_group, base_class ){
 
-		if( !this.count )  this.count = 0
-
+		// if( !this.count )  this.count = 0
 
 		for( const mud_id of Object.keys( source_group )){
 
-			this.count++
+			// this.count++
 
 			// if( this.count >  50 ) return true
 
@@ -425,11 +424,12 @@ class Zone {
 			let proto_material = this.material_map[ model_key ]
 
 			if( proto_mesh ){
-				entity.model({
+
+				entity.model({ 
 					proto_mesh: proto_mesh,
 					proto_material: proto_material
 				})
-				.catch( err => { console.log('err cloning mesh: ', err ) })
+
 			}else{
 				console.log('no mesh found for: ', model_key )
 			}

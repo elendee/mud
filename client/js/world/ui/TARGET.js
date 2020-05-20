@@ -32,26 +32,16 @@ import {
 
 const reticule_size = 10
 const reticule_map = texLoader.load('/resource/textures/circle.png')
-const geo = new PlaneBufferGeometry( reticule_size, reticule_size, 1)
+const geo = new PlaneBufferGeometry( reticule_size, reticule_size, 1 )
 const material = new MeshLambertMaterial({
 	color: 0xffff55,
 	map: reticule_map,
 	// side: DoubleSide,
 	transparent: true,
-	opacity: .6
+	opacity: .3
 })
 const reticule = new Mesh( geo, material )
 reticule.rotation.x = -Math.PI / 2
-
-
-
-// const spriteMap = new TextureLoader().load( '/resource/textures/reticule.png' )
-// const spriteMaterial = new SpriteMaterial( { map: spriteMap, color: 0xffffff } )
-// const reticule = new Sprite( spriteMaterial )
-// reticule.scale.set( 100, 100, 1 )
-// reticule.center.set( .5, .5 )
-// reticule.position.set( 0, 0, 0 ) 
-// reticule.rotation
 
 
 
@@ -66,9 +56,9 @@ class Target {
 		this.element = document.getElementById('target')
 		this.name_ele = document.querySelector('#target-name')
 		this.health_ele = document.querySelector('#target-health .status')
-		this.shields_ele = document.querySelector('#target-shields .status')
+		this.mana_ele = document.querySelector('#target-mana .status')
 		this.health_readout = document.querySelector('#target-health .readout')
-		this.shields_readout = document.querySelector('#target-shields .readout')
+		this.mana_readout = document.querySelector('#target-mana .readout')
 		this.status_ele = document.querySelector('#status')
 		this.profile_img = document.getElementById('target-profile')
 		// this.helper = document.getElementById('target-helper')
@@ -121,12 +111,12 @@ class Target {
 
 			this.name_ele.innerHTML = userData.name || userData.type || 'unknown'
 
-			this.render_selected()
-
 			this.element.style.display = 'inline-block'
 			this.status_ele.style.display = 'inline-block'
 
-			this.show_health()
+			this.show_status()
+
+			this.render_selected()
 
 		}else if( userData.subtype === 'foliage' ){
 
@@ -149,7 +139,7 @@ class Target {
 
 
 
-	show_health(){
+	show_status(){
 
 		if( this.target ){
 
@@ -157,16 +147,24 @@ class Target {
 			if( this.target.health.capacity !== 0 ){
 				percent_health = this.target.health.current / this.target.health.capacity
 			}
-			// let percent_shields
-			// if( this.target.shields.capacity !== 0 ){
-			// 	percent_shields = this.target.shields.current / this.target.shields.capacity
-			// }
-
-			// this.shields_ele.style.width = Math.floor( percent_shields * 100 ) + '%'
 			this.health_ele.style.width = Math.floor( percent_health * 100 ) + '%'
-
 			this.health_readout.innerHTML = this.target.health.current + ' / ' + this.target.health.capacity
-			// this.shields_readout.innerHTML = this.target.shields.current + ' / ' + this.target.shields.capacity
+
+			if( this.target.mana ){
+				let percent_mana
+				if( this.target.mana.capacity !== 0 ){
+					percent_mana = this.target.mana.current / this.target.mana.capacity
+				}
+				this.mana_ele.style.width = Math.floor( percent_mana * 100 ) + '%'
+				this.mana_readout.innerHTML = this.target.mana.current + ' / ' + this.target.mana.capacity
+				// this.mana_ele.style.display = 'initial'
+			}else{
+				// this.mana_ele.style.display = 'none'
+				this.mana_ele.style.width = '0%' // Math.floor( percent_mana * 100 ) + '%'
+				this.mana_readout.innerHTML = '0 / 0'
+			}
+
+
 
 		}
 
@@ -186,11 +184,13 @@ class Target {
 		}
 
 		let bbox_size_vector = new Vector3()
-		new Box3().setFromObject( this.target.MODEL ).getSize( bbox_size_vector )
+		let target_size = new Box3().setFromObject( this.target.MODEL ).getSize()
+
+		console.log( target_size , '<<<')
 
 		// reticule rotated 90deg, so z === y 
-		this.reticule.scale.x = Math.ceil( ( bbox_size_vector.x / this.target.MODEL.scale.x ) / reticule_size )
-		this.reticule.scale.y = Math.ceil( ( bbox_size_vector.z / this.target.MODEL.scale.z ) / reticule_size )
+		this.reticule.scale.x =  Math.max( .5, .18 + ( target_size.x / this.target.MODEL.scale.x ) / reticule_size )
+		this.reticule.scale.y =  Math.max( .5, .18 + ( target_size.z / this.target.MODEL.scale.z ) / reticule_size )
 
 		const wpos = new Vector3()
 		this.target.MODEL.getWorldPosition( wpos )

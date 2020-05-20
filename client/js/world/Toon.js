@@ -277,6 +277,14 @@ export default class Toon {
 				dir.set( -10, 0, 0 )
 			}else if( direction === 'south'){
 				dir.set( 0, 0, 10 )
+			}else if( direction === 'northeast'){
+				dir.set( 10, 0, -10 )
+			}else if( direction === 'northwest'){
+				dir.set( -10, 0, 10 )
+			}else if( direction === 'southeast'){
+				dir.set( 10, 0, 10 )
+			}else if( direction === 'southwest'){
+				dir.set( -10, 0, 10 )
 			}
 			dir.add( this.MODEL.position )
 			this.look_at( dir )

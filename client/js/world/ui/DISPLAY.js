@@ -54,12 +54,12 @@ class Display {
 
 			target.health.current = packet.target_health
 			if( TARGET.target.mud_id === packet.target ){
-				TARGET.show_health()
+				TARGET.show_status()
 				if( target.health.current <= 0 ){
 					flash_target( 'death_combat', zone, target.type, target.mud_id )
 				}
 			}else if( packet.target === window.TOON.mud_id ){
-				window.TOON.show_health()
+				window.TOON.show_status()
 				flash_hurt()
 				if( target.health.current <= 0 ){
 					overlay_toon_death()

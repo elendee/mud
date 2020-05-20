@@ -10,8 +10,10 @@ const SOCKETS = require('./SOCKETS.js')
 
 const Persistent = require('./Persistent.js')
 const Toon = require('./agents/Toon.js')
-const Structure = require('./agents/Structure.js')
-const Flora = require('./agents/Flora.js')
+const Structure = require('./environs/Structure.js')
+const Flora = require('./environs/Flora.js')
+
+// const FLORA_FACTORY = require('./environs/FACTORY.js')
 
 const {
 	Vector3
@@ -204,10 +206,12 @@ class Zone extends Persistent {
 		const rand_radial = 10 + Math.floor( Math.random() * 20 )
 		const rand_vertical = 20 + Math.floor( Math.random() * 30 )
 
+		const subtype = this.available_flora[ Math.floor( Math.random() * this.available_flora.length ) ]
+
 		const flora = new Flora({
-			subtype: this.available_flora[ Math.floor( Math.random() * this.available_flora.length ) ],
 			_zone_key: this._id,
-			scale: .5 + Math.random(),
+			subtype: subtype,
+			// scale: .5 + Math.random(),
 			x: vector.x,
 			y: vector.y,
 			z: vector.z,
@@ -311,9 +315,9 @@ class Zone extends Persistent {
 			${ set._zone_key || 'NULL' }, 
 			${ set.subtype || 'NULL' }, 
 			${ set.scale || 1 }, 
-			${ set.x || 9999 }, 
-			${ set.y || 9999 }, 
-			${ set.z || 9999 },
+			${ set.ref.position.x || 9999 }, 
+			${ set.ref.position.y || 9999 }, 
+			${ set.ref.position.z || 9999 },
 			${ set.width || 'NULL' },
 			${ set.height || 'NULL' },
 			${ set.length || 'NULL' }
@@ -323,9 +327,9 @@ class Zone extends Persistent {
 			zone_key=${ this._id },
 			subtype=${ set.subtype || 'NULL' },
 			scale=${ set.scale },
-			x=${ set.x },
-			y=${ set.y },
-			z=${ set.z },
+			x=${ set.ref.position.x },
+			y=${ set.ref.position.y },
+			z=${ set.ref.position.z },
 			width=${ set.width },
 			height=${ set.height },
 			length=${ set.length }

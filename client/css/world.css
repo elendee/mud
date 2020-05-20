@@ -125,6 +125,8 @@ canvas#mud-flats{
 
 
 
+
+
 #target{
 	position: fixed;
 	width: 150px;
@@ -146,6 +148,7 @@ canvas#mud-flats{
 /* 	rgb(90, 90, 90); */
 }
 
+
 #target>.inner{
 	width: 90%;
 	margin-left: 5%;
@@ -159,8 +162,42 @@ canvas#mud-flats{
 /* 	display: none; */
 }
 
+.readout{
+	display: none;
+	position: relative;
+	z-index: 999;
+	background: rgba(0, 0, 0, .6);
+	text-align: center;
+    cursor: pointer;
+    margin-left: 100px;
+    position: absolute;
+    width: 100px;
+    top: 0;
+}
+
+#target-health .readout{
+	color: red;
+}
+
+#target-mana .readout{
+	color: lightblue;
+}
+
+#target-health:hover .readout,
+#target-mana:hover .readout{
+    display: initial;   
+}
+
+.status{
+    height: 100%;
+}
+
 #target-health .status{
 	background: linear-gradient( black, red );
+}
+
+#target-mana .status{
+	background: linear-gradient( black, lightblue );
 }
 
 #status{
@@ -171,7 +208,15 @@ canvas#mud-flats{
 /* 	height: 20px; */
 	left: 20px;
 	width: 100px;
+	background: rgba( 0, 0, 0, .7);
+
 /* 	border: 1px solid; */
+}
+
+#target-name{
+	padding: 3px;
+	font-size: .8rem;
+	color: wheat;
 }
 
 #status .bar{
@@ -183,18 +228,12 @@ canvas#mud-flats{
 	height: 100%;
     padding: 1px;
 	border: 1px solid grey;
-	background: rgba( 0, 0, 0, .8) 
+	background: rgba( 0, 0, 0, .8);
 /* 	border-radius: 2px;	 */
 }
 
 
-#status .status,
-#ship-health .status,
-#ship-shields .status{
-/*     border: 1px solid rgb(120, 80, 80); */
-/*     border-radius: 3px; */
-	height: 100%;
-}
+
 
 /* #compass{
 
