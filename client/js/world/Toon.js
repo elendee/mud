@@ -104,13 +104,15 @@ export default class Toon {
 			stream: false		
 		}
 
+		this.direction = 'north'
+
 		// this.speed = init.speed || env.SPEED
 
 		this.MODEL = init.MODEL
 
 		this.logistic = this.logistic || []
 		this.logistic = this.logistic.concat( init.logistic )
-		this.logistic.push('needs_rotate', 'needs_move', 'needs_stream', 'intervals', 'MODEL', 'BODY', 'HEAD', 'ARM_LEFT', 'ARM_RIGHT', 'LEG_LEFT', 'LEG_RIGHT', 'INVENTORY', '_INVENTORY', 'bindings')
+		this.logistic.push('needs_rotate', 'needs_move', 'needs_stream', 'direction', 'intervals', 'MODEL', 'BODY', 'HEAD', 'ARM_LEFT', 'ARM_RIGHT', 'LEG_LEFT', 'LEG_RIGHT', 'INVENTORY', '_INVENTORY', 'bindings')
 
 	}
 
@@ -165,7 +167,7 @@ export default class Toon {
 		})
 
 		if( env.LOCAL && 0 ){
-			const gaze_geo = new BoxBufferGeometry(1, 1, 1)
+			const gaze_geo = new BoxBufferGeometry(3, 3, 3)
 			const gaze_mat = material
 			this.GAZE = new Mesh( gaze_geo, gaze_mat )
 			SCENE.add( this.GAZE )
@@ -267,29 +269,43 @@ export default class Toon {
 
 		if( direction ){
 
-			const dir = new Vector3()
+			if( direction !== TOON.direction ){
 
-			console.log( direction )
+				const dir = new Vector3().copy( TOON.MODEL.position )
 
-			if( direction === 'north' ){
-				dir.set( 0, 0, -10 )
-			}else if( direction === 'east'){
-				dir.set( 10, 0, 0 )
-			}else if( direction === 'west'){
-				dir.set( -10, 0, 0 )
-			}else if( direction === 'south'){
-				dir.set( 0, 0, 10 )
-			}else if( direction === 'northeast'){
-				dir.set( 10, 0, -10 )
-			}else if( direction === 'northwest'){
-				dir.set( -10, 0, 10 )
-			}else if( direction === 'southeast'){
-				dir.set( 10, 0, 10 )
-			}else if( direction === 'southwest'){
-				dir.set( -10, 0, 10 )
+				// console.log( direction )
+
+				if( direction === 'north' ){
+					// dir.set( 0, 0, -1 )
+					dir.z -= 1
+				}else if( direction === 'east'){
+					dir.x += 1
+					// dir.set( 1, 0, 0 )
+				}else if( direction === 'west'){
+					dir.x -= 1
+					// dir.set( -1, 0, 0 )
+				}else if( direction === 'south'){
+					dir.z += 1
+					// dir.set( 0, 0, 1 )
+				}else if( direction === 'northeast'){
+					dir.x += 1; dir.z -= 1
+					// dir.set( 10, 0, -10 )
+				}else if( direction === 'northwest'){
+					dir.x -= 1; dir.z -= 1
+					// dir.set( -10, 0, 10 )
+				}else if( direction === 'southeast'){
+					dir.x += 1; dir.z += 1
+					// dir.set( -1, 0, -1 )
+				}else if( direction === 'southwest'){
+					dir.x -= 1; dir.z += 1
+					// dir.set( -10, 0, 10 )
+				}
+				// dir.add( this.MODEL.position )
+				this.look_at( dir )
+
+				TOON.direction = direction
+
 			}
-			dir.add( this.MODEL.position )
-			this.look_at( dir )
 
 		}else{
 

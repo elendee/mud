@@ -215,7 +215,7 @@ function detect_object_clicked( e, ZONE ){
 
 	if( intersects.length > 0 ) { // 1 = skybox
 
-		console.log( intersects[0].object )
+		// console.log( intersects[0].object )
 
 		let clicked = false
 		for( const int of intersects ){

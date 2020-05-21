@@ -19,10 +19,10 @@ const binds = {
 	world: {
 
 		move: {
-			forward: 83, // w
-			back: 87, // s
-			left: 68, // d
-			right: 65 // a
+			forward: 87,
+			back: 83,
+			left: 65, 
+			right: 68 
 		},
 
 		move_alt: {

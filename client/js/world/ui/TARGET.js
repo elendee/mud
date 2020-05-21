@@ -118,6 +118,8 @@ class Target {
 
 			this.render_selected()
 
+			TOON.look_at( this.target.MODEL.position )
+
 		}else if( userData.subtype === 'foliage' ){
 
 			console.log('foliage:', clicked )
@@ -186,7 +188,7 @@ class Target {
 		let bbox_size_vector = new Vector3()
 		let target_size = new Box3().setFromObject( this.target.MODEL ).getSize()
 
-		console.log( target_size , '<<<')
+		// console.log( target_size , '<<<')
 
 		// reticule rotated 90deg, so z === y 
 		this.reticule.scale.x =  Math.max( .5, .18 + ( target_size.x / this.target.MODEL.scale.x ) / reticule_size )

@@ -8,7 +8,7 @@ import {
 let camera = false
 
 
-const offset = new Vector3( 0, GLOBAL.MAX_CAM * .75, -20 )
+const offset = new Vector3( 0, GLOBAL.MAX_CAM * .75, 20 )
 
 export default (function(){
 

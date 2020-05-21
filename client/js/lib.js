@@ -296,8 +296,29 @@ const entity_map = {
 
 
 function identify( entity ){
+
 	return ( entity.name || entity.subtype || entity.type )
+
 }
+
+
+function scale_to_match( source_mesh, dest_mesh ){
+
+	const bbox_dest = new Box3().setFromObject( dest_mesh ).getSize()
+	const bbox_source = new Box3().setFromObject( source_mesh ).getSize()
+
+	const scale = new Vector3( 
+		bbox_dest.x / bbox_source.x,
+		bbox_dest.y / bbox_source.y,
+		bbox_dest.z / bbox_source.z,
+	)
+
+	return scale
+
+}
+
+
+
 
 export {
 	random_hex,
@@ -312,6 +333,7 @@ export {
 	randomize_matrix,
 	entity_map,
 	identify,
-	get_dimensions
+	get_dimensions,
+	scale_to_match
 	// clear_object
 }

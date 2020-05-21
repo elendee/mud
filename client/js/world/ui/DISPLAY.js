@@ -15,6 +15,13 @@ import SCENE from '../../three/SCENE.js'
 
 import texLoader from '../../three/texLoader.js'
 
+
+
+const flash_init_scale = 2 // approx image native render
+
+const flash_step = 50
+
+
 class Display {
 
 	constructor( init ){
@@ -106,44 +113,123 @@ class Display {
 
 const flash_png = texLoader.load('/resource/textures/circle.png')
 const flash_geo = new PlaneBufferGeometry(1, 1, 1)
-const flash_mat = new MeshLambertMaterial({
-	color: 0xffffff,
-	map: flash_png,
-	transparent: true
-})
-
 
 function flash_target( type, zone, target_type, mud_id ){
 
 	let target = zone[ lib.entity_map[ target_type ] ][ mud_id ]
 
+	const flash_mat = new MeshLambertMaterial({
+		color: 0xffffff,
+		map: flash_png,
+		transparent: true,
+		opacity: 1
+	})
+
 	let flash = window.flash = new Mesh( flash_geo, flash_mat )
 	flash.position.copy( target.MODEL.position )
 	flash.position.y += 2
 	flash.rotation.x = -Math.PI / 2
-	flash.scale.multiplyScalar( 50 )
+
+	let scale = lib.scale_to_match( flash, target.MODEL )
+
+	flash.scale.x = scale.x * 1.1
+	flash.scale.y = scale.z * 1.1
+
+	let duration, step, fade, rise, expand
+	duration = 1000
+	step = 50
+	fade = .05
+	rise = 1
+	expand = .5
 
 	switch( type ){
+
 		case 'death_combat':
+			// step = 100
+			duration = 3000
+			expand = 1
+			// fade = .01
+			rise = .01
 			if( target.type === 'flora' ){
-				flash.material.color.set( 0x22ff22 )
+				flash.material.color.set( 0x113311 )
 			}else{
-				flash.material.color.set( 0xff0000 )
+				flash.material.color.set( 0xaa0000 )
 			}
+			break;
+
+		case 'cast_spell':
+			flash.material.color.set( 0x660077 )
 			break;
 
 		default: break
 	}
 
-	SCENE.add( flash )
-	RENDERER.frame( SCENE )
-	setTimeout(function(){
-		SCENE.remove( flash )
-		RENDERER.frame( SCENE )
-	}, 2000)
+	const ticks = Math.floor( duration / step )
+
+	flash_sequence({
+		// visible: true,
+		type: 'fadeout',
+		flash: flash,
+		duration: duration,
+		// step: step,
+		fade: 1 / ticks,
+		rise: rise,
+		expand: expand,
+		ticks: ticks,
+		started: false
+	})
+	
 
 }
 window.flash_target = flash_target
+
+
+function flash_sequence( opt ){
+
+	// visible, flash, duration, step, fade, rise, expand, ticks, started
+
+	if( !opt.started ) SCENE.add( opt.flash )
+
+	if( opt.duration > 0 ){
+	// if( opt.duration > opt.step ){
+
+		// visible ? SCENE.add( flash ) : SCENE.remove( flash )
+		RENDERER.frame( SCENE )
+		setTimeout(function(){
+			// SCENE.remove( flash )
+			// visible ? SCENE.add( flash ) : SCENE.remove( flash )
+			RENDERER.frame( SCENE )
+
+			// opt.duration -= opt.step 
+
+			if( opt.fade > 0 )  opt.flash.material.opacity -= opt.fade
+
+			if( opt.rise )  opt.flash.position.y += opt.rise
+
+			if( opt.rise )  opt.flash.scale.x += opt.expand; opt.flash.scale.y += opt.expand
+
+			flash_sequence({
+				// visible: !opt.visible,
+				flash: opt.flash,
+				duration: opt.duration - flash_step,
+				// step: opt.step,
+				fade: opt.fade,
+				rise: opt.rise,
+				expand: opt.expand,
+				ticks: opt.ticks - 1,
+				started: false
+			})
+
+		}, flash_step )
+
+
+	}else{
+		SCENE.remove( flash )
+		RENDERER.frame( SCENE )
+	}
+
+}
+
 
 function flash_hurt(){
 
