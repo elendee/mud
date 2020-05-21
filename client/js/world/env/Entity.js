@@ -13,7 +13,7 @@ import {
 	Box3,
 	// DoubleSide,
 	// PlaneBufferGeometry
-	// Vector3,
+	Vector3,
 	// Group,
 	// SpriteMaterial,
 	// Sprite,
