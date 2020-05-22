@@ -1,5 +1,6 @@
 import * as lib from '../lib.js'
 import env from '../env.js'
+import hal from '../hal.js'
 
 import SCENE from '../three/SCENE.js'
 import CAMERA from '../three/CAMERA.js'
