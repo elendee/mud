@@ -1,4 +1,5 @@
 import env from '../../env.js'
+import * as lib from '../../lib.js'
 
 // import SOUND from '../../../SOUND.js'
 
@@ -109,7 +110,8 @@ class Target {
 
 			this.profile_img.src = '/resource/images/profiles/' + GLOBAL.PROFILE_IMGS[ userData.type ] || 'unknown.png'
 
-			this.name_ele.innerHTML = userData.name || userData.type || 'unknown'
+			this.name_ele.innerHTML = lib.identify( userData )
+			// userData.name || userData.type || 'unknown'
 
 			this.element.style.display = 'inline-block'
 			this.status_ele.style.display = 'inline-block'
