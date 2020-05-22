@@ -36,7 +36,7 @@ const textures = {
 	magic_basic: texLoader.load('/resource/textures/magic_basic.png'),
 	ranged_basic: texLoader.load('/resource/textures/ranged_basic.png'),
 }
-textures.armor_basic = melee_basic
+textures.armor_basic = textures.melee_basic
 
 const flash_geo = new PlaneBufferGeometry(1, 1, 1)
 // flash_geo.rotation.x = -Math.PI / 2
