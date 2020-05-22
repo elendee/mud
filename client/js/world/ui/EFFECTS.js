@@ -32,9 +32,12 @@ const textures = {
 	slice: texLoader.load('/resource/textures/slice.png'),
 	hand_flame: texLoader.load('/resource/textures/hand_flame.png'),
 	hand_swing: texLoader.load('/resource/textures/hand_swing.png'),
+	melee_basic: texLoader.load('/resource/textures/melee_basic.png'),
 	magic_basic: texLoader.load('/resource/textures/magic_basic.png'),
 	ranged_basic: texLoader.load('/resource/textures/ranged_basic.png'),
 }
+textures.armor_basic = melee_basic
+
 const flash_geo = new PlaneBufferGeometry(1, 1, 1)
 // flash_geo.rotation.x = -Math.PI / 2
 // flash_geo.applyMatrix4()
