@@ -4,6 +4,7 @@ import * as lib from '../../lib.js'
 import TARGET from './TARGET.js'
 
 import GLOBAL from '../../GLOBAL.js'
+import RENDERER from '../../three/RENDERER.js'
 
 import {
 	PlaneBufferGeometry,
