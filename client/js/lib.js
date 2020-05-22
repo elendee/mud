@@ -256,19 +256,19 @@ const rando_scale = new Vector3()
 
 function randomize_matrix( matrix, options, blorb ){
 
-	rando_position.x = options.exclude.x ? 0 : Math.random() * options.position
-	rando_position.y = options.exclude.y ? 0 : Math.random() * options.position
-	rando_position.z = options.exclude.z ? 0 : Math.random() * options.position
+	rando_position.x = options.exclude.position.x ? 0 : Math.random() * options.position
+	rando_position.y = options.exclude.position.y ? 0 : Math.random() * options.position
+	rando_position.z = options.exclude.position.z ? 0 : Math.random() * options.position
 
 	if( blorb ) rando_position.y = -1
 
-	rando_rotation.x = Math.random() * 2 * Math.PI
-	rando_rotation.y = Math.random() * 2 * Math.PI
-	rando_rotation.z = Math.random() * 2 * Math.PI
+	rando_rotation.x = options.exclude.rotation.x ? 0 : Math.random() * 2 * Math.PI
+	rando_rotation.y = options.exclude.rotation.y ? 0 : Math.random() * 2 * Math.PI
+	rando_rotation.z = options.exclude.rotation.z ? 0 : Math.random() * 2 * Math.PI
 
 	rando_quaternion.setFromEuler( rando_rotation )
 
-	rando_scale.x = rando_scale.y = rando_scale.z = options.init_scale + ( 1 - options.scale_range ) + ( 2 * ( Math.random() * options.scale_range ) )
+	rando_scale.x = rando_scale.y = rando_scale.z = options.init_scale - options.scale_range + ( 2 * ( Math.random() * options.scale_range ) )
 
 	matrix.compose( rando_position, rando_quaternion, rando_scale )
 

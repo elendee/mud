@@ -11,12 +11,13 @@ import DEV from './world/ui/DEV.js'
 
 import ZONE from './world/ZONE.js'
 
+import { zone_render } from './world/ZONE_render.js'
+
 import RENDERER from './three/RENDERER.js'
 
 import User from './User.js'
 
 import Toon from './world/Toon.js'
-
 
 
 
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	ROUTER.bind()
 	.then( res => {
 		init_session( res )
-		ZONE.render( res.ZONE )
+		zone_render( ZONE, res.ZONE )
 	})
 	.catch( err => {
 		console.log( err )

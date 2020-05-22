@@ -106,6 +106,10 @@ class Target {
 
 				this.target = ZONE.NPCS[ userData.mud_id ]
 
+			}else if( userData.type == 'structure' && ZONE.STRUCTURES[ userData.mud_id ]){
+
+				this.target = ZONE.STRUCTURES[ userData.mud_id ]
+
 			}
 
 			this.profile_img.src = '/resource/images/profiles/' + GLOBAL.PROFILE_IMGS[ userData.type ] || 'unknown.png'
@@ -195,6 +199,8 @@ class Target {
 		// reticule rotated 90deg, so z === y 
 		this.reticule.scale.x =  Math.max( .5, .18 + ( target_size.x / this.target.MODEL.scale.x ) / reticule_size )
 		this.reticule.scale.y =  Math.max( .5, .18 + ( target_size.z / this.target.MODEL.scale.z ) / reticule_size )
+		// this.reticule.scale.x =  Math.max( .5, .18 + target_size.x / reticule_size )
+		// this.reticule.scale.y =  Math.max( .5, .18 + target_size.z / reticule_size )
 
 		const wpos = new Vector3()
 		this.target.MODEL.getWorldPosition( wpos )

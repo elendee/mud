@@ -99,10 +99,13 @@ export default class Entity {
 
 		// scale
 
-		if( this.type === 'flora' )  ratio.z *= ( bbox.z / bbox.x )
+		if( this.type === 'flora' ){
+			ratio.z *= ( bbox.z / bbox.x )
+			this.MODEL.rotation.y += Math.random() * Math.PI
+		}
 
 		this.MODEL.scale.set( ratio.x, ratio.y, ratio.z )
-		this.MODEL.rotation.y += Math.random() * Math.PI
+
 
 		// rotation
 

@@ -256,9 +256,6 @@ class Zone extends Persistent {
 
 	grow_new_flora( vector ){
 
-		const rand_radial = 10 + Math.floor( Math.random() * 20 )
-		const rand_vertical = 20 + Math.floor( Math.random() * 30 )
-
 		const subtype = this.available_flora[ Math.floor( Math.random() * this.available_flora.length ) ]
 
 		const flora = new Flora({
@@ -268,9 +265,9 @@ class Zone extends Persistent {
 			x: vector.x,
 			y: vector.y,
 			z: vector.z,
-			width: rand_radial,
-			length: rand_radial,
-			height: rand_vertical,
+			// width: rand_radial,
+			// length: rand_radial,
+			// height: rand_vertical,
 		})
 
 		return flora

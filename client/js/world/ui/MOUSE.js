@@ -266,7 +266,7 @@ function check_distance( clicked, intersects ){
 	let dist, clicked_position, required_dist
 	let type = clicked.userData.type
 
-	if( type == 'flora' ){
+	if( type == 'flora' || type == 'structure' ){
 
 		return true
 
