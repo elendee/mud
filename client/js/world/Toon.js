@@ -21,6 +21,7 @@ import * as ACTION_BAR from './ui/ACTION_BAR.js'
 import DEV from './ui/DEV.js'
 import * as MOUSE from './ui/MOUSE.js'
 import * as POPUPS from './ui/POPUPS.js'
+import * as EFFECTS from './ui/EFFECTS.js'
 
 import STATE from './STATE.js'
 import TOONS from './TOONS.js'
@@ -322,12 +323,31 @@ export default class Toon {
 
 
 
-	engage( slot ){
+	attack( slot ){
 
 		if( !TARGET.target )  return false
 
+		let item_id = this.equipped[ slot ]
+
+		let item 
+		if( this.INVENTORY[ item_id ] ){
+			item = this.INVENTORY[ item_id ]	
+		}else{
+			item = slot === 2 ? this.left_hand : this.right_hand
+		} 
+
+		// console.log( item )
+
+		const attack = new EFFECTS.Attack({
+			// type: item.type,
+			item: item,
+			slot: slot,
+			source: this
+		})
+		attack.swing()
+
 		window.SOCKET.send(JSON.stringify({
-			type: 'engage',
+			type: 'attack',
 			slot: String( slot ),
 			target: {
 				type: TARGET.target.type,
@@ -348,6 +368,8 @@ export default class Toon {
 
 			// if( STATE.stream_down ){
 			if( TOON.needs_stream ){
+
+				// console.log('sending')
 
 				if( window.SOCKET && window.SOCKET.send ){
 
@@ -370,7 +392,7 @@ export default class Toon {
 
 			}
 
-		}, 1500 )
+		}, 750 )
 
 		
 

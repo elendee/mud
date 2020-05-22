@@ -12,8 +12,6 @@ import CHAT from './ui/CHAT.js'
 
 import MAP from '../MAP.js'
 
-import DISPLAY from './ui/DISPLAY.js'
-
 const bind = function(){
 
 	return new Promise(function( resolve, reject ){
@@ -154,8 +152,7 @@ const bind = function(){
 					break;
 
 				case 'combat':
-					console.log('combat resolution: ', obj.resolution )
-					DISPLAY.render_combat( ZONE, obj.resolution )
+					ZONE.apply_resolution( obj.resolution )
 					break;
 
 				// case 'bot_begin_path':

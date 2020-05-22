@@ -265,8 +265,8 @@ function animate( start ){
 
 	for( const mud_id of Object.keys( TOONS )){ // should not include player
 		if( TOONS[ mud_id ].needs_move ){
-			TOONS[ mud_id ].MODEL.position.lerp( TOONS[ mud_id ].ref.position, .01 )
-			if( TOONS[ mud_id ].MODEL.position.distanceTo( TOONS[ mud_id ].ref.position ) < .1 ){
+			TOONS[ mud_id ].MODEL.position.lerp( TOONS[ mud_id ].ref.position, .02 )
+			if( TOONS[ mud_id ].MODEL.position.distanceTo( TOONS[ mud_id ].ref.position ) < .05 ){
 				TOONS[ mud_id ].needs_move = false
 				moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
 				// delete moving_toons[ mud_id ]

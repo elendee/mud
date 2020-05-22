@@ -201,7 +201,7 @@ function action( slot ){
 
 		if( !ab_buttons[ slot ].classList.contains('cooldown') ){
 			
-			window.TOON.engage( slot )
+			window.TOON.attack( slot )
 
 			if( !item ){
 				if( slot == 2 ){
@@ -210,8 +210,6 @@ function action( slot ){
 					item = window.TOON.right_hand
 				}
 			}
-
-			console.log('attack: ', item )
 
 			render_cooldown( ab_buttons[ slot ], item.cooldown )
 

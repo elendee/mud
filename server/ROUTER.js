@@ -135,8 +135,8 @@ module.exports = {
 					TOON.drop( packet.held )
 					break;
 
-				case 'engage':
-					GAME.engage( TOON, packet, GAME.ZONES[ TOON._current_zone ] )
+				case 'attack':
+					GAME.ZONES[ TOON._current_zone ].resolve_attack( TOON, packet )
 					break;
 					
 				// case 'register':

@@ -27,11 +27,11 @@ class Resolver {
 
 					// log('flag', 'attacker: ', data.attacker )
 
-					let power = ( data.item.power || 0 ) + ( data.attacker._strength || 0 )
+					let power = ( data.item.power || 0 ) + ( data.attacker._stats.strength || 0 )
 					let defense = ( data.target._dexterity || 0 ) + interf.get_armor( data.target )
 					let dmg = Math.max( 0, Math.floor( Math.random() * ( power - defense ) ) )
 
-					log('flag', 'wtf mate: ', data.item.power, data.attacker._strength )
+					// log('flag', 'wtf mate: ', data.item.power, data.attacker._stats.strength )
 
 					if( dmg >= data.target.health.current )  data.target._status = 'dead'
 
@@ -44,7 +44,7 @@ class Resolver {
 						attacker: data.attacker.mud_id, 
 						attacker_health: data.attacker.health.current,
 						attacker_type: data.attacker.type,
-						target: data.target.mud_id,
+						target_id: data.target.mud_id,
 						target_health: data.target.health.current,
 						target_type: data.target.type,
 						dmg: dmg
@@ -57,7 +57,7 @@ class Resolver {
 					fail: fail,
 					attacker: data.attacker.mud_id,
 					attacker_type: data.attacker.type,
-					target: data.target.mud_id,
+					target_id: data.target.mud_id,
 					target_type: data.target.type,
 				}
 

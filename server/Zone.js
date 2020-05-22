@@ -8,6 +8,8 @@ const MAP = require('./MAP.js')
 
 const SOCKETS = require('./SOCKETS.js')
 
+const COMBAT = require('./combat.js')
+
 const Persistent = require('./Persistent.js')
 const Toon = require('./agents/Toon.js')
 const Structure = require('./environs/Structure.js')
@@ -129,6 +131,57 @@ class Zone extends Persistent {
 		if( typeof( this._id ) !== 'number') {
 			log('flag', 'invalid zone id', this._id )
 			return false
+		}
+
+	}
+
+
+	resolve_attack( TOON, packet ){
+
+		let slot = Number( packet.slot )
+
+		if( slot === 2 || slot === 3 ){
+
+			let item = TOON._INVENTORY[ TOON.equipped[ slot ] ]
+
+			if( !item ){
+				if( slot == 2 ) item = TOON.left_hand
+				if( slot == 3 ) item = TOON.right_hand
+			}
+
+			let entity_type = lib.type_map[ packet.target.type ]
+
+			let target = this[ entity_type ][ packet.target.mud_id ]
+
+			if( !target ){
+				log('flag', 'no target found to attack', packet )
+				return false
+			}
+
+			let dist = lib.get_dist( TOON.ref.position, target.ref.position )
+
+			// let name = item.name || 'your ' + ( slot === 2 ? 'left' : 'right' ) + ' hand'
+
+			let resolution = COMBAT.resolve({
+				type: 'attack',
+				attacker:TOON, 
+				item: item, 
+				target: target, 
+				dist: dist,
+				// this: this
+			})
+
+			for( const mud_id of Object.keys( this._TOONS )){
+				SOCKETS[ TOON.mud_id ].send(JSON.stringify({
+					type: 'combat',
+					resolution: resolution
+				}))
+			}
+
+		}else{
+
+			log('flag', 'unknown slot type')
+
 		}
 
 	}

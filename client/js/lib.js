@@ -287,11 +287,33 @@ function get_dimensions( mesh ){
 }
 
 
-const entity_map = {
+const map_entity = {
 	'flora': 'FLORA',
 	'npc': 'NPCS',
 	'toon': 'TOONS',
 	'structure': 'STRUCTURES'
+}
+
+
+const map_weapon = {
+	'left hand': 'hand_swing',
+	'right hand': 'hand_swing',
+	'melee': 'melee_basic',
+	'ranged': 'ranged_basic',
+	'magic': 'magic_basic',
+	'mega sword': 'slice',
+}
+
+function map_weapon_texture( item ){
+
+	if( map_weapon[ item.name ] ){
+		return map_weapon[ item.name ]
+	}else if( map_weapon[ item.subtype ] ){
+		return map_weapon[ item.subtype ]
+	}else if( map_weapon[ item.type ] ){
+		return map_weapon[ item.type ]
+	}
+	return false
 }
 
 
@@ -304,8 +326,8 @@ function identify( entity ){
 
 function scale_to_match( source_mesh, dest_mesh ){
 
-	const bbox_dest = new Box3().setFromObject( dest_mesh ).getSize()
 	const bbox_source = new Box3().setFromObject( source_mesh ).getSize()
+	const bbox_dest = new Box3().setFromObject( dest_mesh ).getSize()
 
 	const scale = new Vector3( 
 		bbox_dest.x / bbox_source.x,
@@ -331,9 +353,10 @@ export {
 	// glob_geometries,
 	load,
 	randomize_matrix,
-	entity_map,
+	map_entity,
+	map_weapon_texture,
 	identify,
 	get_dimensions,
-	scale_to_match
+	scale_to_match,
 	// clear_object
 }

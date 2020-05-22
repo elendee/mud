@@ -337,11 +337,19 @@ function validate_seconds( ...vals ){
 }
 
 
-const entity_map = {
+const type_map = {
 	'flora': '_FLORA',
 	'npc': '_NPCS',
 	'toon': '_TOONS',
 	'structure': '_STRUCTURES'
+}
+
+
+const range_map = {
+	melee: 15,
+	ranged: 75,
+	magic: 50,
+	armor: 15
 }
 
 
@@ -453,7 +461,8 @@ module.exports = {
 	validate_seconds,
 	validate_vec3,
 	validate_quat,
-	entity_map,
+	type_map,
+	range_map,
 	get_dist,
 	identify
 }

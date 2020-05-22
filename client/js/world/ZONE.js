@@ -6,14 +6,14 @@ import CAMERA from '../three/CAMERA.js'
 import RENDERER from '../three/RENDERER.js'
 import * as LIGHT from '../three/LIGHT.js'
 
-import * as SHADERS from './env/shaders.js'
 
 import GLOBAL from '../GLOBAL.js'
 import TOONS from './TOONS.js'
-
 import Toon from './Toon.js'
+import * as ANIMATE from './animate.js'
 
 // import BuffGeoLoader from '../three/BuffGeoLoader.js'
+import * as SHADERS from './env/shaders.js'
 
 import Flora from './env/Flora.js'
 import Structure from './env/Structure.js'
@@ -23,10 +23,11 @@ import grass_mesh from './env/grass_mesh.js'
 import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
 import CHAT from './ui/CHAT.js'
+import * as EFFECTS from './ui/EFFECTS.js'
+import TARGET from './ui/TARGET.js'
 
 // import DIALOGUE from './'
 
-import * as ANIMATE from './animate.js'
 
 import {
 	Geometry,
@@ -581,6 +582,137 @@ class Zone {
 
 			}
 		}
+
+	}
+
+
+
+
+
+	apply_resolution( resolution ){
+
+		// console.log( resolution )
+
+		let target, attacker
+
+		target = this[ lib.map_entity[ resolution.target_type ] ][ resolution.target_id ]
+		attacker = this[ lib.map_entity[ resolution.attacker_type ] ][ resolution.attacker ]
+
+		if( !target || !attacker ){
+			console.log('incomplete resolution data', resolution )
+			return false
+		}
+
+		if( resolution.type === 'combat' ){
+
+			target.health.current = resolution.target_health
+
+			if( resolution.status === 'dead' )  console.log('animate dead')
+
+		}else if( resolution.type === 'decompose' ){
+
+			this.decompose( target )
+
+		}
+
+		this.render_resolution_flash( target, attacker, resolution )
+
+		this.render_resolution_text( target, attacker, resolution )
+
+	}
+
+
+
+
+	render_resolution_flash( target, attacker, resolution ){
+
+		let type, flash_target
+
+		if( TARGET.target.mud_id === resolution.target_id ){
+			TARGET.show_status()
+			flash_target = target
+		}else if( resolution.target_id === window.TOON.mud_id ){
+			window.TOON.show_status()
+			flash_target = target
+		}
+
+		if( flash_target.health.current <= 0 )  type = 'death'
+
+		if( resolution.success ){
+
+			let flash_type = 'generic'
+
+			if( type === 'death' ){
+				flash_type = 'death'
+			}else if( type === 'death' ){
+				flash_type = 'receive_melee'
+			}
+
+			const flash = new EFFECTS.Flash({
+				target: flash_target,
+				type: flash_type
+			})
+			flash.step()
+
+		}
+
+	}
+
+
+
+
+	render_resolution_text( target, attacker, resolution ){
+
+		let msg, type
+
+		type = resolution.type
+
+		if( resolution.success ){
+
+			if( resolution.target_id === window.TOON.mud_id ){
+				msg = lib.identify( attacker ) + ' attacks you for ' + resolution.dmg
+			}else if( resolution.attacker === window.TOON.mud_id ){
+				msg = 'You attack ' + lib.identify( target ) + ' for ' + resolution.dmg
+			}
+
+		}else{
+
+			if( resolution.target_id === window.TOON.mud_id ){
+
+				switch( resolution.fail ){
+					case 'range':
+						msg = lib.identify( attacker ) + ' fails to reach you'
+						break;
+					case 'target_dead':
+						msg = lib.identify( attacker ) + ' attacks the dead corpse of ' + lib.identify( target )
+						break;
+					default: break;
+				}
+			}else if( resolution.attacker === window.TOON.mud_id ){
+				switch( resolution.fail ){
+					case 'range':
+						msg = 'You fail to reach ' + lib.identify( target )
+						break;
+					case 'target_dead':
+						msg = 'You attack the dead corpse of ' + lib.identify( target )
+						break;
+					default: break;
+				}
+			}
+
+			type = 'error'
+
+		}
+
+		hal( type, msg, 2000 )
+
+	}
+
+
+
+	decompose( target ){
+
+		console.log('decomposing: ', target )
 
 	}
 

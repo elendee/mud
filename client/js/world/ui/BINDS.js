@@ -26,13 +26,13 @@ const binds = {
 		},
 
 		move_alt: {
-			forward: 40, // up
-			back: 38, // down
+			forward: 38, // up
+			back: 40, // down
 		},
 
 		turn: {
-			left: 39,
-			right: 37
+			left: 37,
+			right: 39
 		},
 
 		// flip_cam: 70, // f
