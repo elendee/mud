@@ -161,8 +161,7 @@ canvas#mud-flats{
 	overflow: hidden;
 	border: 1px solid lightgrey;
 	background: radial-gradient( rgba( 185, 185, 185, .5), rgba(0, 0, 0, 1) );
-    
-/* 	display: none; */
+    box-shadow: inset 0px 0px 5px black, inset 0px 0px 5px black, 0px 0px 5px black;
 }
 
 .readout{

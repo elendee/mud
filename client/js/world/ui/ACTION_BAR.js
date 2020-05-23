@@ -1,4 +1,5 @@
 import hal from '../../hal.js'
+import * as lib from '../../lib.js'
 
 import Popup from './Popup.js'
 // import * as POPUPS from './POPUPS.js'
@@ -117,7 +118,7 @@ function init_character_buttons(){
 	character_wrapper.id = 'character-wrapper'
 
 	const character = document.createElement('div')
-	character.innerHTML = '<img src="/resource/images/icons/noun_hood.png">'
+	character.innerHTML = '<img src="/resource/images/icons/hood.png">'
 	character.id = 'ab-character'
 	character.classList.add('bar-button')
 	character.addEventListener('click', function(){
@@ -128,7 +129,7 @@ function init_character_buttons(){
 
 	const inventory = document.createElement('div')
 	inventory.id = 'ab-inventory'
-	inventory.innerHTML = '<img src="/resource/images/icons/noun_satchel.png">'
+	inventory.innerHTML = '<img src="/resource/images/icons/satchel.png">'
 	inventory.classList.add('bar-button')
 	inventory.addEventListener('click', function(){
 		inv_pop.set_visible(true)
@@ -177,7 +178,7 @@ function render_equip( slot, mud_id ){
 	if( mud_id && window.TOON.INVENTORY[ mud_id ] ){
 	
 		let img = document.createElement('img')
-		img.src = '/resource/images/icons/' + window.TOON.INVENTORY[ mud_id ].icon_url
+		img.src = '/resource/images/icons/' +  lib.identify( 'icon', window.TOON.INVENTORY[ mud_id ] ) +'.png' // window.TOON.INVENTORY[ mud_id ].icon_url
 		ab_buttons[ slot ].appendChild( img )
 
 	}else{

@@ -219,7 +219,7 @@ export default class Popup {
 			row.classList.add('stat', item.type )
 			let icon = document.createElement('img')
 			icon.classList.add('icon')
-			icon.src = '/resource/images/icons/' + INVENTORY[ mud_id ].icon_url
+			icon.src = '/resource/images/icons/' + lib.identify( 'icon', INVENTORY[ mud_id ] ) + '.png' // INVENTORY[ mud_id ].icon_url
 			icon.addEventListener('click', function(){
 				MOUSE.mousehold.pickup( mud_id, 'inventory' )
 			})

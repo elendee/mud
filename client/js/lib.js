@@ -317,9 +317,23 @@ function map_weapon_texture( item ){
 }
 
 
-function identify( entity ){
+function identify( type, entity ){
 
-	return ( entity.name || entity.subtype || entity.type )
+	switch( type ){
+
+		case 'name':
+			return ( entity.name || entity.subtype || entity.type )
+
+		case 'model':
+			return ( entity.model_url || entity.subtype || entity.type )
+
+		case 'icon':
+			return ( entity.icon_url || entity.subtype || entity.type )
+
+		default: 
+			return entity.subtype || entity.type
+
+	}
 
 }
 

@@ -31,6 +31,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._table = 'avatars'
 
+		this.icon_url = init.icon_url || 'toon'
+
 		this._INVENTORY = init._INVENTORY
 
 		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
@@ -122,7 +124,7 @@ module.exports = class Toon extends AgentPersistent {
 				const stick = new FACTORY({
 					type: 'melee',
 					name: 'Unwieldy Stick',
-					icon_url: 'noun_stick.png',
+					// icon_url: 'noun_stick',
 					power: 2
 				})
 				this._INVENTORY[ stick.mud_id ] = stick
@@ -130,41 +132,41 @@ module.exports = class Toon extends AgentPersistent {
 				const trousers = new FACTORY({
 					type: 'armor',
 					name: 'Unwieldy Trousers',
-					icon_url: 'noun_trousers.png',
+					// icon_url: 'noun_trousers',
 				})
 				this._INVENTORY[ trousers.mud_id ] = trousers
 				const belt = new FACTORY({
 					type: 'armor',
 					name: 'Unwieldy Vest',
-					icon_url: 'noun_shirt.png',
+					// icon_url: 'noun_shirt',
 				})
 				this._INVENTORY[ belt.mud_id ] = belt
 				if( env.DEV ){
 					const megasword = new FACTORY({
 						type: 'melee',
 						name: 'Mega Sword',
-						icon_url: 'noun_short-sword.png',
+						icon_url: 'short-sword',
 						power: 50
 					})
 					this._INVENTORY[ megasword.mud_id ] = megasword
 					const megastaff = new FACTORY({
 						type: 'magic',
 						name: 'Mega Staff',
-						icon_url: 'noun_scepter.png',
+						icon_url: 'scepter',
 						power: 20
 					})
 					this._INVENTORY[ megastaff.mud_id ] = megastaff
 					const megaarmor = new FACTORY({
 						type: 'armor',
 						name: 'Mega Armor',
-						icon_url: 'noun_cape.png',
+						icon_url: 'cape',
 						power: 50
 					})
 					this._INVENTORY[ megaarmor.mud_id ] = megaarmor
 					const megabow = new FACTORY({
 						type: 'ranged',
 						name: 'Mega Bow',
-						icon_url: 'noun_bow.png',
+						icon_url: 'bow',
 						power: 10
 					})
 					this._INVENTORY[ megabow.mud_id ] = megabow

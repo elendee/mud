@@ -156,6 +156,7 @@ export default class Toon {
 			clickable: true,
 			mud_id: this.mud_id,
 			type: type,
+			icon_url: this.icon_url,
 			// website: this.website,
 			name: this.name
 		}

@@ -395,9 +395,9 @@ class Zone {
 		if( resolution.success ){
 
 			if( resolution.target_id === window.TOON.mud_id ){
-				msg = lib.identify( attacker ) + ' attacks you for ' + resolution.dmg
+				msg = lib.identify( 'name', attacker ) + ' attacks you for ' + resolution.dmg
 			}else if( resolution.attacker === window.TOON.mud_id ){
-				msg = 'You attack ' + lib.identify( target ) + ' for ' + resolution.dmg
+				msg = 'You attack ' + lib.identify( 'name', target ) + ' for ' + resolution.dmg
 			}
 
 		}else{
@@ -406,20 +406,20 @@ class Zone {
 
 				switch( resolution.fail ){
 					case 'range':
-						msg = lib.identify( attacker ) + ' fails to reach you'
+						msg = lib.identify( 'name', attacker ) + ' fails to reach you'
 						break;
 					case 'target_dead':
-						msg = lib.identify( attacker ) + ' attacks the dead corpse of ' + lib.identify( target )
+						msg = lib.identify( 'name', attacker ) + ' attacks the dead corpse of ' + lib.identify( 'name', target )
 						break;
 					default: break;
 				}
 			}else if( resolution.attacker === window.TOON.mud_id ){
 				switch( resolution.fail ){
 					case 'range':
-						msg = 'You fail to reach ' + lib.identify( target )
+						msg = 'You fail to reach ' + lib.identify( 'name', target )
 						break;
 					case 'target_dead':
-						msg = 'You attack the dead corpse of ' + lib.identify( target )
+						msg = 'You attack the dead corpse of ' + lib.identify( 'name', target )
 						break;
 					default: break;
 				}

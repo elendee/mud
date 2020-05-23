@@ -112,9 +112,10 @@ class Target {
 
 			}
 
-			this.profile_img.src = '/resource/images/profiles/' + GLOBAL.PROFILE_IMGS[ userData.type ] || 'unknown.png'
+			this.profile_img.src = '/resource/images/icons/' + lib.identify( 'icon', userData ) + '.png'
 
-			this.name_ele.innerHTML = lib.identify( userData )
+			this.name_ele.innerHTML = lib.identify( 'name', userData )
+			if( userData.type === 'self' ) this.name_ele.innerHTML += ' (you)'
 			// userData.name || userData.type || 'unknown'
 
 			this.element.style.display = 'inline-block'

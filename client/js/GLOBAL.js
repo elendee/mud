@@ -94,14 +94,14 @@ export default {
 
 	SPEAKER: 3,
 
-	PROFILE_IMGS: {
-		unknown: 'unknown.png',
-		flora: 'flora.png',
-		toon: 'toon.png',
-		self: 'toon.png',
-		npc: 'toon.png',
-		structure: 'structure.png'
-	}
+	// PROFILE_IMGS: {
+	// 	unknown: 'unknown.png',
+	// 	flora: 'flora.png',
+	// 	toon: 'toon.png',
+	// 	self: 'toon.png',
+	// 	npc: 'toon.png',
+	// 	structure: 'structure.png'
+	// }
 	// SPEAKER: 80
 
 }

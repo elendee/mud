@@ -43,9 +43,11 @@ export default class Entity {
 	}
 
 	async proto( init ){
-
+ 
 		// const url = '/resource/geometries/' + lib.identify( this ) + '.json'
-		const url = '/resource/geometries/' + lib.identify( this ) + '.obj'
+		const url = '/resource/geometries/' + lib.identify( 'model', this ) + '.obj'
+
+		console.log( '>>> ' + lib.identify( false, this ) )
 
 		// const scene = await lib.load('json', url )
 		const group = await lib.load('obj', url )
@@ -53,7 +55,7 @@ export default class Entity {
 		const mesh = group.children[0]
 
 		if( !mesh || !mesh.isMesh ){
-			console.log('invalid obj prototype requested: ', lib.identify( this ) )
+			console.log('invalid obj prototype requested: ', lib.identify( 'generic', this ) )
 			return false
 		}
 		mesh.castShadow = true
@@ -77,7 +79,7 @@ export default class Entity {
 
 		}else if( init.proto_mesh.isScene ){
 
-			console.log( 'bad, collapse to object, ', lib.identify( this ) )
+			console.log( 'bad, collapse to object, ', lib.identify( 'generic', this ) )
 
 		}else{
 			console.log('invalid mesh passed.....', init.proto_mesh )

@@ -333,7 +333,7 @@ async function instantiate_entities( zone, dest_group, source_group, base_class 
 		dest_group[ entity.mud_id ] = entity
 
 		if( !entity.MODEL ){
-			console.log('failed to make model: ', lib.identify( entity ))
+			console.log('failed to make model: ', lib.identify( 'generic', entity ))
 			return false
 		}
 

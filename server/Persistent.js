@@ -17,6 +17,10 @@ module.exports = class Persistent {
 
 		this.subtype = init.subtype
 
+		this.icon_url = init.icon_url
+
+		this.model_url = init.model_url
+
 		this._table = init._table
 
 		this._created = lib.validate_string( init._created, undefined )
@@ -25,7 +29,7 @@ module.exports = class Persistent {
 
 		this.logistic = []
 		this.logistic = this.logistic.concat( init.logistic )
-		this.logistic.push('logistic', 'mud_id')
+		this.logistic.push('logistic', 'mud_id', 'icon_url', 'model_url')
 
 	}
 

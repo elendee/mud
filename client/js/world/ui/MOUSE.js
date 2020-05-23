@@ -1,4 +1,5 @@
 import env from '../../env.js'
+import * as lib from '../../lib.js'
 import hal from '../../hal.js'
 
 import STATE from '../STATE.js'
@@ -382,7 +383,7 @@ class MouseHold {
 
 	pickup( mud_id, origin_type ){
 		this.ele.style.display = 'initial'
-		this.hold_img.src = '/resource/images/icons/' + window.TOON.INVENTORY[ mud_id ].icon_url
+		this.hold_img.src = '/resource/images/icons/' + lib.identify( 'icon', window.TOON.INVENTORY[ mud_id ] ) + '.png'  ///window.TOON.INVENTORY[ mud_id ].icon_url
 		this.held = {
 			mud_id: mud_id,
 			origin: origin_type
