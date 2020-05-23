@@ -264,6 +264,13 @@ async function prototype_entities( zone, type, zone_data ){
 					// 	// clipping: true,
 					// 	// lights: true
 					// })
+					if( entity.type === 'flora' ){
+						if( entity.subtype === 'oak' ){
+							color  = 'rgb( 18, 20, 5)'
+						}else if( entity.subtype === 'pine' ){
+							color = 'rgb(10, 20, 5)'
+						}
+					}
 
 					zone.material_map[ entity_address ] = new MeshLambertMaterial({
 						color: color
