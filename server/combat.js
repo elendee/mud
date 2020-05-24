@@ -33,7 +33,21 @@ class Resolver {
 
 					// log('flag', 'wtf mate: ', data.item.power, data.attacker._stats.strength )
 
-					if( dmg >= data.target.health.current )  data.target._status = 'dead'
+					let loot = false
+
+					if( dmg >= data.target.health.current ){
+						
+						data.target._status = 'dead'
+						
+						if( data.target.drop_loot ){
+							loot = data.target.drop_loot()
+						}else{
+							log('flag', 'entity missing drop_loot method: ', lib.identify( 'name', data.target ) )
+						}
+
+						set decompose clock (?) on target
+
+					}
 
 					data.target.health.current = Math.max( 0, data.target.health.current - dmg )
 
@@ -41,6 +55,7 @@ class Resolver {
 						type: 'combat',
 						success: true,
 						status: data.target._status,
+						loot: loot,
 						attacker: data.attacker.mud_id, 
 						attacker_health: data.attacker.health.current,
 						attacker_type: data.attacker.type,

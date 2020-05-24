@@ -2,18 +2,19 @@ const Melee = require('./Melee.js')
 const Ranged = require('./Ranged.js')
 const Magic = require('./Magic.js')
 const Armor = require('./Armor.js')
-// const Key = require('./Key.js')
+const Resource = require('./Resource.js')
 
 const map = new Map([
 	['melee', Melee],
 	['ranged', Ranged],
 	['magic', Magic],
-	['armor', Armor]
+	['armor', Armor],
+	['resource', Resource]
 ])
 
 module.exports = function( item ) {
 
-	if( map.get( item.type ) ){
+	if( item && map.get( item.type ) ){
 
 		const itemClass = map.get( item.type)
 

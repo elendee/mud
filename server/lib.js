@@ -431,8 +431,24 @@ function get_dist( vec1, vec2 ){
 }
 
 
-function identify( entity ){
-	return ( entity.name || entity.subtype || entity.type )
+function identify( type, entity ){
+
+	switch( type ){
+
+		case 'name':
+			return ( entity.name || entity.subtype || entity.type )
+
+		case 'model':
+			return ( entity.model_url || entity.subtype || entity.type )
+
+		case 'icon':
+			return ( entity.icon_url || entity.subtype || entity.type )
+
+		default: 
+			return entity.subtype || entity.type
+
+	}
+
 }
 
 

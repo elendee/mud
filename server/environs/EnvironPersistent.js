@@ -4,6 +4,10 @@ const log = require('../log.js')
 
 const Persistent = require('../Persistent.js')
 
+// const Item = require('../items/Item.js')
+const FACTORY = require('../items/FACTORY.js')
+
+const LOOT = require('./LOOT.js')
 
 class EnvironPersistent extends Persistent {
 
@@ -53,6 +57,32 @@ class EnvironPersistent extends Persistent {
 		this.logistic.push('scale', 'type', 'ref') // 'x', 'y', 'z'
 
 	}
+
+	drop_loot(){
+
+		let loot = []
+
+		const types = LOOT[ lib.identify( 'name', this ) ]
+
+		for( const key of types ){
+
+			// log('flag', 'loots: ', type )
+
+			let init = {
+				type: 'resource',
+				subtype: key
+			}
+
+			loot.push( new FACTORY( init ) )
+
+		}
+
+		// log('flag', 'loots: ', loot )
+
+		return loot
+
+	}
+
 }
 
 

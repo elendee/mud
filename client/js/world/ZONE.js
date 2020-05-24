@@ -332,13 +332,16 @@ class Zone {
 
 			target.health.current = resolution.target_health
 
-			if( resolution.status === 'dead' )  console.log('animate dead')
-
 		}else if( resolution.type === 'decompose' ){
 
 			this.decompose( target )
 
 		}
+
+		if( resolution.status === 'dead' ){
+			console.log('deaders: ', resolution.loot )
+		}
+
 
 		this.render_resolution_flash( target, attacker, resolution )
 

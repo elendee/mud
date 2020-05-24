@@ -141,7 +141,9 @@ module.exports = class Toon extends AgentPersistent {
 					// icon_url: 'noun_shirt',
 				})
 				this._INVENTORY[ belt.mud_id ] = belt
+
 				if( env.DEV ){
+
 					const megasword = new FACTORY({
 						type: 'melee',
 						name: 'Mega Sword',
@@ -170,6 +172,14 @@ module.exports = class Toon extends AgentPersistent {
 						power: 10
 					})
 					this._INVENTORY[ megabow.mud_id ] = megabow
+					const hatchet_launcher = new FACTORY({
+						type: 'ranged',
+						name: 'Hatchet Launcher',
+						icon_url: 'bow',
+						power: 500
+					})
+					this._INVENTORY[ hatchet_launcher.mud_id ] = hatchet_launcher
+
 				}
 
 			}else{
@@ -188,6 +198,9 @@ module.exports = class Toon extends AgentPersistent {
 
 	async touch_equipped(){
 
+		// log('flag', 'wot: ', this.equipped )
+		// log('flag', 'wot: ', this._INVENTORY )
+
 		// if( typeof( this._id ) === 'number' ){ // auth'd avatars
 
 			// to use the session equip or the db equip ... ?
@@ -205,6 +218,7 @@ module.exports = class Toon extends AgentPersistent {
 
 				if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_left ){
 
+					log('flag', 'wott', 'ya' )
 					this.equipped[0] = this._INVENTORY[ mud_id ]
 
 				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_right ){
@@ -227,6 +241,14 @@ module.exports = class Toon extends AgentPersistent {
 
 					this.equipped[5] = this._INVENTORY[ mud_id ]
 
+				}
+
+			}
+
+			for( const mud_id of Object.keys( this._INVENTORY ) ){
+
+				if( this._INVENTORY[ mud_id ].name === 'Hatchet Launcher' ){
+					this.equipped[ 2 ] =  mud_id 
 				}
 
 			}
@@ -366,6 +388,23 @@ module.exports = class Toon extends AgentPersistent {
 		if( update_eqp || update_inv )  SOCKETS[ this.mud_id ].request.session.save()
 	
 	}
+
+
+
+
+
+
+	drop_loot(){
+
+		// drop loot
+
+		return {
+			the_loot: 'toon dropped loot ...'
+		}
+
+	}
+
+	
 
 
 

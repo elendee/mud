@@ -16,7 +16,9 @@ module.exports = class Item extends Persistent {
 
 		// this._table = 'items'
 
-		this.name = lib.validate_string( init.name, 'unknown' )
+		this.weight = lib.validate_number( init.weight, 0 )
+
+		this.name = lib.validate_string( init.name, undefined )
 
 		this.cooldown = lib.validate_number( init.cooldown, 2000 )
 
@@ -33,7 +35,8 @@ module.exports = class Item extends Persistent {
 			'icon_url',
 			'power',
 			'armor',
-			'reach'
+			'reach',
+			'weight'
 		]
 
 		const update_vals = [ 
@@ -41,7 +44,8 @@ module.exports = class Item extends Persistent {
 			this.icon_url,
 			this.power,
 			this.armor,
-			this.range
+			this.range,
+			this.weight
 		]
 
 		// if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
