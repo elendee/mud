@@ -143,25 +143,7 @@ class Zone {
 		SCENE.add( CAMERA )
 	    CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
 
-	    if( env.LOCAL && 0 ){
-			setTimeout(function(){
-				CAMERA.offset.set( -50, 50, 50 )
-				CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
-				CAMERA.lookAt( window.TOON.MODEL.position )
-				RENDERER.frame( SCENE )
-			}, 1000)
-		}
 		// CAMERA.position.set( 0, 150, 20 )
-
-
-
-		setTimeout(function(){
-
-			CAMERA.lookAt( TOON.MODEL.position ) 
-
-			RENDERER.frame( SCENE )
-
-		}, 100 )
 
 		TOON.begin_intervals()
 
@@ -332,10 +314,6 @@ class Zone {
 
 			target.health.current = resolution.target_health
 
-		}else if( resolution.type === 'decompose' ){
-
-			this.decompose( target )
-
 		}
 
 		if( resolution.status === 'dead' ){
@@ -437,12 +415,14 @@ class Zone {
 	}
 
 
+	render_decomposers( packet ){
 
-	decompose( target ){
+		let decomposers = packet
 
-		console.log('decomposing: ', target )
+		console.log('decomposers: ', decomposers )
 
 	}
+
 
 
 }

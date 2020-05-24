@@ -57,6 +57,9 @@ class Zone extends Persistent {
 		this._NPCS = init.NPCS || {}
 		this._TOONS = init.TOONS || {}
 
+		this.DECOMPOSERS = init.DECOMPOSERS || {} // never persisted, so no _INSTANTIATER ^^
+		this.LOOT = init.LOOT || {}
+
 	}
 
 	get_id(){
@@ -171,6 +174,9 @@ class Zone extends Persistent {
 				// this: this
 			})
 
+			if( resolution.status === 'dead' ) this.add_decomposers( target )
+			if( resolution.loot && resolution.loot.length )  this.add_loot( resolution.loot )
+
 			for( const mud_id of Object.keys( this._TOONS )){
 				SOCKETS[ TOON.mud_id ].send(JSON.stringify({
 					type: 'combat',
@@ -185,6 +191,89 @@ class Zone extends Persistent {
 		}
 
 	}
+
+
+
+
+	add_decomposers( target ){
+
+		const zone = this
+
+		if( !zone.DECOMPOSERS[ target.mud_id ]){
+
+			zone.DECOMPOSERS[ target.mud_id ] = { // can be any entity type (!)
+				entity: {
+					type: target.type,
+					name: lib.identify('name', target )
+				},
+				timeout: setTimeout(function(){
+					delete zone.DECOMPOSERS[ target.mud_id ]
+					zone.emit( 'decomposers', SOCKETS, false, zone.bundle_decomposers() )
+				}, 1000 * 60 * 5 )
+			}
+
+			zone.emit( 'decomposers', SOCKETS, false, zone.bundle_decomposers() )
+
+		}
+
+	}
+
+
+	bundle_decomposers(){
+		const bundle = {}
+		for( const mud_id of Object.keys( this.DECOMPOSERS ) ){
+			bundle[ mud_id ] = this.DECOMPOSERS[ mud_id ].entity
+		}
+		return bundle
+	}
+
+
+	add_loot( loots ){
+
+		const zone = this
+
+		for( const loot of loots ){
+
+			if( !zone.LOOT[ loot.mud_id ]){
+
+				zone.LOOT[ loot.mud_id ] = { // can be any entity type (!)
+					entity: loot,
+					timeout: setTimeout(function(){
+						delete zone.LOOT[ loot.mud_id ]
+						zone.emit( 'loot', SOCKETS, false, zone.bundle_loot() )
+					}, 1000 * 60 * 5 )
+				}
+
+				zone.emit( 'loot', SOCKETS, false, zone.bundle_loot() )
+
+			}
+
+		}
+
+	}
+
+
+
+
+
+	emit( type, group, exclude, packet ){
+
+		if( typeof exclude === 'string' )  exclude = [ exclude ]
+
+		if( !exclude ) exclude = []
+
+		for( const mud_id of Object.keys( group )){
+			if( !exclude.includes( mud_id ) ){
+				SOCKETS[ mud_id ].send(JSON.stringify({
+					type: type,
+					packet: packet
+				}))
+			}
+		}
+
+	}
+
+
 
 
 	grow_day(){
@@ -447,6 +536,10 @@ class Zone extends Persistent {
 	}
 
 	async close(){
+
+		clear loot
+		clear decomposers
+		blabab
 
 		log('zone', 'closing: ', this.mud_id )
 		await this.save()

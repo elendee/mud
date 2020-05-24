@@ -39,13 +39,7 @@ class Resolver {
 						
 						data.target._status = 'dead'
 						
-						if( data.target.drop_loot ){
-							loot = data.target.drop_loot()
-						}else{
-							log('flag', 'entity missing drop_loot method: ', lib.identify( 'name', data.target ) )
-						}
-
-						set decompose clock (?) on target
+						loot = data.target.drop_loot()
 
 					}
 

@@ -187,7 +187,7 @@ class Game {
 				type: 'session_init',
 				USER: user,
 				TOON: TOON.publish('_INVENTORY', '_stats' ),
-				ZONE: zone.publish( '_FLORA', '_NPCS', '_STRUCTURES' ),
+				ZONE: zone.publish( '_FLORA', '_STRUCTURES', '_DECOMPOSERS' ),
 				map: MAP,
 			}) )
 
@@ -263,6 +263,8 @@ class Game {
 			const res = await zone.save()
 
 		}
+
+		log('flag', 'returned: ', zone._id )
 
 		this.ZONES[ zone.mud_id ] = zone
 

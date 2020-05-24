@@ -1,7 +1,11 @@
 import * as lib from '../lib.js'
+import env from '../env.js'
 
 import SCENE from '../three/SCENE.js'
 import MAP from '../MAP.js'
+
+import CAMERA from '../three/CAMERA.js'
+import RENDERER from '../three/RENDERER.js'
 
 import Flora from './env/Flora.js'
 import Structure from './env/Structure.js'
@@ -116,6 +120,23 @@ async function zone_render ( zone, zone_data ){
 	// 		console.log('err npc load: ', err )
 	// 	})			
 	// }
+
+	 setTimeout(function(){
+
+		CAMERA.lookAt( TOON.MODEL.position ) 
+
+		RENDERER.frame( SCENE )
+
+	}, 100 )
+
+    if( env.LOCAL && 0 ){
+		setTimeout(function(){
+			CAMERA.offset.set( -50, 50, 50 )
+			CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+			CAMERA.lookAt( window.TOON.MODEL.position )
+			RENDERER.frame( SCENE )
+		}, 1000)
+	}
 
 }
 

@@ -90,6 +90,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		if( typeof( this._id ) === 'number' ){ // registered user
 
+			log('toon', 'registered user login: ', this._id, lib.identify( 'name', this ))
+
 			if( this._INVENTORY ){
 
 				return true
@@ -116,6 +118,8 @@ module.exports = class Toon extends AgentPersistent {
 			}
 
 		}else{  // unregistered
+
+			log('toon', 'unregistered user login: ', this._id, lib.identify( 'name', this ))
 
 			if( !this._INVENTORY || env.ETERNAL_NOOB ){
 
@@ -394,13 +398,11 @@ module.exports = class Toon extends AgentPersistent {
 
 
 
-	drop_loot(){
+	drop_loot( zone ){
 
-		// drop loot
+		log('flag', 'skipping toon drop items...')
 
-		return {
-			the_loot: 'toon dropped loot ...'
-		}
+		return [ new Item().publish() ]
 
 	}
 

@@ -155,6 +155,14 @@ const bind = function(){
 					ZONE.apply_resolution( obj.resolution )
 					break;
 
+				case 'decomposers':
+					ZONE.render_decomposers( obj.packet )
+					break;
+
+				case 'loot':
+					console.log('got LOOT', obj )
+					break;
+
 				// case 'bot_begin_path':
 				// 	ZONE.handle_bot( obj )
 				// 	break;
