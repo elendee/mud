@@ -244,14 +244,22 @@ class Zone extends Persistent {
 					}, 1000 * 60 * 5 )
 				}
 
-				zone.emit( 'loot', SOCKETS, false, zone.bundle_loot() )
-
 			}
 
 		}
 
+		zone.emit( 'loot', SOCKETS, false, zone.bundle_loot() )
+
 	}
 
+
+	bundle_loot(){
+		const bundle = {}
+		for( const mud_id of Object.keys( this.LOOT ) ){
+			bundle[ mud_id ] = this.LOOT[ mud_id ].entity
+		}
+		return bundle
+	}
 
 
 
@@ -537,9 +545,14 @@ class Zone extends Persistent {
 
 	async close(){
 
-		clear loot
-		clear decomposers
-		blabab
+		const zone = this
+
+		for( const mud_id of Object.keys( this.LOOT )){
+			clearTimeout( zone.LOOT[ mud_id ].timeout )
+		}
+		for( const mud_id of Object.keys( this.DECOMPOSERS )){
+			clearTimeout( zone.DECOMPOSERS[ mud_id ].timeout )
+		}
 
 		log('zone', 'closing: ', this.mud_id )
 		await this.save()

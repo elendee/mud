@@ -359,6 +359,18 @@ export default class Toon {
 
 
 
+	animate_death( scene ){
+
+		const toon = this
+
+		setTimeout(function(){
+			console.log( 'removing dead toon...')
+			scene.remove( toon.MODEL )
+		}, 1000 )
+
+	}
+
+
 
 
 	begin_intervals(){

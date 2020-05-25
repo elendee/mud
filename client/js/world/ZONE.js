@@ -317,7 +317,23 @@ class Zone {
 		}
 
 		if( resolution.status === 'dead' ){
-			console.log('deaders: ', resolution.loot )
+
+			ANIMATE.animators.push( new ANIMATE.Animator({
+				model: target.MODEL,
+				// current: target.MODEL.rotation.x,
+				limit: -Math.PI / 2,
+				step: ( delta_seconds, model )=>{
+					model.rotation.x -= 1 * delta_seconds
+				},
+				test: ( model, limit )=>{
+					return model.rotation.x > limit
+				}
+			}))
+
+			ANIMATE.animate( true )
+
+			// SCENE.remove( target.MODEL )
+
 		}
 
 
@@ -419,13 +435,20 @@ class Zone {
 
 		let decomposers = packet
 
-		console.log('decomposers: ', decomposers )
+		for( const mud_id of Object.keys( decomposers )){
+			console.log( 'render decompose: ', decomposers[ mud_id ])
+		}
 
 	}
 
 
 
 }
+
+
+
+
+
 
 
 

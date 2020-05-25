@@ -398,13 +398,13 @@ module.exports = class Toon extends AgentPersistent {
 
 
 
-	drop_loot( zone ){
+	// drop_loot( zone ){
 
-		log('flag', 'skipping toon drop items...')
+	// 	log('flag', 'skipping toon drop items...')
 
-		return [ new Item().publish() ]
+	// 	return [ new Item().publish() ]
 
-	}
+	// }
 
 	
 

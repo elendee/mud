@@ -13,5 +13,12 @@ export default class Item {
 		}
 
 	}
+
+	animate_death( scene ){
+		console.log('animating dead item.. ?')
+		if( this.MODEL )  scene.remove( this.MODEL )
+
+	}
+
 	
 }

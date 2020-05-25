@@ -1,5 +1,7 @@
 import Entity from './Entity.js'
 
+let delta, then, now
+
 export default class Flora extends Entity {
 
 	constructor( init ){
@@ -10,7 +12,13 @@ export default class Flora extends Entity {
 
 		this.type = 'flora'
 
+		this.tippable = true
+
+		this.logistic = this.logistic || []
+		this.logistic.push('tippable')
+
 	}
+
 
 }
 

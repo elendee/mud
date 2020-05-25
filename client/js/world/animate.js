@@ -29,7 +29,21 @@ const FORWARD = new Vector3(0, 0, 1)
 
 const moving_toons = []
 const rotating_toons = []
+const animators = []
 
+
+class Animator{
+	constructor( init ){
+
+		if( !init.step || typeof init.step !== 'function' ) return false
+		this.model = init.model
+		this.step = init.step
+		this.test = init.test
+		this.limit = init.limit
+
+	}
+
+}
 
 
 function update_compass(){
@@ -204,7 +218,7 @@ function animate( start ){
 
 	STATE.animating = true
 
-	if( !STATE.stream_down && !moving_toons.length && !rotating_toons.length ){ // && !x && !y ....
+	if( !STATE.stream_down && !moving_toons.length && !rotating_toons.length && !animators.length ){ // && !x && !y ....
 		// console.log('anim end')
 		STATE.animating = false
 		return false
@@ -284,6 +298,16 @@ function animate( start ){
 		}
 	}
 
+	for( let i = 0; i < animators.length; i++ ){
+
+		animators[i].step( delta_seconds, animators[i].model )
+
+		if( !animators[i].test( animators[i].model, animators[i].limit ) ){
+			animators.splice(i,1)
+		}
+
+	}
+
 	// for( const mud_id of Object.keys( BOTS )){ // should not include player
 	// 	if( BOTS[ mud_id ].needs_move ){
 	// 		BOTS[ mud_id ].MODEL.position.lerp( BOTS[ mud_id ].ref.position, .01 )
@@ -324,5 +348,8 @@ export {
 	moving_toons,
 	rotating_toons,
 	receive_move,
-	receive_rotate
+	receive_rotate,
+	animators,
+	Animator,
+	animate
 }
