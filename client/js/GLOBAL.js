@@ -82,6 +82,11 @@ export default {
 
 	ORIGIN: new Vector3(0,0,0),
 
+	UP: new Vector3( 0, 1, 0 ),
+	DOWN: new Vector3( 0, -1, 0 ),
+	EAST: new Vector3( 1, 0, 0 ),
+	WEST: new Vector3( -1, 0, 0 ),
+	
 	LOOK_HORIZONTAL: base.LOOK_SPEED / 2,
 
 	LOOK_VERTICAL: base.LOOK_SPEED / 3,
@@ -89,8 +94,6 @@ export default {
 	CAMERA_VERTICAL_OFFSET: 5,
 
 	CAMERA_HORIZONTAL_OFFSET: 80,
-
-	RESOLUTION: 1,
 
 	SPEAKER: 3,
 

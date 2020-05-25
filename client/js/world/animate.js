@@ -21,7 +21,7 @@ import MAP from '../MAP.js'
 
 if( env.EXPOSE ) window.RENDERER = RENDERER
 
-let delta, now, then, delta_seconds
+let delta, now, then, delta_seconds, anim_length
 const direction = []
 const distance = []
 const facing = new Vector3()
@@ -298,7 +298,9 @@ function animate( start ){
 		}
 	}
 
-	for( let i = 0; i < animators.length; i++ ){
+	anim_length = animators.length - 1
+
+	for( let i = anim_length; i >= 0; i-- ){
 
 		animators[i].step( delta_seconds, animators[i].model )
 

@@ -26,7 +26,7 @@ import texLoader from '../../three/texLoader.js'
 
 
 const flash_init_scale = 2 // approx image native render
-const flash_step = 50
+const flash_step = 100
 const textures = {
 	flash: texLoader.load('/resource/textures/circle.png'),
 	slice: texLoader.load('/resource/textures/slice.png'),
@@ -91,7 +91,7 @@ class Flash {
 		//// base event color
 		
 		if( init.type === 'death' ){
-			this.duration = 10000
+			this.duration = 5000
 			this.expand = .1
 			this.rise = .01
 		}else if( init.type === 'cast' ){
@@ -113,7 +113,7 @@ class Flash {
 
 		this.geometry = flash_geo.clone()
 		this.material = flash_mat.clone()
-		init.color ? this.material.color.set( init.color ) : true
+		init.color ? this.material.color.set( init.color ) : this.material.color.set( this.color )
 
 		// window.flash
 		this.mesh  = new Mesh( this.geometry, this.material )

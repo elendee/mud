@@ -318,6 +318,8 @@ class Zone {
 
 		if( resolution.status === 'dead' ){
 
+			// target.MODEL.rotateOnWorldAxis( GLOBAL.UP, 1 )
+
 			ANIMATE.animators.push( new ANIMATE.Animator({
 				model: target.MODEL,
 				// current: target.MODEL.rotation.x,
@@ -330,9 +332,15 @@ class Zone {
 				}
 			}))
 
+			TARGET.clear()
+
 			ANIMATE.animate( true )
 
 			// SCENE.remove( target.MODEL )
+
+			// setTimeout(function(){
+			// 	SCENE.remove( target.MODEL )
+			// }, 5000)
 
 		}
 
@@ -348,17 +356,19 @@ class Zone {
 
 	render_resolution_flash( target, attacker, resolution ){
 
-		let type, flash_target
+		let type
+		// , flash_target
 
-		if( TARGET.target.mud_id === resolution.target_id ){
-			TARGET.show_status()
-			flash_target = target
-		}else if( resolution.target_id === window.TOON.mud_id ){
-			window.TOON.show_status()
-			flash_target = target
-		}
+		// if( TARGET.target && TARGET.target.mud_id === resolution.target_id ){
+		// 	TARGET.show_status()
+		// 	flash_target = target
+		// }else if( resolution.target_id === window.TOON.mud_id ){
+		// 	window.TOON.show_status()
+		// 	flash_target = target
+		// }
 
-		if( flash_target.health.current <= 0 )  type = 'death'
+		// if( flash_target.health.current <= 0 )  type = 'death'
+		if( target.health.current <= 0 ) type = 'death'
 
 		if( resolution.success ){
 
@@ -371,8 +381,10 @@ class Zone {
 			}
 
 			const flash = new EFFECTS.Flash({
-				target: flash_target,
-				type: flash_type
+				target: target,
+				// flash_target,
+				type: type
+				// flash_type
 			})
 			flash.step()
 
