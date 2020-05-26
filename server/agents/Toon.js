@@ -410,6 +410,7 @@ module.exports = class Toon extends AgentPersistent {
 		// 	log('flag', Object.keys( this._INVENTORY[ key ] ))
 		// }
 		// log('flag', 'WHY\n',  this._INVENTORY )//publish_inventory() )
+		SOCKETS[ this.mud_id ].request.session.save()
 
 		SOCKETS[ this.mud_id ].send(JSON.stringify({
 			type: 'acquire',
