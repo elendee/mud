@@ -12,6 +12,8 @@ module.exports = class Resource extends Item {
 
 		init = init || {}
 
+		this.subtype = 'resource'
+
 		this.weight = lib.validate_number( init.weight, 1 )
 
 	}

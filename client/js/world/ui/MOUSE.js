@@ -7,8 +7,6 @@ import GLOBAL from '../../GLOBAL.js'
 
 import CHAT from './CHAT.js'
 
-import TARGET from './TARGET.js'
-
 import { 
 	Vector3 
 } from '../../lib/three.module.js'
@@ -24,17 +22,12 @@ import * as ANIMATE from '../animate.js'
 
 import * as POPUPS from './POPUPS.js'
 
-// import TARGET from './TARGET.js'
-
-// import * as DIALOGUE from '../ui/DIALOGUE.js'
-// import * as POPUP from '../ui/POPUP.js'
-
 
 
 
 const buttons = [ 'left', 'middle', 'right' ]
 
-const clickable_types = ['toon', 'npc', 'self', 'flora', 'structure']
+const clickable_types = ['toon', 'npc', 'self', 'flora', 'structure', 'item']
 
 let lastX = -1
 let lastY = -1
@@ -82,7 +75,7 @@ function click_down( e ){
 
 		if( !on_inventory && !on_action_bar ){
 
-			mousehold.drop( true )
+			mousehold.drop( 'unequip' )
 
 		}else{
 
@@ -239,7 +232,7 @@ function detect_object_clicked( e, ZONE ){
 
 			if( clickable_types.includes( clicked.userData.type )){
 
-				TARGET.set( clicked, ZONE )
+				ZONE.set_target( clicked )
 
 			}else{
 
@@ -267,23 +260,17 @@ function check_distance( clicked, intersects ){
 	let dist, clicked_position, required_dist
 	let type = clicked.userData.type
 
-	if( type == 'flora' || type == 'structure' ){
-
-		return true
-
-	}else if( type == 'npc' || type == 'toon' ){
+	if( type == 'toon' ){
 
 		clicked_position = new Vector3().copy( clicked.position )
 		required_dist = MAP.TARGET_DIST * 2
-
-	}else if( type == 'self' ){
 
 		return true
 
 	}else{
 
 		console.log('unhandled click type: ', type )
-		return false
+		return true
 		
 	}
 
@@ -382,8 +369,18 @@ class MouseHold {
 	}
 
 	pickup( mud_id, origin_type ){
+		
 		this.ele.style.display = 'initial'
-		this.hold_img.src = '/resource/images/icons/' + lib.identify( 'icon', window.TOON.INVENTORY[ mud_id ] ) + '.png'  ///window.TOON.INVENTORY[ mud_id ].icon_url
+
+		let group
+
+		if( origin_type === 'zone' ){
+			group = zone.ITEMS
+		}else{
+			group = window.TOON.INVENTORY
+		}
+		this.hold_img.src = '/resource/images/icons/' + lib.identify( 'icon', group[ mud_id ] ) + '.png' 
+
 		this.held = {
 			mud_id: mud_id,
 			origin: origin_type
@@ -393,11 +390,14 @@ class MouseHold {
 		const ev = new CustomEvent('mousemove'); // just render icon in right place ...
 		ev.initEvent('resize');
 		window.dispatchEvent(ev); 
+
+		document.body.classList.add('mousehold')
+
 	}
 
-	drop( unequip ){
+	drop( type, TARGET ){
 
-		if( unequip ){
+		if( type === 'unequip' ){
 			if( mousehold.held.mud_id ){
 				let held = window.TOON.INVENTORY[ mousehold.held.mud_id ]
 				let skip = false
@@ -411,6 +411,28 @@ class MouseHold {
 					}))
 				}
 			}
+		}else if( type === 'acquire' ){
+			if( zone.ITEMS[ this.held.mud_id ] ){
+				if( window.TOON.INVENTORY[ this.held.mud_id ] ){
+					hal('alert', 'it seems you already have that item')
+				}else{
+					// you funny
+					// server side foo
+					window.SOCKET.send(JSON.stringify({
+						type: 'acquire',
+						mud_id: this.held.mud_id
+					}))
+
+					// window.TOON.INVENTORY[ this.held.mud_id ] = zone.ITEMS[ this.held.mud_id ]
+					// POPUPS.get('inventory').render()
+					// const mesh = SCENE.get_mud_id( this.held.mud_id )
+					// console.log( mesh )
+					// SCENE.remove( mesh )
+					// TARGET.clear()
+					// delete zone.ITEMS[ this.held.mud_id ]
+					// RENDERER.frame( SCENE )
+				}
+			}
 		}
 
 		this.ele.style.display = 'none'
@@ -421,13 +443,16 @@ class MouseHold {
 		}
 		// this.ele.setAttribute('data-held', false )
 		window.removeEventListener('mousemove', mousetrack )
+
+		document.body.classList.remove('mousehold')
+
 	}
 
 }
 
 
 function mousetrack(e){
-	mousehold.ele.style.top = e.clientY + 'px'
+	mousehold.ele.style.top = e.clientY + 5 + 'px'
 	mousehold.ele.style.left = e.clientX + 'px'
 }
 

@@ -2,6 +2,7 @@
 import * as MOUSE from './MOUSE.js'
 import * as POPUPS from './POPUPS.js'
 import * as lib from '../../lib.js'
+import TARGET from './TARGET.js'
 
 export default class Popup {
 	
@@ -44,6 +45,7 @@ export default class Popup {
     }
     
     initElements() {
+
         this.element = document.createElement('div')
 		this.element.classList.add('popup')
 		this.element.id = this.options.id
@@ -65,6 +67,17 @@ export default class Popup {
 		this.content = document.createElement('div')
 		this.content.classList.add('content')
 		this.element.appendChild( this.content )
+
+		if( this.id == 'inventory' ){
+			this.overlay = document.createElement('div')
+			this.overlay.classList.add('overlay')
+			this.element.appendChild( this.overlay )
+			this.overlay.addEventListener('click', (e)=>{
+				MOUSE.mousehold.drop( 'acquire', TARGET )
+			})
+			this.element.appendChild( this.overlay )
+		}
+
     }
 
     initEvents() {
@@ -216,7 +229,7 @@ export default class Popup {
 			let item = INVENTORY[ mud_id ]
 
 			let row = document.createElement('div')
-			row.classList.add('stat', item.type )
+			row.classList.add('stat', item.subtype )
 			let icon = document.createElement('img')
 			icon.classList.add('icon')
 			icon.src = '/resource/images/icons/' + lib.identify( 'icon', INVENTORY[ mud_id ] ) + '.png' // INVENTORY[ mud_id ].icon_url

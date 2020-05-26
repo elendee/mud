@@ -12,7 +12,10 @@ module.exports = class Armor extends Item {
 
 		init = init || {}
 
+		this.subtype = 'armor'
+
 		this.armor = lib.validate_number( init.armor, 1 )
+		this.range = lib.validate_number( init.range, 5 )
 
 	}
 

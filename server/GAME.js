@@ -187,7 +187,7 @@ class Game {
 				type: 'session_init',
 				USER: user,
 				TOON: TOON.publish('_INVENTORY', '_stats' ),
-				ZONE: zone.publish( '_FLORA', '_STRUCTURES', '_DECOMPOSERS' ),
+				ZONE: zone.publish( '_FLORA', '_STRUCTURES', '_ITEMS', '_DECOMPOSERS' ),
 				map: MAP,
 			}) )
 

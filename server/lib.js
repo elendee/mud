@@ -341,16 +341,17 @@ const type_map = {
 	'flora': '_FLORA',
 	'npc': '_NPCS',
 	'toon': '_TOONS',
-	'structure': '_STRUCTURES'
+	'structure': '_STRUCTURES',
+	'resource': '_RESOURCE'
 }
 
 
-const range_map = {
-	melee: 15,
-	ranged: 75,
-	magic: 50,
-	armor: 15
-}
+// const range_map = {
+// 	melee: 15,
+// 	ranged: 75,
+// 	magic: 50,
+// 	armor: 15
+// }
 
 
 function validate_vec3( ...inputs ){
@@ -478,7 +479,7 @@ module.exports = {
 	validate_vec3,
 	validate_quat,
 	type_map,
-	range_map,
+	// range_map,
 	get_dist,
 	identify
 }

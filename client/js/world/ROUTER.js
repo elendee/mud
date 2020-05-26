@@ -148,7 +148,7 @@ const bind = function(){
 					break;
 
 				case 'inventory':
-					window.TOON.init_inventory( obj.inventory )
+					window.TOON.set_inventory( obj.inventory )
 					break;
 
 				case 'combat':
@@ -159,8 +159,13 @@ const bind = function(){
 					ZONE.render_decomposers( obj.packet )
 					break;
 
-				case 'loot':
-					console.log('got LOOT', obj )
+				case 'items':
+					ZONE.render_items( obj.packet )
+					break;
+
+				case 'acquire':
+					window.TOON.set_inventory( obj.inventory )
+					ZONE.clear_acquisition( obj.mud_id )
 					break;
 
 				// case 'bot_begin_path':

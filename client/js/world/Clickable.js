@@ -12,6 +12,7 @@ export default class Clickable {
 		this.name = init.name 
 		this.type = init.type
 		this.subtype = init.subtype
+		this.resource_type = init.resource_type
 
 	}
 

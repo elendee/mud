@@ -1,3 +1,5 @@
+const log = require('../log.js')
+
 const Melee = require('./Melee.js')
 const Ranged = require('./Ranged.js')
 const Magic = require('./Magic.js')
@@ -14,18 +16,25 @@ const map = new Map([
 
 module.exports = function( item ) {
 
-	if( item && map.get( item.type ) ){
+	if( item && map.get( item.subtype ) ){
 
-		const itemClass = map.get( item.type)
+		const itemClass = map.get( item.subtype )
 
-		const new_item = new itemClass( item )
-	
-		return new_item 
+		if( itemClass ){
 
-	}else{
+			const new_item = new itemClass( item )
+		
+			return new_item 
 
-		return false
+		}
 
 	}
 
+	return false
+
 }
+
+
+
+
+

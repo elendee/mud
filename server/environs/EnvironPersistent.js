@@ -7,7 +7,7 @@ const Persistent = require('../Persistent.js')
 // const Item = require('../items/Item.js')
 const FACTORY = require('../items/FACTORY.js')
 
-const LOOT = require('./LOOT.js')
+const LOOT = require('./LOOT_types.js')
 
 class EnvironPersistent extends Persistent {
 
@@ -21,6 +21,8 @@ class EnvironPersistent extends Persistent {
 		this._edited = lib.validate_string( init.edited, init._edited, undefined )
 
 		this._status = init._status || 'alive'
+
+		this._zone_key = lib.validate_number( init._zone_key )
 
 		this.health = init.health || {}
 
@@ -38,23 +40,21 @@ class EnvironPersistent extends Persistent {
 		// this.y = lib.validate_number( init._y, init.y, 0 )
 		// this.z = lib.validate_number( init._z, init.z, 0 )
 
-		this.ref = init.ref || {}
+		// this.ref = init.ref || {}
 
-		this.ref.position = lib.validate_vec3( this.ref.position, {
-			x: lib.validate_number( init._x, init.x, 0 ),
-			y: lib.validate_number( init._y, init.y, 0 ),
-			z: lib.validate_number( init._z, init.z, 0 )
-		})
+		// this.ref.position = lib.validate_vec3( this.ref.position, {
+		// 	x: lib.validate_number( init._x, init.x, 0 ),
+		// 	y: lib.validate_number( init._y, init.y, 0 ),
+		// 	z: lib.validate_number( init._z, init.z, 0 )
+		// })
 
 		this.width = lib.validate_number( init.width, 5 )
 		this.height = lib.validate_number( init.height, 5 )
 		this.length = lib.validate_number( init.length, 5 )
 
-		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
-
 		this.logistic = this.logistic || []
 		this.logistic = this.logistic.concat( init.logistic )
-		this.logistic.push('scale', 'type', 'ref') // 'x', 'y', 'z'
+		this.logistic.push('scale') // 'x', 'y', 'z'
 
 	}
 
@@ -62,18 +62,26 @@ class EnvironPersistent extends Persistent {
 
 		let loot = []
 
-		const types = LOOT[ lib.identify( 'name', this ) ]
+		let drops 
+		if( this.name && LOOT[ this.name ] ){
+			drops = LOOT[ this.name ]
+		}else if( this.subtype && LOOT[ this.subtype ]){
+			drops = LOOT[ this.subtype ]
+		}else{
+			drops = LOOT[ this.type ]
+		}
 
-		for( const key of types ){
+		for( const drop of drops ){
 
 			// log('flag', 'loots: ', type )
 
 			let init = {
-				type: 'resource',
-				subtype: key
+				// type: 'resource',
+				subtype: 'resource',
+				resource_type: drop
 			}
 
-			loot.push( new FACTORY( init ) )
+			loot.push( FACTORY( init ) )
 
 		}
 

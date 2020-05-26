@@ -126,7 +126,7 @@ module.exports = class Toon extends AgentPersistent {
 				this._INVENTORY = {}
 
 				const stick = new FACTORY({
-					type: 'melee',
+					subtype: 'melee',
 					name: 'Unwieldy Stick',
 					// icon_url: 'noun_stick',
 					power: 2
@@ -134,13 +134,13 @@ module.exports = class Toon extends AgentPersistent {
 				this._INVENTORY[ stick.mud_id ] = stick
 				// log('flag', 'wots worng wit me stick', stick )
 				const trousers = new FACTORY({
-					type: 'armor',
+					subtype: 'armor',
 					name: 'Unwieldy Trousers',
 					// icon_url: 'noun_trousers',
 				})
 				this._INVENTORY[ trousers.mud_id ] = trousers
 				const belt = new FACTORY({
-					type: 'armor',
+					subtype: 'armor',
 					name: 'Unwieldy Vest',
 					// icon_url: 'noun_shirt',
 				})
@@ -149,35 +149,35 @@ module.exports = class Toon extends AgentPersistent {
 				if( env.DEV ){
 
 					const megasword = new FACTORY({
-						type: 'melee',
+						subtype: 'melee',
 						name: 'Mega Sword',
 						icon_url: 'short-sword',
 						power: 50
 					})
 					this._INVENTORY[ megasword.mud_id ] = megasword
 					const megastaff = new FACTORY({
-						type: 'magic',
+						subtype: 'magic',
 						name: 'Mega Staff',
 						icon_url: 'scepter',
 						power: 20
 					})
 					this._INVENTORY[ megastaff.mud_id ] = megastaff
 					const megaarmor = new FACTORY({
-						type: 'armor',
+						subtype: 'armor',
 						name: 'Mega Armor',
 						icon_url: 'cape',
 						power: 50
 					})
 					this._INVENTORY[ megaarmor.mud_id ] = megaarmor
 					const megabow = new FACTORY({
-						type: 'ranged',
+						subtype: 'ranged',
 						name: 'Mega Bow',
 						icon_url: 'bow',
 						power: 10
 					})
 					this._INVENTORY[ megabow.mud_id ] = megabow
 					const hatchet_launcher = new FACTORY({
-						type: 'ranged',
+						subtype: 'ranged',
 						name: 'Hatchet Launcher',
 						icon_url: 'bow',
 						power: 500
@@ -396,15 +396,57 @@ module.exports = class Toon extends AgentPersistent {
 
 
 
+	acquire( zone, mud_id ){
+
+		if( !zone._ITEMS[ mud_id ] ){ log('flag', 'item is not in zone: ', mud_id, zone._ITEMS ); return false }
+		if( this._INVENTORY[ mud_id ] ){ log('flag', 'toon already has item: ', mud_id ); return false }
+
+		this._INVENTORY[ mud_id ] = zone._ITEMS[ mud_id ]
+		delete zone._ITEMS[ mud_id ]
+
+		// log('flag', 'WHY\n', this.publish_inventory() )
+		// const keys = Object.keys( this._INVENTORY )
+		// for( const key of keys ){
+		// 	log('flag', Object.keys( this._INVENTORY[ key ] ))
+		// }
+		// log('flag', 'WHY\n',  this._INVENTORY )//publish_inventory() )
+
+		SOCKETS[ this.mud_id ].send(JSON.stringify({
+			type: 'acquire',
+			inventory: this.publish_inventory(),
+			mud_id: mud_id
+		}))
+
+	}
 
 
-	// drop_loot( zone ){
 
-	// 	log('flag', 'skipping toon drop items...')
 
-	// 	return [ new Item().publish() ]
+	publish_inventory(){
+		const inv = {}
+		for( const mud_id of Object.keys( this._INVENTORY )){
+			inv[ mud_id ] = {} //this._INVENTORY[ mud_id ]
+			for( const key of Object.keys( this._INVENTORY[ mud_id ] )){
+				if( key !== '_timeout' ) inv[ mud_id ][ key ] = this._INVENTORY[ mud_id ][ key ]
+			}
+		}
+		return inv
+	}
 
-	// }
+
+
+
+
+
+	drop_loot( zone ){
+
+		log('flag', 'skipping toon drop items...')
+
+		return [ new Item({
+			type: 'melee'
+		}).publish() ]
+
+	}
 
 	
 

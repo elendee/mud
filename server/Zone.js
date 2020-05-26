@@ -15,6 +15,11 @@ const Toon = require('./agents/Toon.js')
 const Structure = require('./environs/Structure.js')
 const Flora = require('./environs/Flora.js')
 
+// const Loot = require('./items/Loot.js')
+// const Item = require('./items/Item.js')
+
+const ItemFactory = require('./items/FACTORY.js')
+
 // const FLORA_FACTORY = require('./environs/FACTORY.js')
 
 const {
@@ -41,7 +46,7 @@ class Zone extends Persistent {
 		this.elevation = lib.validate_number( this.elevation, 1 )
 		this.precipitation = lib.validate_number( init.precipitation, 1 )
 
-		this.available_flora = init.available_flora || this.generate_available_flora()
+		this.available_flora = init.available_flora || this.generate_available_types()
 
 		this._last_growth = lib.validate_seconds( init._last_growth, init.last_growth, new Date('1970').getTime() )// fill_growth( init )
 		this._flora_target = lib.validate_number( init._flora_target, init.flora_target, 100 )
@@ -52,13 +57,14 @@ class Zone extends Persistent {
 			move: false
 		}
 
-		this._FLORA = init.FLORA || {}
-		this._STRUCTURES = init.STRUCTURES || {}
-		this._NPCS = init.NPCS || {}
-		this._TOONS = init.TOONS || {}
+		this._FLORA = init._FLORA || {}
+		this._STRUCTURES = init._STRUCTURES || {}
+		this._NPCS = init._NPCS || {}
+		this._TOONS = init._TOONS || {}
+		this._ITEMS = init._ITEMS || {}
 
 		this.DECOMPOSERS = init.DECOMPOSERS || {} // never persisted, so no _INSTANTIATER ^^
-		this.LOOT = init.LOOT || {}
+		// this.LOOT = init.LOOT || {}
 
 	}
 
@@ -82,6 +88,9 @@ class Zone extends Persistent {
 		if( env.READ.FLORA )  await this.read_flora()
 
 		if( env.READ.STRUCTURES )  await this.read_structures()
+
+		// if( env.READ.STRUCTURES )  
+		await this.read_items()
 
 		// creates
 
@@ -175,7 +184,7 @@ class Zone extends Persistent {
 			})
 
 			if( resolution.status === 'dead' ) this.add_decomposers( target )
-			if( resolution.loot && resolution.loot.length )  this.add_loot( resolution.loot )
+			if( resolution.loot && resolution.loot.length )  this.add_items( resolution.loot, target.ref.position )
 
 			for( const mud_id of Object.keys( this._TOONS )){
 				SOCKETS[ TOON.mud_id ].send(JSON.stringify({
@@ -228,35 +237,40 @@ class Zone extends Persistent {
 	}
 
 
-	add_loot( loots ){
+	add_items( items_array, position ){
 
 		const zone = this
 
-		for( const loot of loots ){
+		for( const item of items_array ){
 
-			if( !zone.LOOT[ loot.mud_id ]){
+			if( !zone._ITEMS[ item.mud_id ]){
 
-				zone.LOOT[ loot.mud_id ] = { // can be any entity type (!)
-					entity: loot,
-					timeout: setTimeout(function(){
-						delete zone.LOOT[ loot.mud_id ]
-						zone.emit( 'loot', SOCKETS, false, zone.bundle_loot() )
-					}, 1000 * 60 * 5 )
-				}
+				zone._ITEMS[ item.mud_id ] = new ItemFactory( item )
+				zone._ITEMS[ item.mud_id ]._timeout = setTimeout(function(){
+					delete zone._ITEMS[ item.mud_id ]
+					zone.emit( 'item', SOCKETS, false, zone.bundle_items() )
+				}, 1000 * 60 * 5 )
+				zone._ITEMS[ item.mud_id ].ref.position = lib.validate_vec3( new Vector3(
+					position.x + ( -1 + Math.random() * 2 ) * 10,
+					1,
+					position.z + ( -1 + Math.random() * 2 ) * 10,
+				))
 
 			}
 
 		}
 
-		zone.emit( 'loot', SOCKETS, false, zone.bundle_loot() )
+		// log('flag', 'items now: ', zone._ITEMS )
+
+		zone.emit( 'items', SOCKETS, false, zone.bundle_items() )
 
 	}
 
 
-	bundle_loot(){
+	bundle_items(){
 		const bundle = {}
-		for( const mud_id of Object.keys( this.LOOT ) ){
-			bundle[ mud_id ] = this.LOOT[ mud_id ].entity
+		for( const mud_id of Object.keys( this._ITEMS ) ){
+			bundle[ mud_id ] = this._ITEMS[ mud_id ].publish()
 		}
 		return bundle
 	}
@@ -372,7 +386,7 @@ class Zone extends Persistent {
 	}
 
 
-	generate_available_flora(){
+	generate_available_types(){
 
 		return ['pine', 'oak']
 
@@ -423,6 +437,28 @@ class Zone extends Persistent {
 		for ( const structure of results ){
 			let struct = new Structure( structure )
 			this._STRUCTURES[ struct.mud_id ] = struct
+		}
+
+	}
+
+
+
+	async read_items(){
+
+		if( !this._id )  return false
+
+		const pool = DB.getPool()
+
+		// const limit = this._structure_target
+
+		const sql = 'SELECT * FROM items WHERE zone_key=' + this._id 
+
+		const { error, results, fields } = await pool.queryPromise( sql )
+		if( error ) log('flag', 'item looukp  err: ', error )
+		// log('flag', 'results: ', results )
+		for ( const item of results ){
+			let itm = new Item( item )
+			this._ITEMS[ struct.mud_id ] = itm
 		}
 
 	}

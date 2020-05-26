@@ -16,7 +16,7 @@ import * as ANIMATE from './animate.js'
 // import BuffGeoLoader from '../three/BuffGeoLoader.js'
 import * as SHADERS from './env/shaders.js'
 
-
+import Item from './Item.js'
 
 // import Npc from './Npc.js'
 import grass_mesh from './env/grass_mesh.js'
@@ -80,6 +80,8 @@ class Zone {
 		this.NPCS = {}
 		this.TOONS = {}
 
+		this.ITEMS = {}
+
 		this.model_map = []
 		this.material_map = []
 
@@ -94,7 +96,8 @@ class Zone {
 
 		const TOON = window.TOON
 
-		TOON.model('self')
+		TOON.model()
+		TOON.MODEL.userData.self = true
 
 		this.TOONS[ TOON.mud_id ] = TOON
 
@@ -452,6 +455,45 @@ class Zone {
 		}
 
 	}
+
+
+	render_items( packet ){
+
+		const item = packet
+
+		for( const mud_id of Object.keys( item )){
+			
+			console.log( 'render item: ', item[ mud_id ] )
+
+			this.ITEMS[ mud_id ] = new Item( item[ mud_id ] )
+			this.ITEMS[ mud_id ].model()
+
+			SCENE.add( this.ITEMS[ mud_id ].MODEL )
+
+		}
+
+	}
+
+
+
+	set_target( clicked ){
+
+		TARGET.set( this, clicked )
+
+	}
+
+
+	clear_acquisition( mud_id ){
+
+		const mesh = SCENE.get_mud_id( mud_id )
+		SCENE.remove( mesh )
+		TARGET.clear()
+		delete zone.ITEMS[ mud_id ]
+		RENDERER.frame( SCENE )
+
+	}
+
+						
 
 
 

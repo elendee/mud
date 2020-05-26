@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', function(){
 	.then( res => {
 		init_session( res )
 		zone_render( ZONE, res.ZONE )
+		setTimeout(function(){
+			document.querySelectorAll('img').forEach(function(ele){
+				ele.setAttribute('draggable', false )
+			})
+		}, 2000)
 	})
 	.catch( err => {
 		console.log( err )
@@ -57,7 +62,7 @@ async function init_session( res ){
 	// window.SCENE = SCENE
 	window.USER = new User( res.USER )
 	window.TOON = USER.TOON = new Toon( res.TOON )
-	window.TOON.init_inventory()
+	window.TOON.set_inventory()
 	window.TOON.refresh_equipped()
 	if( env.EXPOSE )  window.ZONE = ZONE
 	// window.TOON.model()

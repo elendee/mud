@@ -11,6 +11,8 @@ import GLOBAL from '../../GLOBAL.js'
 import RENDERER from '../../three/RENDERER.js'
 import SCENE from '../../three/SCENE.js'
 
+import * as MOUSE from './MOUSE.js'
+
 // import { getView } from '../../View.js'
 // import VIEW from '../../VIEW.js'
 
@@ -55,12 +57,13 @@ class Target {
 		if( env.EXPOSE ) window.TARGET = this
 
 		this.element = document.getElementById('target')
+		this.status_ele = document.querySelector('#status')
 		this.name_ele = document.querySelector('#target-name')
 		this.health_ele = document.querySelector('#target-health .status')
 		this.mana_ele = document.querySelector('#target-mana .status')
+		this.item_ele = document.querySelector('#target-item')
 		this.health_readout = document.querySelector('#target-health .readout')
 		this.mana_readout = document.querySelector('#target-mana .readout')
-		this.status_ele = document.querySelector('#status')
 		this.profile_img = document.getElementById('target-profile')
 		// this.helper = document.getElementById('target-helper')
 
@@ -75,13 +78,15 @@ class Target {
 		// this.STRUCTURES = init.STRUCTURES
 		// this.NPCS = init.NPCS
 		// this.TOONS = init.TOONS
+		this.item_ele.addEventListener('click', ( e ) => {
+			MOUSE.mousehold.pickup( this.item_ele.getAttribute('data-id'), 'zone' )
+		})
 
 	}
 
 
 
-	set( clicked, ZONE ){
-
+	set( ZONE, clicked ){
 
 		if( STATE.handler !== 'world' ){
 			console.log( 'should not be running target in state.handler: ', STATE.handler )
@@ -98,36 +103,51 @@ class Target {
 
 				this.target = ZONE.FLORA[ userData.mud_id ]
 
-			}else if( userData.type === 'self' ){
+			}else if( userData.type === 'toon' ){
 
-				this.target = window.TOON
+				if( userData.self ){
 
-			}else if( userData.type === 'npc' && ZONE.NPCS[ userData.mud_id ]){
+					this.target = window.TOON
 
-				this.target = ZONE.NPCS[ userData.mud_id ]
+				}else if( ZONE.NPCS[ userData.mud_id ] ){
+
+					this.target = ZONE.NPCS[ userData.mud_id ]
+
+				}
 
 			}else if( userData.type == 'structure' && ZONE.STRUCTURES[ userData.mud_id ]){
 
 				this.target = ZONE.STRUCTURES[ userData.mud_id ]
 
+			}else if( userData.type == 'item' && ZONE.ITEMS[ userData.mud_id ]){
+
+				this.target = ZONE.ITEMS[ userData.mud_id ]
+
 			}
 
 			this.profile_img.src = '/resource/images/icons/' + lib.identify( 'icon', userData ) + '.png'
 
-			this.name_ele.innerHTML = lib.identify( 'name', userData )
-			if( userData.type === 'self' ) this.name_ele.innerHTML += ' (you)'
+			this.name_ele.innerHTML = userData.resource_type || lib.identify( 'name', userData )
+			if( userData.self ) this.name_ele.innerHTML += ' (you)'
 			// userData.name || userData.type || 'unknown'
 
 			this.element.style.display = 'inline-block'
 			this.status_ele.style.display = 'inline-block'
 
-			this.show_status()
+			if( this.target ){
+				this.show_name()
+				if( this.target.type === 'item' ){
+					this.show_item()
+				}else{
+					this.show_status()
+				}
+			}
 
 			this.render_selected()
 
 			TOON.look_at( this.target.MODEL.position )
 
-		}else if( userData.subtype === 'foliage' ){
+		}else if( userData && userData.subtype === 'foliage' ){
 
 			console.log('foliage:', clicked )
 
@@ -143,41 +163,6 @@ class Target {
 
 	}
 
-
-
-
-
-
-	show_status(){
-
-		if( this.target ){
-
-			let percent_health  
-			if( this.target.health.capacity !== 0 ){
-				percent_health = this.target.health.current / this.target.health.capacity
-			}
-			this.health_ele.style.width = Math.floor( percent_health * 100 ) + '%'
-			this.health_readout.innerHTML = this.target.health.current + ' / ' + this.target.health.capacity
-
-			if( this.target.mana ){
-				let percent_mana
-				if( this.target.mana.capacity !== 0 ){
-					percent_mana = this.target.mana.current / this.target.mana.capacity
-				}
-				this.mana_ele.style.width = Math.floor( percent_mana * 100 ) + '%'
-				this.mana_readout.innerHTML = this.target.mana.current + ' / ' + this.target.mana.capacity
-				// this.mana_ele.style.display = 'initial'
-			}else{
-				// this.mana_ele.style.display = 'none'
-				this.mana_ele.style.width = '0%' // Math.floor( percent_mana * 100 ) + '%'
-				this.mana_readout.innerHTML = '0 / 0'
-			}
-
-
-
-		}
-
-	}
 
 
 	render_selected(){
@@ -215,16 +200,72 @@ class Target {
 
 		RENDERER.frame( SCENE )
 
+	}
 
+
+
+	show_name(){
+		this.name_ele.style.display = 'initial'
+	}
+
+
+
+	show_item(){
+
+		this.item_ele.setAttribute('src', '/resource/images/icons/' + lib.identify('icon', this.target ) + '.png' )
+
+		this.status_ele.style.display = 'none'
+
+		this.item_ele.style.display = 'initial'
+
+		this.item_ele.setAttribute('data-id', this.target.mud_id )
+
+		console.log( 'renderin from : ', this.target )
 
 	}
+
+
+
+	show_status(){
+
+		this.item_ele.style.display = 'none'
+
+		if( this.target ){
+
+			let percent_health  
+			if( this.target.health.capacity !== 0 ){
+				percent_health = this.target.health.current / this.target.health.capacity
+			}
+			this.health_ele.style.width = Math.floor( percent_health * 100 ) + '%'
+			this.health_readout.innerHTML = this.target.health.current + ' / ' + this.target.health.capacity
+
+			if( this.target.mana ){
+				let percent_mana
+				if( this.target.mana.capacity !== 0 ){
+					percent_mana = this.target.mana.current / this.target.mana.capacity
+				}
+				this.mana_ele.style.width = Math.floor( percent_mana * 100 ) + '%'
+				this.mana_readout.innerHTML = this.target.mana.current + ' / ' + this.target.mana.capacity
+				// this.mana_ele.style.display = 'initial'
+			}else{
+				// this.mana_ele.style.display = 'none'
+				this.mana_ele.style.width = '0%' // Math.floor( percent_mana * 100 ) + '%'
+				this.mana_readout.innerHTML = '0 / 0'
+			}
+
+			this.status_ele.style.display = 'initial'
+
+		}
+
+	}
+
 
 
 
 	clear( clear ){
 
 		this.element.style.display = 'none'
-		this.status_ele.style.display = 'none'
+		this.status_ele.style.display = this.name_ele.style.display = this.item_ele.style.display = 'none'
 		this.profile_url = ''
 
 		if( !this.target || !this.target.MODEL ) return false

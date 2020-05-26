@@ -203,7 +203,7 @@ class Attack {
 
 		this.geometry = flash_geo.clone()
 		this.material = flash_mat.clone()
-		console.log( init.item, lib.map_weapon_texture( init.item ) )
+		// console.log( init.item, lib.map_weapon_texture( init.item ) )
 		// debugger
 		this.material.map = textures[ lib.map_weapon_texture( init.item ) || 'hand_swing' ]
 		init.color ? this.material.color.set( init.color ) : true

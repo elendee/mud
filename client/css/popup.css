@@ -127,3 +127,19 @@
 	box-shadow: inset 0px 0px 4px black;
 	border-radius: 3px;
 }
+
+.popup .overlay{
+	transition: .5s;
+	opacity: 0;
+	position: absolute;
+    z-index: 99999;
+    background: radial-gradient( rgba(255, 255, 100, .1), rgba(255, 255, 100, .5) );
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+body.mousehold .popup:hover .overlay{
+    opacity: .5;
+    pointer-events: initial;
+}

@@ -34,6 +34,51 @@ class Structure extends EnvironPersistent {
 
 	}
 
+
+
+	async save(){
+
+		const update_fields = [
+			'name',
+			'zone_key',
+			'icon_url',
+			'model_url',
+			'subtype',
+			'x',
+			'y',
+			'z',
+			'width',
+			'height',
+			'length',
+			'orientation'
+		]
+
+		const update_vals = [ 
+			this.name, 
+			this._zone_key,
+			this.icon_url,
+			this.model_url,
+			this.subtype,
+			this.ref.position.x,
+			this.ref.position.y,
+			this.ref.position.z,
+			this.width,
+			this.height,
+			this.length,
+			this.orientation
+		]
+
+		// if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
+		// 	log('flag', 'cannot identify user for save: ', this._x, this._z, this._layer )
+		// 	return false
+		// }
+
+		const res = await DB.update( this, update_fields, update_vals )
+
+		return res
+
+	}
+
 }
 
 

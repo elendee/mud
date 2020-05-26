@@ -12,6 +12,10 @@ module.exports = class Magic extends Item {
 
 		init = init || {}
 
+		this.subtype = 'magic'
+
+		this.range = lib.validate_number( init.range, 50 )
+
 	}
 
 	attack(){

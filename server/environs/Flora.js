@@ -31,8 +31,6 @@ class Flora extends EnvironPersistent {
 
 		this._table = 'flora' // not in db schema currently...
 
-		this._zone_key = init._zone_key
-
 		this.width = lib.validate_number( init.width, Math.floor( seed_map[ this.subtype ].width + Math.random() * seed_map[ this.subtype ].width ) )
 		this.length = lib.validate_number( init.length, this.width )
 		this.height = lib.validate_number( init.height, Math.floor( seed_map[ this.subtype ].height + Math.random() * seed_map[ this.subtype ].height ) )

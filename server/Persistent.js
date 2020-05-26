@@ -27,9 +27,18 @@ module.exports = class Persistent {
 
 		this._edited = lib.validate_string( init._edited, undefined )
 
+		this.ref = init.ref || {}
+		this.ref.position = lib.validate_vec3( this.ref.position, {
+			x: init.x,
+			y: init.y,
+			z: init.z
+		})
+
+		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
+
 		this.logistic = []
 		this.logistic = this.logistic.concat( init.logistic )
-		this.logistic.push('logistic', 'mud_id', 'icon_url', 'model_url')
+		this.logistic.push('logistic', 'mud_id', 'icon_url', 'model_url', 'ref', 'type')
 
 	}
 

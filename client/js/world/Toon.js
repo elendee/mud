@@ -44,6 +44,8 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
+		this.type = 'toon'
+
 		this.bindings = this.bindings || {}
 
 		this.INVENTORY = false
@@ -123,14 +125,23 @@ export default class Toon {
 	}
 
 
-	init_inventory( inv ){
+	set_inventory( inv ){
 
-		this.INVENTORY = {}
+		this.INVENTORY = this.INVENTORY || {}
 
 		const init = inv || this._INVENTORY
 
 		for( const mud_id of Object.keys( init ) ){
-			this.INVENTORY[ mud_id ] = new Item( init[ mud_id ])
+			if( !this.INVENTORY[ mud_id ]){
+				this.INVENTORY[ mud_id ] = new Item( init[ mud_id ])
+			}
+		}
+
+		for( const mud_id of Object.keys( this.INVENTORY ) ){
+			if( !init[ mud_id ]){
+				console.log('item not found in init; dropping: ', mud_id, this.INVENTORY[ mud_id ])
+				delete this.INVENTORY[ mud_id ]
+			}
 		}
 
 		if( inv ){
@@ -147,7 +158,7 @@ export default class Toon {
 	}
 
 
-	model( type ){
+	model(){
 
 		this.MODEL = new Group()
 		this.MODEL.castShadow = true
@@ -155,7 +166,7 @@ export default class Toon {
 		this.MODEL.userData = {
 			clickable: true,
 			mud_id: this.mud_id,
-			type: type,
+			type: 'toon',
 			icon_url: this.icon_url,
 			// website: this.website,
 			name: this.name

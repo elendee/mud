@@ -164,6 +164,28 @@ canvas#mud-flats{
     box-shadow: inset 0px 0px 5px black, inset 0px 0px 5px black, 0px 0px 5px black;
 }
 
+#target-item.icon{
+    top: 60px;
+    left: 60px;
+    box-shadow: 0px 0px 5px black;
+}
+
+
+#target-name,
+#target-item{
+	display: none;
+	position: fixed;
+}
+
+#target-name{
+	background: rgba(0,0,0,.5);
+	padding: 3px 8px;;
+	font-size: .8rem;
+	color: wheat;
+	top: 90px;
+	left: 20px;
+}
+
 .readout{
 	display: none;
 	position: relative;
@@ -213,12 +235,6 @@ canvas#mud-flats{
 	background: rgba( 0, 0, 0, .7);
 
 /* 	border: 1px solid; */
-}
-
-#target-name{
-	padding: 3px;
-	font-size: .8rem;
-	color: wheat;
 }
 
 #status .bar{
@@ -278,13 +294,16 @@ canvas#mud-flats{
 
 
 .popup .stat .icon,
-#mousehold{
+#mousehold,
+#target-item.icon{
 	width: 30px;
 	height: 30px;
 	border-radius: 5px;
 	background: radial-gradient( grey, black);
 	border: 1px solid;
 }
+
+
 
 #mousehold{
 	position: fixed;

@@ -12,6 +12,10 @@ module.exports = class Melee extends Item {
 
 		init = init || {}
 
+		this.subtype = 'melee'
+
+		this.range = lib.validate_number( init.range, 15 )
+
 	}
 
 	attack(){

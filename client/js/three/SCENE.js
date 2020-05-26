@@ -31,6 +31,21 @@ export default (function(){
 		console.log('scene nuke exists!', scene.nuke )
 	}
 
+	scene.get_mud_id = function( mud_id ){
+
+		let obj
+		scene.traverse( function ( object ) {
+
+			if ( object.userData && object.userData.mud_id === mud_id ){
+				obj = object
+			}
+
+		} )
+
+		return obj
+
+	}
+
 	return scene
 
 })()

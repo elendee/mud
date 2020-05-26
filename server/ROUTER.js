@@ -139,6 +139,9 @@ module.exports = {
 					GAME.ZONES[ TOON._current_zone ].resolve_attack( TOON, packet )
 					break;
 					
+				case 'acquire':
+					TOON.acquire( GAME.ZONES[ TOON._current_zone ], packet.mud_id )
+					break;
 				// case 'register':
 				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )
 				// 	.catch( err => {

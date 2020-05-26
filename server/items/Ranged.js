@@ -12,6 +12,9 @@ module.exports = class Ranged extends Item {
 
 		init = init || {}
 
+		this.range = lib.validate_number( init.range, 75 )
+		// this.type_meth = 'ranged'
+
 	}
 
 	attack(){

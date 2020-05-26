@@ -60,6 +60,8 @@ const overlays = {
 				<img id='target-profile' src=''>
 			</div>
 		</div>
+		<div id='target-name'></div>
+		<img id='target-item' class='icon'/>
 		<div id='status'>
 			<div id='target-health' class='bar'>
 				<div class='status'></div>
@@ -69,7 +71,6 @@ const overlays = {
 				<div class='status'></div>
 				<div class='readout flex-wrapper'></div>
 			</div>
-			<div id='target-name'></div>
 		</div>`,
 	shaders: `
 		<script id="fshader" type="x-shader/x-fragment">
