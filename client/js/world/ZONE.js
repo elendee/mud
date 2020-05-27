@@ -352,6 +352,10 @@ class Zone {
 
 		this.render_resolution_text( target, attacker, resolution )
 
+		if( TARGET.target && TARGET.target.mud_id === resolution.target_id ){
+			TARGET.show_status()
+		}
+
 	}
 
 
