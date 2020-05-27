@@ -28,6 +28,10 @@ module.exports = class User extends Persistent {
 
 		this.active_avatar = init.active_avatar
 
+		this.level = init.level
+
+		this.confirmed = init.confirmed
+
 		this._TOON = init._TOON || init.TOON
 
 	}
@@ -36,15 +40,19 @@ module.exports = class User extends Persistent {
 	async save(){
 
 		const update_fields = [
-			'name',
+			// 'name',
 			'email',
-			'active_avatar'
+			'active_avatar',
+			'level',
+			'confirmed'
 		]
 
 		const update_vals = [ 
-			this.name, 
+			// this.name, 
 			this.email,
-			this.active_avatar
+			this.active_avatar,
+			this.level,
+			this.confirmed
 		]
 
 		// if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){

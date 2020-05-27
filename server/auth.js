@@ -60,7 +60,12 @@ async function register_user( request ){
 	// should always be the case if routing correctly
 	if( request.session.USER ){
 
-		if( !request.session.USER.id && request.session.USER.level <= 0 ){
+		if( request.session.USER._id || request.session.USER.level > 0 ){
+
+			log('flag', 'bad register attempt: ', request.session.USER )
+			return false
+
+		}else{
 
 			const pool = DB.getPool()
 
@@ -83,20 +88,16 @@ async function register_user( request ){
 
 			const sql = 'INSERT INTO `users` (`email`, `password`, `level`, `confirmed`) VALUES ( ?, ?, 1, false )'
 
-			const response = pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
+			const { error, results, fields } = await pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
 
-			const user = await select_user( 'id', result.insertId )
+			const user = await select_user( 'id', results.insertId )
 
-			request.session.USER = user // should be app logic: new User( res )
+			request.session.USER = new User( user ) // should be app logic: new User( res )
 
-			return true
-
-		}else{
-
-			log('flag', 'bad register attempt: ', request.session.USER )
-			return false
+			return true			
 
 		}
+
 	}else{
 		log('flag', 'no user')
 	}

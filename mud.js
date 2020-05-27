@@ -74,6 +74,12 @@ const gatekeep = function(req, res, next) {
 
 		next()
 
+	}else if( req.path.match(/\/register/) || req.path.match(/\/login/) ){
+
+		req.session.USER = new User( req.session.USER )
+
+		next()
+
 	}else{
 
 		// log('flag', 'old blorble: ', req.session.blorble )
@@ -84,7 +90,7 @@ const gatekeep = function(req, res, next) {
 
 		// req.session.blorble = 	hhttp_b
 
-		log('flag', 'whos dis user: ', req.session.USER )
+		// log('flag', 'whos dis user: ', req.session.USER )
 
 		// req.session.USER = new User( req.session.USER )
 
@@ -159,6 +165,7 @@ exp.get('/', function(request, response) {
 exp.post('/register', function( request, response ){
 	auth.register_user( request )
 	.then( success => {
+		log('flag', 'reg res: ', success )
 		if( success ){
 			response.send( render( 'avatar' ) )
 		}else{
