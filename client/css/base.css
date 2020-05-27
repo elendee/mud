@@ -15,12 +15,26 @@ input{
     box-sizing: border-box;
 }
 
+form input{
+    background: transparent;
+    border: 0px;
+    border-left: 1px solid white;
+    width: 100%;
+    margin: 10px 0;
+    padding: 5px 10px;
+    color: wheat;
+}
+
 div,
 p,
 a,
 input{
 /* 	font-family: monospace; */
 /* 	letter-spacing: 1px; */
+}
+
+#errors{
+    display: none;
 }
 
 .flex-liner{

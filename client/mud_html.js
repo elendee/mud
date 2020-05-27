@@ -191,7 +191,7 @@ const overlays = {
 }
 
 
-const render = function( type, request ){
+const render = function( type, request, error ){
 	let css_includes = styles.base
 	let js_includes = scripts.base
 	switch( type ){
@@ -207,11 +207,14 @@ const render = function( type, request ){
 				</head>
 				<body>
 					${ overlays.alert }
+					<div id='errors'>
+						${ error || '' }
+					</div>
 					<div id='content'>
 						<div id='auth-contain'>
 							<form id='login-form' method='post' class='auth-form' action='/login'>
 								Login
-								<input id='login-email' type='text' name='email' placeholder='email'>
+								<input id='login-email' type='email' name='email' placeholder='email'>
 								<input id='login-password' type='password' name='password' placeholder='password'>
 								<input type='submit' class='submit button'>
 							</form>
@@ -252,8 +255,18 @@ const render = function( type, request ){
 				</head>
 				<body>
 					${ overlays.alert }
+					<div id='errors'>
+						${ error || '' }
+					</div>
 					<div id='content'>
-						avatar....
+						<div id='avatars'>
+						</div>
+						<div id='create'>
+							<form action='/create_avatar' method='post'>
+								<input id='avatar-name' type='text' placeholder='avatar name' name='name'>
+								<input type='submit' class='submit button'>
+							</form>
+						</div>
 					</div>
 				</body>
 			</html>`

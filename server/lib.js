@@ -29,7 +29,8 @@ password_schema
 
 
 const tables = {
-	verboten: ['fuk', 'fuck', 'cunt', 'damn', 'nigger', 'kike', 'chink', 'bitch']
+	verboten: ['fuk', 'fuck', 'cunt', 'damn', 'nigger', 'kike', 'chink', 'bitch'],
+	max_name_length: 20
 }
 
 // function gen_portrait(){
@@ -66,21 +67,7 @@ function zone_id( x, z, layer ){
 	return x + '-' + z + '-' + layer
 }
 
-// sanitize_chat: sanitize_chat,	
 
-// is_valid_name: is_valid_name,
-
-// is_valid_password: is_valid_password,
-
-// is_valid_portrait: is_valid_portrait,
-
-// is_valid_website: is_valid_website,
-
-// is_valid_email: is_valid_email,
-
-// random_hex: random_hex,
-
-// random_rgb: random_rgb,
 
 function two_decimals( float ){
 
@@ -150,7 +137,7 @@ function is_valid_name( name ){
 
 	if( !name ) valid = false
 
-	if( typeof( name ) !== 'string' || name.length > tables.name_length ) return false // yes skip the log here, could be huge
+	if( typeof( name ) !== 'string' || name.length > tables.max_name_length ) return false // yes skip the log here, could be huge
 
 	if( name.match(/^null$/i) ) valid = false
 

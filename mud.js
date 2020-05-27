@@ -158,36 +158,63 @@ exp.get('/', function(request, response) {
 	response.send( render( 'index', request ) )
 })
 
+exp.get('/fetch_avatars', function( request, response ){
+	auth.fetch_avatars( request )
+	.then( res => {
+		response.json( res )
+	})
+	.catch( err => {
+		log('flag', 'err fetching avatars: ', err )
+		response.json({
+			success: false,
+			msg: 'failed to fetch avatars'
+		})
+	})
+})
+
+exp.post('/create_avatar', function( request, response ){
+	auth.create_avatar( request )
+	.then( res => {
+		response.json( res )
+	})
+	.catch( err => {
+		log('flag', 'err creating avatar: ', err )
+		response.json({
+			success: false,
+			msg: 'failed to create avatar'
+		})
+	})
+})
+
 // exp.get('/test', function( request, response) {
 // 	log('flag', Object.keys(h).length )
 // })
 
 exp.post('/register', function( request, response ){
 	auth.register_user( request )
-	.then( success => {
-		log('flag', 'reg res: ', success )
-		if( success ){
+	.then( res => {
+		if( res.success ){
 			response.send( render( 'avatar' ) )
 		}else{
-			response.send( render( 'index' ) )
+			response.send( render( 'index', request, res.msg ) )
 		}
 	}).catch( err => {
 		log('flag', 'err register: ', err )
-		response.send( render('index') )
+		response.send( render('index', request, 'invalid attempt') )
 	})
 })
 
 exp.post('/login', function( request, response ){
 	auth.login_user( request )
-	.then( success => {
-		if( success ){
+	.then( res => {
+		if( res.success ){
 			response.send( render( 'avatar' ) )
 		}else{
-			response.send( render( 'index' ) )
+			response.send( render( 'index', request, res.msg ) )
 		}
 	}).catch( err => {
 		log('flag', 'err login: ', err )
-		response.send( render('index') )
+		response.send( render('index'), request, 'invalid login attempt' )
 	})
 })
 

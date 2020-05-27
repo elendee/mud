@@ -25,16 +25,6 @@ form.auth-form{
 /*     border: 1px solid; */
 }
 
-form input{
-    background: transparent;
-    border: 0px;
-    border-left: 1px solid white;
-    width: 100%;
-    margin: 10px 0;
-    padding: 5px 10px;
-    color: wheat;
-}
-
 
 form input::placeholder{
     color: grey;
@@ -100,3 +90,4 @@ form input::placeholder{
 #discord a:hover{
     opacity: 1;
 }
+

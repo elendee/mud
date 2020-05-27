@@ -8,7 +8,7 @@ module.exports = class Persistent {
 
 		init = init || {}
 
-		this._id = init._id || init.id
+		this._id = lib.validate_number( init._id, init.id )
 		// lib.validate_number( init._id, init.id, undefined )
 
 		this.mud_id = init.mud_id || uuid()

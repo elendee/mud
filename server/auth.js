@@ -16,6 +16,8 @@ const SALT_ROUNDS = 10
 
 const User = require('./User.js')
 
+const Toon = require('./agents/Toon.js')
+
 log('call', 'auth.js')
 
 
@@ -25,29 +27,52 @@ log('call', 'auth.js')
 
 async function login_user( request ){
 
-	const pool = DB.getPool()
-
 	const email = request.body.email.toLowerCase().trim()
 	const password = request.body.password.trim()
 
-	const response = await select_user( 'email', email )
-	if( !response ) return false
+	let msg
 
-	const hash_pw = response.msg.password
+	if( !password ) msg = 'no password given for login'
+	if( !email ) msg = 'no email given for login'
+	if( !request.session.USER ) msg = 'invalid login attempt'
 
-	const user = new User( response.msg )
+	if( msg ){
+		return {
+			success: false,
+			msg: msg
+		}
+	}
+
+	if( request.session.USER._id && request.session.USER.email === email ){
+		return { success: true }
+	}
+
+	const pool = DB.getPool()
+
+	const user = await select_user( 'email', email )
+	if( !user ) return {
+		success: false,
+		msg: 'no user found for login'
+	}
+
+	const hash_pw = user.password
 
 	const bcrypt_boolean = await bcrypt.compare( password, hash_pw )
 
 	if( bcrypt_boolean ){
 
-		request.session.USER = user
+		request.session.USER = new User( user )
 
-		return true
+		return {
+			success: true
+		}
 
 	}else{
 
-		return false
+		return {
+			success: false,
+			msg: 'failed to auth'
+		}
 
 	}
 
@@ -58,49 +83,51 @@ async function login_user( request ){
 async function register_user( request ){
 
 	// should always be the case if routing correctly
-	if( request.session.USER ){
-
-		if( request.session.USER._id || request.session.USER.level > 0 ){
-
-			log('flag', 'bad register attempt: ', request.session.USER )
-			return false
-
-		}else{
-
-			const pool = DB.getPool()
-
-			const email = request.body.email.toLowerCase().trim()
-			const pw = request.body.password.trim()
-
-			let invalid = false
-			if( !lib.is_valid_email( email )){
-				invalid = 'invalid email'
-			}else if( !lib.is_valid_password( pw )){
-				invalid = 'invalid password'
-			}
-			if( invalid ){
-				log('flag', 'register: ', invalid )
-				return false
-			}
-
-			let salt = bcrypt.genSaltSync( SALT_ROUNDS )
-			let hash = bcrypt.hashSync( pw, salt )
-
-			const sql = 'INSERT INTO `users` (`email`, `password`, `level`, `confirmed`) VALUES ( ?, ?, 1, false )'
-
-			const { error, results, fields } = await pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
-
-			const user = await select_user( 'id', results.insertId )
-
-			request.session.USER = new User( user ) // should be app logic: new User( res )
-
-			return true			
-
+	if( !request.session.USER ){
+		return {
+			success: false,
+			msg: 'invalid register attempt'
 		}
-
-	}else{
-		log('flag', 'no user')
 	}
+
+	if( request.session.USER._id || request.session.USER.level > 0 ){
+		return {
+			success: false,
+			msg: 'user already exists'
+		}
+	}
+
+	const pool = DB.getPool()
+
+	const email = request.body.email.toLowerCase().trim()
+	const pw = request.body.password.trim()
+
+	let invalid = false
+	if( !lib.is_valid_email( email )){
+		invalid = 'invalid email'
+	}else if( !lib.is_valid_password( pw )){
+		invalid = 'invalid password'
+	}
+	if( invalid ){
+		return {
+			success: false,
+			msg: invalid
+		}
+	}
+
+	let salt = bcrypt.genSaltSync( SALT_ROUNDS )
+	let hash = bcrypt.hashSync( pw, salt )
+
+	const sql = 'INSERT INTO `users` (`email`, `password`, `level`, `confirmed`) VALUES ( ?, ?, 1, false )'
+
+	const { error, results, fields } = await pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
+
+	const user = await select_user( 'id', results.insertId )
+
+	request.session.USER = new User( user ) // should be app logic: new User( res )
+
+	return { success: true }	
+
 }
 
 
@@ -139,7 +166,6 @@ async function select_user( type, value ){
 
 
 
-
 const logout_user = async( request ) => {
 
 	let msg = 'user saved'
@@ -170,6 +196,113 @@ const logout_user = async( request ) => {
 
 
 
+const fetch_avatars = async( request, avatar_id ) => {
+
+	const pool = DB.getPool()
+
+	let sql, value
+	if( avatar_id ){
+		sql = 'SELECT * FROM avatars WHERE id=?'
+		value = avatar_id
+	}else{
+		sql = 'SELECT * FROM avatars WHERE user_key=?'
+		value = request.session.USER._id
+	}
+
+	const { error, results, fields } = await pool.queryPromise( sql, [ value ] )
+	if( error ) return {
+		success: false,
+		msg: 'invalid fetch avatars'
+	}
+
+	if( !results || !results.length ) return {
+		success: true,
+		avatars: []
+	}
+
+	for( let avatar of results ){
+		avatar = new Toon( avatar )
+	}
+
+	return { 
+		success: true, 
+		avatars: results 
+	}
+
+}
+
+
+
+const create_avatar = async( request ) => {
+
+	if( !lib.is_valid_name( request.body.name ) ) return {
+		success: false,
+		msg: 'invalid avatar name'
+	}
+
+	if( !request.session.USER || !request.session.USER._id )	return {
+		success: false,
+		msg: 'no user found for avatar'
+	}
+
+	const pool = DB.getPool()
+
+	const sql = `INSERT INTO avatars (user_key, name) VALUES( ?, ? )`
+
+	const { error, results, fields } = await pool.queryPromise( sql, [ request.session.USER._id, request.body.name ] )
+	if( error ) {
+		log('flag', 'err: ', error )
+		return {
+			success: false,
+			msg: 'invalid fetch avatars'
+		}
+	}
+
+	if( results.affectedRows === 1 && typeof results.insertId === 'number' ){
+		const res = await fetch_avatars( false, results.insertId )
+		if( !res || !res.success ) return {
+			success: false,
+			msg: 'error creating avatar'
+		}
+		return {
+			success: true,
+			avatar: res.avatars[0]
+		}
+	}
+
+	return { 
+		success: false, 
+		msg: 'avatar creation error'
+	}
+
+}
+
+
+	// const update = 'INSERT INTO `' + doc._table + '` (' + field_string + ') VALUES (' + value_string + ') ON DUPLICATE KEY UPDATE ' + full_string
+
+	// log('query', 'attempting UPDATE: ', update )
+
+	// const { error, results, fields } = await pool.queryPromise( update )
+
+	// if( error || !results ){
+	// 	if( error ){
+	// 		log('flag', 'update err:', error.sqlMessage )
+	// 		return false
+	// 	}else{
+	// 		// throw new Error( 'UPDATE error: ', error.sqlMessage, 'attempted: ', '\nATTEMPTED: ', update, doc._table )
+	// 		throw new Error( 'no results: ' + update )
+	// 	}
+	// }
+
+	// log('query', 'results: ', JSON.stringify( results ) )
+
+	// return {
+	// 	msg: 'update success',
+	// 	id: results.insertId
+	// }
+
+
+
 
 
 
@@ -178,7 +311,9 @@ module.exports = {
 	register_user,
 	select_user,
 	login_user,
-	logout_user
+	logout_user,
+	fetch_avatars,
+	create_avatar
 }
 
 
