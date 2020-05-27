@@ -137,7 +137,7 @@ class Target {
 			if( this.target ){
 				this.show_name()
 				if( this.target.type === 'item' ){
-					this.show_item()
+					this.show_item( userData )
 				}else{
 					this.show_status()
 				}
@@ -183,8 +183,13 @@ class Target {
 		// console.log( target_size , '<<<')
 
 		// reticule rotated 90deg, so z === y 
-		this.reticule.scale.x =  Math.max( .5, .18 + ( target_size.x / this.target.MODEL.scale.x ) / reticule_size )
-		this.reticule.scale.y =  Math.max( .5, .18 + ( target_size.z / this.target.MODEL.scale.z ) / reticule_size )
+		if( this.target.type === 'item' ){
+			this.reticule.scale.x =  Math.max( 1 )
+			this.reticule.scale.y =  Math.max( 1 )
+		}else{
+			this.reticule.scale.x =  Math.max( .5, .18 + ( target_size.x / this.target.MODEL.scale.x ) / reticule_size )
+			this.reticule.scale.y =  Math.max( .5, .18 + ( target_size.z / this.target.MODEL.scale.z ) / reticule_size )
+		}
 		// this.reticule.scale.x =  Math.max( .5, .18 + target_size.x / reticule_size )
 		// this.reticule.scale.y =  Math.max( .5, .18 + target_size.z / reticule_size )
 
@@ -210,9 +215,9 @@ class Target {
 
 
 
-	show_item(){
+	show_item( userData ){
 
-		this.item_ele.setAttribute('src', '/resource/images/icons/' + lib.identify('icon', this.target ) + '.png' )
+		this.item_ele.setAttribute('src', '/resource/images/icons/' + lib.identify( 'icon', userData ) + '.png' )
 
 		this.status_ele.style.display = 'none'
 

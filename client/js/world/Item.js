@@ -42,11 +42,13 @@ export default class Item {
 
 	
 
-	model(  ){
+	model(){
+
+		const item = this
 
 		const geo = new BoxBufferGeometry(5, 5, 5)
 		const mat = new MeshLambertMaterial({
-			color: 'blue'
+			color: 'rgb(150, 120, 70)'
 		})
 		const item_mesh = new Mesh( geo, mat )
 
@@ -56,6 +58,13 @@ export default class Item {
 			this.ref.position.y,
 			this.ref.position.z 
 		)
+
+		// let count
+		// let drop = setInterval(()=>{
+		// 	if( count > 10 ) clearInterval( drop )
+		// 	item.MODEL.position.lerp( item.ref.position, .1 )
+		// 	count++
+		// }, 200)
 
 		this.MODEL.userData = new Clickable( this )
 

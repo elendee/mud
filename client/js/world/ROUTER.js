@@ -155,9 +155,9 @@ const bind = function(){
 					ZONE.apply_resolution( obj.resolution )
 					break;
 
-				case 'decomposers':
-					ZONE.render_decomposers( obj.packet )
-					break;
+				// case 'decomposers':
+				// 	ZONE.render_decomposers( obj.packet )
+				// 	break;
 
 				case 'items':
 					ZONE.render_items( obj.packet )

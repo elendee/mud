@@ -322,13 +322,13 @@ function identify( type, entity ){
 	switch( type ){
 
 		case 'name':
-			return ( entity.name || entity.subtype || entity.type )
+			return ( entity.name || entity.resource_type || entity.subtype || entity.type )
 
 		case 'model':
 			return ( entity.model_url || entity.subtype || entity.type )
 
 		case 'icon':
-			return ( entity.icon_url || entity.subtype || entity.type )
+			return ( entity.resource_type || entity.icon_url || entity.subtype || entity.type )
 
 		default: 
 			return entity.subtype || entity.type

@@ -5716,9 +5716,16 @@ Object3D.prototype = Object.assign( Object.create( EventDispatcher.prototype ), 
 
 		var children = this.children;
 
-		for ( var i = 0, l = children.length; i < l; i ++ ) {
+		// for ( var i = 0, l = children.length; i < l; i ++ ) {
+		for ( var i = children.length; i >= 0; i -- ) {
 
-			children[ i ].traverse( callback );
+			// if( children[i] ){
+
+			if( children[ i ] ) children[ i ].traverse( callback );
+
+			// }else{
+			// 	console.log('......', children[i])
+			// }
 
 		}
 

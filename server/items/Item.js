@@ -34,7 +34,7 @@ module.exports = class Item extends Persistent {
 		// this.ref = init.ref || {}
 		// this.ref.position = lib.validate_vec3( this.ref.position )
 
-		this._timeout = init._timeout
+		// this._timeout = init._timeout
 
 	}
 

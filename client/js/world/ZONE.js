@@ -341,12 +341,12 @@ class Zone {
 
 			// SCENE.remove( target.MODEL )
 
-			// setTimeout(function(){
-			// 	SCENE.remove( target.MODEL )
-			// }, 5000)
+			setTimeout(function(){
+				if( SCENE && target.MODEL )  SCENE.remove( target.MODEL )
+				RENDERER.frame( SCENE )
+			}, 1000 * 60 * 1 )
 
 		}
-
 
 		this.render_resolution_flash( target, attacker, resolution )
 
@@ -446,31 +446,44 @@ class Zone {
 	}
 
 
-	render_decomposers( packet ){
+	// render_decomposers( packet ){
 
-		let decomposers = packet
+	// 	let decomposers = packet
 
-		for( const mud_id of Object.keys( decomposers )){
-			console.log( 'render decompose: ', decomposers[ mud_id ])
-		}
+	// 	for( const mud_id of Object.keys( decomposers )){
+	// 		if( !this.DECOMPOSERS[ mud_id ]){
+	// 			this.DECOMPOSERS[ mud_id ] = new Item( items[ mud_id ] )
+	// 			this.DECOMPOSERS[ mud_id ].model()
+	// 			SCENE.add( this.DECOMPOSERS[ mud_id ].MODEL )
+	// 		}
+	// 		// console.log( 'render decompose: ', decomposers[ mud_id ])
+	// 	}
 
-	}
+	// }
 
 
 	render_items( packet ){
 
-		const item = packet
+		const items = packet
 
-		for( const mud_id of Object.keys( item )){
-			
-			console.log( 'render item: ', item[ mud_id ] )
-
-			this.ITEMS[ mud_id ] = new Item( item[ mud_id ] )
-			this.ITEMS[ mud_id ].model()
-
-			SCENE.add( this.ITEMS[ mud_id ].MODEL )
+		for( const mud_id of Object.keys( items )){
+			// console.log( 'render item: ', item[ mud_id ] )
+			if( !this.ITEMS[ mud_id ]){
+				this.ITEMS[ mud_id ] = new Item( items[ mud_id ] )
+				this.ITEMS[ mud_id ].model()
+				SCENE.add( this.ITEMS[ mud_id ].MODEL )
+			}
 
 		}
+
+		SCENE.traverse(( obj ) => {
+			if( obj.userData && obj.userData.mud_id && obj.userData.type === 'item' ){
+				if( !items[ obj.userData.mud_id ] ){
+					console.log('removing _dep item')
+					SCENE.remove( obj )
+				}
+			}
+		})
 
 	}
 

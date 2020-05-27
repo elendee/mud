@@ -269,7 +269,7 @@ function check_distance( clicked, intersects ){
 
 	}else{
 
-		console.log('unhandled click type: ', type )
+		// console.log('unhandled click type: ', type )
 		return true
 		
 	}

@@ -68,6 +68,14 @@ export default class Popup {
 		this.content.classList.add('content')
 		this.element.appendChild( this.content )
 
+		this.content_equip = document.createElement('div')
+		this.content_equip.classList.add('content-equip')
+		this.content.appendChild( this.content_equip )
+
+		this.content_resource = document.createElement('div')
+		this.content_resource.classList.add('content-resource')
+		this.content.appendChild( this.content_resource )
+
 		if( this.id == 'inventory' ){
 			this.overlay = document.createElement('div')
 			this.overlay.classList.add('overlay')
@@ -222,36 +230,46 @@ export default class Popup {
 
 	render_inventory( INVENTORY ){
 
-		this.content.innerHTML = ''
-		
+		// this.content.innerHTML = ''
+		this.content_equip.innerHTML = this.content_resource.innerHTML = ''
+
 		for( const mud_id of Object.keys( INVENTORY )){
+			if( INVENTORY[ mud_id ].subtype !== 'resource' )  this.render_item( 'equip', mud_id, INVENTORY )
+		}
 
-			let item = INVENTORY[ mud_id ]
-
-			let row = document.createElement('div')
-			row.classList.add('stat', item.subtype )
-			let icon = document.createElement('img')
-			icon.classList.add('icon')
-			icon.src = '/resource/images/icons/' + lib.identify( 'icon', INVENTORY[ mud_id ] ) + '.png' // INVENTORY[ mud_id ].icon_url
-			icon.addEventListener('click', function(){
-				MOUSE.mousehold.pickup( mud_id, 'inventory' )
-			})
-			row.appendChild( icon )
-			let stat_key = document.createElement('span')
-			stat_key.classList.add('stat-key')
-			stat_key.innerHTML = item.name
-			row.appendChild( stat_key )
-			
-			row.appendChild( document.createElement('br'))
-			
-			this.content.appendChild( row )
-
+		for( const mud_id of Object.keys( INVENTORY )){
+			if( INVENTORY[ mud_id ].subtype === 'resource' )  this.render_item( 'resource', mud_id, INVENTORY )
 		}
 
 	}
 
+	render_item( category, mud_id, INVENTORY ){
+
+		let item = INVENTORY[ mud_id ]
+
+		let row = document.createElement('div')
+		row.classList.add('stat', item.subtype )
+		let icon = document.createElement('img')
+		icon.classList.add('icon')
+		icon.src = '/resource/images/icons/' + lib.identify( 'icon', INVENTORY[ mud_id ] ) + '.png' // INVENTORY[ mud_id ].icon_url
+		icon.addEventListener('click', function(){
+			MOUSE.mousehold.pickup( mud_id, 'inventory' )
+		})
+		row.appendChild( icon )
+		let stat_key = document.createElement('span')
+		stat_key.classList.add('stat-key')
+		stat_key.innerHTML = lib.identify( 'name', item )
+		row.appendChild( stat_key )
+		
+		row.appendChild( document.createElement('br'))
+		
+		this['content_' + category].appendChild( row )
+
+	}
+
 	unrender(){
-		this.content.innerHTML = ''
+		this.content_equip.innerHTML = this.content_resource.innerHTML = ''
+		// this.content.innerHTML = ''
 	}
 
 	render(){

@@ -414,7 +414,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		SOCKETS[ this.mud_id ].send(JSON.stringify({
 			type: 'acquire',
-			inventory: this.publish_inventory(),
+			inventory: this._INVENTORY,
 			mud_id: mud_id
 		}))
 
@@ -423,16 +423,16 @@ module.exports = class Toon extends AgentPersistent {
 
 
 
-	publish_inventory(){
-		const inv = {}
-		for( const mud_id of Object.keys( this._INVENTORY )){
-			inv[ mud_id ] = {} //this._INVENTORY[ mud_id ]
-			for( const key of Object.keys( this._INVENTORY[ mud_id ] )){
-				if( key !== '_timeout' ) inv[ mud_id ][ key ] = this._INVENTORY[ mud_id ][ key ]
-			}
-		}
-		return inv
-	}
+	// publish_inventory(){
+	// 	const inv = {}
+	// 	for( const mud_id of Object.keys( this._INVENTORY )){
+	// 		inv[ mud_id ] = {} //this._INVENTORY[ mud_id ]
+	// 		for( const key of Object.keys( this._INVENTORY[ mud_id ] )){
+	// 			if( key !== '_timeout' ) inv[ mud_id ][ key ] = this._INVENTORY[ mud_id ][ key ]
+	// 		}
+	// 	}
+	// 	return inv
+	// }
 
 
 

@@ -18,6 +18,10 @@ canvas#mud-flats{
 /*     border-top: 1px solid wheat; */
 }
 
+.icon{
+	cursor: pointer;
+}
+
 .bar-button{
 	position: relative;
     display: inline-block;
@@ -29,7 +33,7 @@ canvas#mud-flats{
     overflow: hidden;
 
     box-shadow: inset 0px 0px 5px lightblue;
-/*     cursor: pointer; */
+    cursor: pointer;
 }
 .bar-button:hover,
 .bar-button.secondary:hover,
@@ -50,6 +54,7 @@ canvas#mud-flats{
     height: 60px;
     width: 60px; 
     box-shadow: inset 0px 0px 10px rgb( 155, 50, 50);
+    background: radial-gradient( rgb(60, 50, 60), black);
 }
 .action-button.secondary{
     height: 50px;
@@ -168,6 +173,9 @@ canvas#mud-flats{
     top: 60px;
     left: 60px;
     box-shadow: 0px 0px 5px black;
+}
+#target-item.icon:hover{
+	box-shadow: inset 0px 0px 5px lightblue;
 }
 
 

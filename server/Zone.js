@@ -59,11 +59,17 @@ class Zone extends Persistent {
 
 		this._FLORA = init._FLORA || {}
 		this._STRUCTURES = init._STRUCTURES || {}
-		this._NPCS = init._NPCS || {}
+		// this._NPCS = init._NPCS || {}
 		this._TOONS = init._TOONS || {}
 		this._ITEMS = init._ITEMS || {}
 
-		this.DECOMPOSERS = init.DECOMPOSERS || {} // never persisted, so no _INSTANTIATER ^^
+		// this._DECOMPOSERS = init._DECOMPOSERS || {} // never persisted, so no _INSTANTIATER ^^
+
+		this._TIMEOUTS = init._TIMEOUTS || {
+			items: {},
+			// decomposers: {}
+		}
+
 		// this.LOOT = init.LOOT || {}
 
 	}
@@ -183,8 +189,13 @@ class Zone extends Persistent {
 				// this: this
 			})
 
-			if( resolution.status === 'dead' ) this.add_decomposers( target )
-			if( resolution.loot && resolution.loot.length )  this.add_items( resolution.loot, target.ref.position )
+			if( resolution.status === 'dead' ){
+				delete this[ entity_type ][ target.mud_id ]
+				// this.add_decomposers( target )
+			}
+			if( resolution.loot && resolution.loot.length ){
+				this.add_items( resolution.loot, target.ref.position )
+			}
 
 			for( const mud_id of Object.keys( this._TOONS )){
 				SOCKETS[ TOON.mud_id ].send(JSON.stringify({
@@ -204,37 +215,28 @@ class Zone extends Persistent {
 
 
 
-	add_decomposers( target ){
+	// add_decomposers( target ){
 
-		const zone = this
+	// 	const zone = this
 
-		if( !zone.DECOMPOSERS[ target.mud_id ]){
+	// 	if( !zone._DECOMPOSERS[ target.mud_id ]){
 
-			zone.DECOMPOSERS[ target.mud_id ] = { // can be any entity type (!)
-				entity: {
-					type: target.type,
-					name: lib.identify('name', target )
-				},
-				timeout: setTimeout(function(){
-					delete zone.DECOMPOSERS[ target.mud_id ]
-					zone.emit( 'decomposers', SOCKETS, false, zone.bundle_decomposers() )
-				}, 1000 * 60 * 5 )
-			}
+	// 		zone._DECOMPOSERS[ target.mud_id ] = { // can be any entity type (!)
+	// 			entity: {
+	// 				type: target.type,
+	// 				name: lib.identify('name', target )
+	// 			}
+	// 		}
+	// 		zone._TIMEOUTS.decomposers[ target.mud_id ] = setTimeout(function(){
+	// 			delete zone._DECOMPOSERS[ target.mud_id ]
+	// 			// zone.emit( 'decomposers', SOCKETS, false, zone._DECOMPOSERS )
+	// 		}, 1000 * 3 ) //* 5 )
 
-			zone.emit( 'decomposers', SOCKETS, false, zone.bundle_decomposers() )
+	// 		// zone.emit( 'decomposers', SOCKETS, false, zone._DECOMPOSERS )
 
-		}
+	// 	}
 
-	}
-
-
-	bundle_decomposers(){
-		const bundle = {}
-		for( const mud_id of Object.keys( this.DECOMPOSERS ) ){
-			bundle[ mud_id ] = this.DECOMPOSERS[ mud_id ].entity
-		}
-		return bundle
-	}
+	// }
 
 
 	add_items( items_array, position ){
@@ -246,15 +248,18 @@ class Zone extends Persistent {
 			if( !zone._ITEMS[ item.mud_id ]){
 
 				zone._ITEMS[ item.mud_id ] = new ItemFactory( item )
-				zone._ITEMS[ item.mud_id ]._timeout = setTimeout(function(){
-					delete zone._ITEMS[ item.mud_id ]
-					zone.emit( 'item', SOCKETS, false, zone.bundle_items() )
-				}, 1000 * 60 * 5 )
 				zone._ITEMS[ item.mud_id ].ref.position = lib.validate_vec3( new Vector3(
 					position.x + ( -1 + Math.random() * 2 ) * 10,
 					1,
 					position.z + ( -1 + Math.random() * 2 ) * 10,
 				))
+
+				zone._TIMEOUTS.items[ item.mud_id ] = setTimeout(function(){
+					if( zone && zone._ITEMS[ item.mud_id ] ){
+						delete zone._ITEMS[ item.mud_id ]
+						zone.emit( 'items', SOCKETS, false, zone.bundle_items() )
+					}
+				}, 1000 * 60 * 5 )
 
 			}
 
@@ -583,16 +588,18 @@ class Zone extends Persistent {
 
 		const zone = this
 
-		for( const mud_id of Object.keys( this.LOOT )){
-			clearTimeout( zone.LOOT[ mud_id ].timeout )
+		for( const key of Object.keys( zone._TIMEOUTS )){
+			for( const mud_id of Object.keys( zone._TIMEOUTS[ key ] )){
+				clearTimeout( zone._TIMEOUTS[ key ][ mud_id ] )
+			}
 		}
-		for( const mud_id of Object.keys( this.DECOMPOSERS )){
-			clearTimeout( zone.DECOMPOSERS[ mud_id ].timeout )
-		}
+		// for( const mud_id of Object.keys( zone._DECOMPOSERS )){
+		// 	clearTimeout( zone._DECOMPOSERS[ mud_id ].timeout )
+		// }
 
-		log('zone', 'closing: ', this.mud_id )
-		await this.save()
-		log('zone', 'closed: ', this.mud_id )
+		log('zone', 'closing: ', zone.mud_id )
+		await zone.save()
+		log('zone', 'closed: ', zone.mud_id )
 
 		return true
 
