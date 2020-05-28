@@ -354,6 +354,13 @@ function scale_to_match( source_mesh, dest_mesh ){
 }
 
 
+function get_avatar_name( avatar ){
+
+	if( !avatar.name ) return false
+
+	return avatar.name + ( avatar.surname ? ' ' + avatar.surname : '' )
+}
+
 
 
 export {
@@ -372,5 +379,6 @@ export {
 	identify,
 	get_dimensions,
 	scale_to_match,
+	get_avatar_name
 	// clear_object
 }

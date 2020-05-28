@@ -35,7 +35,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._INVENTORY = init._INVENTORY
 
-		this.name = init.name || 'Toon_' + lib.random_hex( 4 )
+		this.surname = init.surname || 'O\'Toon'
 
 		this.height = lib.validate_number( init.height, 3 )
 

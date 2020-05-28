@@ -1,3 +1,5 @@
+
+import * as lib from './lib.js'
 import hal from './hal.js'
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -35,6 +37,14 @@ document.addEventListener('DOMContentLoaded', function(){
 		.catch( err => {
 			console.log('err fetching avatars: ', err )
 		})
+	})
+
+	document.getElementById('enter-world').addEventListener('click', function(e){
+		const avatar = localStorage.getItem('mud-active-avatar')
+		if( typeof avatar !== 'string' ){
+			e.preventDefault()
+			hal('error', 'must choose an avatar first')
+		}
 	})
 
 })
@@ -76,23 +86,50 @@ async function create_avatar( data ) {
 
 function render_avatars( avatars ){
 
-	document.getElementById('avatars').innerHTML = ''
+	// document.getElementById('avatar-content').innerHTML = ''
+	let names = []
+	const avatar_names = document.querySelectorAll('.avatar-name')
+	// const avatar_eles = document.querySelectorAll('.avatar')
+	for( const name_content of avatar_names ){
+		names.push( name_content.innerHTML.trim() )
+	}
 
 	for( const avatar of avatars ){
 
-		const av = document.createElement('div')
-		av.classList.add('avatar')
-		const name = document.createElement('div')
-		name.classList.add('avatar-name')
-		name.innerHTML = avatar.name
-		const color = document.createElement('div')
-		color.classList.add('avatar-color')
-		const col = 'linear-gradient( ' + avatar.color + ', transparent )'
-		console.log( col )
-		color.style.background = col
-		av.appendChild( color )
-		av.appendChild( name )
-		document.getElementById('avatars').appendChild( av )
+		const name = lib.get_avatar_name( avatar )
+
+		if( !names.includes( name )){
+
+			const av_wrap = document.createElement('div')
+			av_wrap.classList.add('avatar-wrapper')
+			
+			const av = document.createElement('div')
+			av.classList.add('avatar', 'flex-liner')
+			av.addEventListener('click', function(){
+				// console.log( avatar_eles )
+				localStorage.setItem('mud-active-avatar', name )
+				const avs = document.querySelectorAll('.avatar')
+				for( const a of avs ){
+					a.classList.remove('selected')
+				}
+				this.classList.add('selected')
+			})
+			av_wrap.appendChild( av )
+
+			const name_ele = document.createElement('div')
+			name_ele.classList.add('avatar-name')
+			name_ele.innerHTML = name
+			const color = document.createElement('div')
+			color.classList.add('avatar-color')
+			const col = 'linear-gradient( 165deg, ' + avatar.color + ',  transparent )'
+			color.style.background = col
+			
+			av.appendChild( color )
+			av.appendChild( name_ele )
+			
+			document.getElementById('avatar-content').appendChild( av_wrap )
+		}
 	}
+
 
 }

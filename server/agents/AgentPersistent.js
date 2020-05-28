@@ -18,6 +18,8 @@ class AgentPersistent extends Persistent {
 
 		this._status = init._status || 'alive'
 
+		this.name = init.name || 'Toon_' + lib.random_hex(4)
+
 		this._stats = init._stats || {}
 		this._stats.strength = lib.validate_number( this._stats.strength, 5 )
 		this._stats.vitality = lib.validate_number( this._stats.vitality, 5 )

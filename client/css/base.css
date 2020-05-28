@@ -52,6 +52,7 @@ input{
     text-transform: uppercase;
     font-weight: bold;
     letter-spacing: 2px;
+    font-family: sans-serif;
 }
 
 
@@ -106,6 +107,17 @@ input{
 }
 .standard .alert-close{
 	color: white;
+}
+#alert-contain a{
+	font-weight: bold;
+	background: rgba(255, 255, 255, .5);
+	color: black;
+	padding: 0 3px;
+	text-decoration: none;
+	border-radius: 3px;
+	display: block;
+	text-align: center;
+	margin-top: 5px;
 }
 #alert-contain .error{
 	background: maroon;

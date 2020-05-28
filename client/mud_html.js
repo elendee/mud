@@ -260,13 +260,23 @@ const render = function( type, request, error ){
 					</div>
 					<div id='content'>
 						<div id='avatars'>
+							<h3>avatars:</h3>
+							<div id='avatar-content'>
+							</div>
 						</div>
 						<div id='create'>
+							<h3>create an avatar:</h3>
 							<form action='/create_avatar' method='post'>
 								<input id='avatar-name' type='text' placeholder='avatar name' name='name'>
-								<input type='submit' class='submit button'>
+								<input type='submit' value='create' class='submit button'>
 							</form>
 						</div>
+					</div>
+					<div id='enter-world' class='submit button'>
+						<a href='/world'>Enter World</a>
+					</div>
+					<div id='logout' class='submit button'>
+						<a href='/logout'>Logout</a>
 					</div>
 				</body>
 			</html>`

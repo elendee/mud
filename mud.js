@@ -74,7 +74,7 @@ const gatekeep = function(req, res, next) {
 
 		next()
 
-	}else if( req.path.match(/\/register/) || req.path.match(/\/login/) ){
+	}else if( req.path.match(/\/register/) || req.path.match(/\/login/) || req.path.match(/\/logout/) ){
 
 		req.session.USER = new User( req.session.USER )
 
@@ -155,7 +155,11 @@ exp.use( gatekeep )
 
 // routing
 exp.get('/', function(request, response) {
-	response.send( render( 'index', request ) )
+	if( request.session.USER && request.session.USER._id ){
+		response.send( render( 'avatar', request ) )
+	}else{
+		response.send( render( 'index', request ) )
+	}
 })
 
 exp.get('/fetch_avatars', function( request, response ){
@@ -234,17 +238,19 @@ exp.post('/world', function( request, response ){
 	// })
 })
 
-exp.post('/logout', function( request, response ){
-	auth.logout( request )
+exp.use('/logout', function( request, response ){
+	auth.logout_user( request )
 	.then( res => {
 		// includes success false's :
-		response.json( res )
+		response.send( render( 'index', request ))
+		// response.json( res )
 	}).catch( err => {
 		log('flag', 'err logout: ', err )
-		response.json({
-			success: false,
-			msg: 'error logging out'
-		})
+		response.send( render('index'))
+		// response.json({
+		// 	success: false,
+		// 	msg: 'error logging out'
+		// })
 	})
 })
 
@@ -264,91 +270,93 @@ exp.post('/update', function( request, response ){
 
 
 
-exp.post('/img_handler', function( request, response ){
+// exp.post('/img_handler', function( request, response ){
 
-	if( request.files && request.session.USER.name ){
+// 	if( request.files && request.session.USER.name ){
 
-		const FILE = request.files.upload
+// 		const FILE = request.files.upload
 
-		const slot_mud_id = request.body.slot_mud_id
-		const title = request.body.title
-		const description = request.body.description
+// 		const slot_mud_id = request.body.slot_mud_id
+// 		const title = request.body.title
+// 		const description = request.body.description
 
-		const tempPath = FILE.path
+// 		const tempPath = FILE.path
 
-		const file_URL = `${ Date.now() }__${ FILE.originalFilename }`
-		const mud_idPath = env.UPLOAD_DIR + request.session.USER.mud_id
+// 		const file_URL = `${ Date.now() }__${ FILE.originalFilename }`
+// 		const mud_idPath = env.UPLOAD_DIR + request.session.USER.mud_id
 
-		const finalPath = mud_idPath + '/' + file_URL
+// 		const finalPath = mud_idPath + '/' + file_URL
 
-		if( '(check valid)' == '(check valid)' ){
+// 		if( '(check valid)' == '(check valid)' ){
 
-			mkdirp( mud_idPath, { mode: '0744' })
-			.then( res => {
+// 			mkdirp( mud_idPath, { mode: '0744' })
+// 			.then( res => {
 
-				// fs.rename( tempPath, finalPath, err => {
-				fs.rename( tempPath, finalPath, err => {
+// 				// fs.rename( tempPath, finalPath, err => {
+// 				fs.rename( tempPath, finalPath, err => {
 					
-					if( err ) {
-						log('flag', 'filepath err: ', err)
-						response.status(500).end()
-					}
+// 					if( err ) {
+// 						log('flag', 'filepath err: ', err)
+// 						response.status(500).end()
+// 					}
 
-					// log('flag', 'request.session.USER.website: ', request.session.USER )
+// 					// log('flag', 'request.session.USER.website: ', request.session.USER )
 
-					GAME.add_img_upload( request.session.USER.mud_id, slot_mud_id, file_URL, description, title )
-					.then( res => {
-						if( res.success ){
-							response.json({
-								success: true
-							})
-						}else{
-							log('flag', 'new img fail: ', res )
-							response.json({
-								success: false,
-								msg: 'failed to set image'
-							})
-						}
-					}).catch( err => { log('flag', 'error setting image: ', err ) })
+// 					GAME.add_img_upload( request.session.USER.mud_id, slot_mud_id, file_URL, description, title )
+// 					.then( res => {
+// 						if( res.success ){
+// 							response.json({
+// 								success: true
+// 							})
+// 						}else{
+// 							log('flag', 'new img fail: ', res )
+// 							response.json({
+// 								success: false,
+// 								msg: 'failed to set image'
+// 							})
+// 						}
+// 					}).catch( err => { log('flag', 'error setting image: ', err ) })
 
-				})
+// 				})
 
-			}).catch( err => {
-				log('flag', 'err saving upload', err )
-		    	response.status(500).end()
-		    	return false
-			})
+// 			}).catch( err => {
+// 				log('flag', 'err saving upload', err )
+// 		    	response.status(500).end()
+// 		    	return false
+// 			})
 
-		}else{
+// 		}else{
 
-			fs.unlink( tempPath, err => {
-				if( err ) return false
-				response.status(403).contentType('text/plain').end('invalid file upload')
-			})
+// 			fs.unlink( tempPath, err => {
+// 				if( err ) return false
+// 				response.status(403).contentType('text/plain').end('invalid file upload')
+// 			})
 
-		}
+// 		}
 
-	}else{
-		log('flag', 'no file')
-		response.end()
-	}
-})
+// 	}else{
+// 		log('flag', 'no file')
+// 		response.end()
+// 	}
+// })
 
 exp.post('*', function(request, response){
 	log('router', '404 POST: ' + request.url)
 	if( request.url.match(/\.html$/) ){
-		response.send( render('gabbagabbahey'))
+		response.send( render('404'))
 	}else{
-		response.end()
+		response.send( render('404'))
+		// response.end()
 	}
 })
 
 exp.get('*', function(request, response){
 	log('router', '404 GET: ' + request.url)
 	if( request.url.match(/\.html$/) ){
-		response.send( render('jargonyjargon'))
+		response.send( render('404'))
 	}else{
-		response.end()
+		response.send( render('404'))
+		// response.end()
 	}
 })
 
@@ -458,6 +466,7 @@ DB.initPool(( err, pool ) => {
 			
 					GAME.init_user( socket )
 					.catch( err => {
+						socket.send(JSON.stringify({ type: 'error', msg: 'failed to initialize user'}))
 						log('flag', 'err init user:', err )
 					})
 			

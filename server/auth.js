@@ -170,7 +170,7 @@ const logout_user = async( request ) => {
 
 	let msg = 'user saved'
 
-	if( request.session.USER.save && request.session.USER.id ){
+	if( request.session.USER && request.session.USER._id ){
 
 		const r = await request.session.USER.save() // auto stamps
 		if( !r || !r.success )  log('flag', 'error saving user during logout (proceeding) ', r )
@@ -246,6 +246,15 @@ const create_avatar = async( request ) => {
 	}
 
 	const pool = DB.getPool()
+
+	// const pre_query = await fetch_avatars( false, request.session.USER._id )
+	// if( error ) {
+	// 	log('flag', 'err: ', error )
+	// 	return {
+	// 		success: false,
+	// 		msg: 'invalid fetch avatars'
+	// 	}
+	// }
 
 	const sql = `INSERT INTO avatars (user_key, name) VALUES( ?, ? )`
 

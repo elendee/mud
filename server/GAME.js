@@ -93,7 +93,9 @@ class Game {
 
 			if( typeof( USER.active_avatar ) !== 'number' ){ 
 
-				USER._TOON = TOON = false
+				// USER._TOON = TOON = 
+				socket.send(JSON.stringify({ type: 'error', msg: 'cannot use anon avatars while logged in <a href="/">back</a>'}))
+				return false
 
 			}else{
 
@@ -111,7 +113,9 @@ class Game {
 					
 					}else{
 
-						USER._TOON = TOON = false
+						// USER._TOON = TOON = 
+						socket.send(JSON.stringify({ type: 'error', msg: 'failed to initialize user'}))
+						return false
 
 					}
 
