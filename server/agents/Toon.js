@@ -33,13 +33,13 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.icon_url = init.icon_url || 'toon'
 
-		this._INVENTORY = init._INVENTORY
+		this._INVENTORY = init._INVENTORY || {}
 
 		this.surname = init.surname || 'O\'Toon'
 
 		this.height = lib.validate_number( init.height, 3 )
 
-		this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
+		// this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
 
 		let random_seed = Math.floor( Math.random() * 100 )
 		this.color = init.color || lib.random_rgb( 
@@ -92,9 +92,21 @@ module.exports = class Toon extends AgentPersistent {
 
 			log('toon', 'registered user login: ', this._id, lib.identify( 'name', this ))
 
-			if( this._INVENTORY ){
+			if( typeof this._INVENTORY === 'object' ){
 
+				if( this._created === this._edited ){
+
+					log('flag', 'yeehaw \n\n\n yeehaw')
+					
+					const stick = new FACTORY({
+						subtype: 'melee',
+						name: 'Unwieldy Stick',
+						power: 2
+					})
+					this._INVENTORY[ stick.mud_id ] = stick
+				}
 				return true
+
 
 			}else{
 
@@ -459,7 +471,7 @@ module.exports = class Toon extends AgentPersistent {
 		const update_fields = [
 			'name',
 			'height',
-			'speed',
+			// 'speed',
 			'color',
 			'layer',
 			'vitality',
@@ -469,6 +481,7 @@ module.exports = class Toon extends AgentPersistent {
 			'perception',
 			'luck',
 			'intellect',
+			'speed',
 			'camped_key',
 			'eqp_hand_left',
 			'eqp_hand_right',
@@ -481,7 +494,7 @@ module.exports = class Toon extends AgentPersistent {
 		const update_vals = [ 
 			this.name, 
 			this.height,
-			this.speed,
+			// this.speed,
 			this.color,
 			this._layer,
 			this._stats.vitality,
@@ -491,6 +504,7 @@ module.exports = class Toon extends AgentPersistent {
 			this._stats.perception,
 			this._stats.luck,
 			this._stats.intellect,
+			this._stats.speed,
 			this._camped_key,
 			this._eqp.hand_left,
 			this._eqp.hand_right,

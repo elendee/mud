@@ -78,6 +78,8 @@ module.exports = {
 	// 	'owl2.png',
 	// ]
 
+	SPEED_FLOOR: 15,
+
 	MAX_STATS: {
 		human: {
 			strength: 10,

@@ -241,8 +241,8 @@ function animate( start ){
 		direction[0] = Number( STATE.move.right ) - Number( STATE.move.left )
 	    direction[1] = Number( STATE.move.back ) - Number( STATE.move.forward )
 
-	    distance[0] = direction[0] * delta_seconds * window.TOON.speed
-	    distance[1] = direction[1] * delta_seconds * window.TOON.speed
+	    distance[0] = direction[0] * delta_seconds * window.TOON._stats.speed
+	    distance[1] = direction[1] * delta_seconds * window.TOON._stats.speed
 
 	    if(direction[0] != 0 && direction[1] != 0){
 			distance[0] *= .7
