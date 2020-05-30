@@ -105,6 +105,8 @@ class Game {
 
 				}else{ // no session
 
+					log('flag', 'OH NOES, need to pass http session to socket again here ... (after create)' )
+
 					const toon = await this.get_toon( socket.request.session.USER.active_avatar )
 
 					if( toon ){

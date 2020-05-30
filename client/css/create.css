@@ -1,0 +1,136 @@
+#create{
+	/* font-size: 0px; */
+}
+
+form{
+    text-align: center;
+}
+
+option,
+select{
+    background: black;
+    color: white;
+    padding: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+}
+
+#avatar-race{
+    width: 300px;
+    margin: 30px 0;
+}
+
+#create-display{
+    height: 50vh;
+    text-align: left;
+    font-size: 0px
+}
+
+#stats,
+#avatar-image{
+	/* border: 2px solid; */
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+    width: 50%;
+    font-size: initial;
+}
+
+#stats{
+	/* font-size: initial; */
+	/* width: 30%; */
+}
+
+#avatar-image{
+	text-align: center;
+	/* width: 70%; */
+}
+
+#avatar-image{
+    position: relative;
+    max-width: 100%;
+	/* border: 2px solid; */
+}
+
+#avatar-image .img-panel{
+	display: inline-block;
+	/* max-widtht: 20%; */
+	/* border: 2px solid red; */
+	/* position: relative; */
+	/* width: 50%; */
+	/* width: auto; */
+	border: 1px solid white;
+    border-radius: 5px;
+    height: 300px;
+    width: 300px;
+    border-radius: 200px; 
+    background-repeat: no-repeat !important;
+    background-size: 100% !important;
+    background-position: center center !important;
+	/* back */
+    margin: 30px;
+    box-shadow: inset 0px 0px 10px black, inset 0px 0px 30px black;
+}
+
+img{
+	/* position: relative; */
+	/* max-width: 100%; */
+	/* height: 100%; */
+	/* width: auto; */
+}
+
+#avatar-name{
+    width: 300px;
+    display: inline-block;
+    margin: 30px 0;
+}
+
+/* .section{
+    display: inline-block;
+    width: 100%;
+    max-width: 33%;
+    font-size: initial;
+    min-height: 300px;
+    padding: 10px;
+    border: 1px solid;
+    vertical-align: top;
+} */
+
+.row{
+/* 	border: 1px solid red; */
+/*     text-align: center; */
+}
+
+.stat-panel{
+/*     border: 1px solid; */
+    padding: 10px;
+}
+
+.stat{
+/*     border: 1px solid purple; */
+}
+
+.stat-name{
+/*     border: 1px solid teal; */
+/*     display: inline-block; */
+}
+
+.stat input{
+	margin: 0;
+}
+
+.stat-name span{
+	color: lightgrey;
+	float: right;
+/* 	display: inline-block; */
+/* 	margin-left: 10px; */
+}
+
+#avatar-points{
+	color: wheat;
+	font-size: 1.5rem;
+}
+#avatar-points span{
+    float: right;
+}

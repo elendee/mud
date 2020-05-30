@@ -247,23 +247,25 @@ const create_avatar = async( request ) => {
 
 	const pool = DB.getPool()
 
-	// const pre_query = await fetch_avatars( false, request.session.USER._id )
-	// if( error ) {
-	// 	log('flag', 'err: ', error )
-	// 	return {
-	// 		success: false,
-	// 		msg: 'invalid fetch avatars'
-	// 	}
-	// }
+	const sql = 'INSERT INTO avatars (user_key, `name`, race, strength, vitality, dexterity, perception, luck, intellect, speed ) VALUES (?,?,?,?,?,?,?,?,?,?)'
 
-	const sql = `INSERT INTO avatars (user_key, name) VALUES( ?, ? )`
-
-	const { error, results, fields } = await pool.queryPromise( sql, [ request.session.USER._id, request.body.name ] )
+	const { error, results, fields } = await pool.queryPromise( sql, [ 
+		request.session.USER._id, 
+		lib.validate_string( request.body.name ),
+		lib.validate_string( request.body.race ),
+		lib.validate_number( request.body.stats.strength, 0 ),
+		lib.validate_number( request.body.stats.vitality, 0 ),
+		lib.validate_number( request.body.stats.dexterity, 0 ),
+		lib.validate_number( request.body.stats.perception, 0 ),
+		lib.validate_number( request.body.stats.luck, 0 ),
+		lib.validate_number( request.body.stats.intellect, 0 ),
+		lib.validate_number( request.body.stats.speed, 0 ),
+	])
 	if( error ) {
 		log('flag', 'err: ', error )
 		return {
 			success: false,
-			msg: 'invalid fetch avatars'
+			msg: 'invalid insert avatars'
 		}
 	}
 
@@ -273,6 +275,7 @@ const create_avatar = async( request ) => {
 			success: false,
 			msg: 'error creating avatar'
 		}
+		request.session.USER.active_avatar = results.insertId
 		return {
 			success: true,
 			avatar: res.avatars[0]

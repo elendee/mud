@@ -222,20 +222,27 @@ exp.post('/login', function( request, response ){
 	})
 })
 
-exp.post('/world', function( request, response ){
+exp.use('/world', function( request, response ){
+	// if( request.session.USER && request.session.USER._id ){
+	// 	response.send( render( 'avatar', request ) )
+	// }else{
+	// 	response.send( render( 'index', request ) )
+	// }
 
 	response.send( render('world') )
-	// auth.login_user( request )
-	// .then( success => {
-	// 	if( success ){
-	// 		response.send( render( 'avatar' ) )
-	// 	}else{
-	// 		response.send( render( 'index' ) )
-	// 	}
-	// }).catch( err => {
-	// 	log('flag', 'err login: ', err )
-	// 	response.send( render('index') )
-	// })
+	
+})
+
+exp.get('/create', function(request, response ){
+	if( request.session.USER && request.session.USER._id ){
+		response.send(render('create') )
+	}else{
+		response.send( render( 'index', request ) )
+	}
+})
+
+exp.get('/map', function( request, response ){
+	response.json( MAP )
 })
 
 exp.use('/logout', function( request, response ){

@@ -13,6 +13,18 @@ document.addEventListener('DOMContentLoaded', function(){
 		console.log( res )
 		if( res.success && res.avatars ){
 			render_avatars( res.avatars )
+			const create = document.createElement('div')
+			create.classList.add('avatar-wrapper')
+			create.id = 'create-avatar'
+			const av_liner = document.createElement('div')
+			av_liner.classList.add('avatar')
+			create.appendChild( av_liner )
+			const a_create = document.createElement('a')
+			a_create.classList.add('flex-liner')
+			a_create.href = '/create'
+			a_create.innerHTML = '+'
+			av_liner.appendChild( a_create )
+			document.querySelector('#avatar-content').appendChild( create )
 		}else{
 			hal('error', res.msg )
 		}
@@ -21,23 +33,13 @@ document.addEventListener('DOMContentLoaded', function(){
 		console.log('err fetching avatars: ', err )
 	})
 
-	document.querySelector('#create form').addEventListener('submit', (e)=>{
-		e.preventDefault()
-		create_avatar({
-			name: document.querySelector('#avatar-name').value.trim()
-		})
-		.then( res => {
-			console.log( res )
-			if( res.success && res.avatar ){
-				render_avatars( [ res.avatar ] )
-			}else{
-				hal('error', res.msg )
-			}
-		})
-		.catch( err => {
-			console.log('err fetching avatars: ', err )
-		})
-	})
+	// document.querySelector('#create-open').addEventListener('click', (e)=>{
+	// 	document.getElementById('create').style.bottom = '0px'
+	// })
+	// document.querySelector('#create-close').addEventListener('click', (e)=>{
+	// 	document.getElementById('create').style.bottom = '-60%'
+	// })
+
 
 	document.getElementById('enter-world').addEventListener('click', function(e){
 		const avatar = localStorage.getItem('mud-active-avatar')
@@ -64,23 +66,7 @@ async function fetch_avatars() {
 
 
 
-async function create_avatar( data ) {
 
-	const response = await fetch('/create_avatar', {
-		method: 'post',
-		headers: {
-	    	'Content-Type': 'application/json'
-	    },
-		body: JSON.stringify({
-			name: data.name
-		})
-	})
-
-	const res = await response.json()
-
-	return res
-
-}
 
 
 
@@ -130,6 +116,8 @@ function render_avatars( avatars ){
 			document.getElementById('avatar-content').appendChild( av_wrap )
 		}
 	}
+
+
 
 
 }

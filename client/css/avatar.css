@@ -1,18 +1,8 @@
-h3{
-    margin: 0px;
-    display: inline-block;
-    position: absolute;
-    z-index: 9;
-    left: 0px;
-    top: 0px;
-    background: black;
-    padding: 0 3px;
-}
 
 #avatars{
     border: 1px solid;
     position: relative;
-    height: 50%;
+    height: 80%;
     overflow-x: auto;
     white-space: nowrap;
 }
@@ -43,8 +33,10 @@ h3{
 
 .avatar-color{
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    left: 5%;
+    height: 2%;
+    bottom: 5;
 }
 
 
@@ -55,7 +47,10 @@ h3{
     position: fixed;
     bottom: 0px;
     width: 100%;
-    height: 50%;
+    height: 80%;
+    background: black;
+    bottom: -60%;
+    transition: .5s
 }
 
 #create form{
@@ -92,3 +87,35 @@ h3{
 .avatar.selected{
     border: 1px solid white;
 }
+
+#create-avatar{
+/*     display: inline-block; */
+/*     border: 2px solid; */
+/*     height: 100%; */
+    vertical-align: top;
+}
+#create-avatar .flex-liner{
+/*     border: 2px solid green; */
+    height: 100%;
+/*     position: relative; */
+}
+#create-avatar a{
+    text-decoration: none;
+    font-size: 3rem;
+    color: tan;
+/*     height: 100%; */
+}
+/* 
+#create-open,
+#create-close{
+    margin: 0px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    font-size: 2rem;
+    cursor: pointer;
+}
+#create-open:hover,
+#create-close:hover{
+    color: white;
+} */

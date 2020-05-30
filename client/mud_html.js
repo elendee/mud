@@ -1,3 +1,5 @@
+const env = require('../server/.env.js')
+
 const header_info = `
 	<title>MUD</title>
 	<meta charset="utf-8">
@@ -13,6 +15,7 @@ const scripts = {
 	auth: `<script type='module' src='/client/js/init_auth.js'></script>`,
 	world: `<script type='module' src='/client/js/init_world.js'></script>`,
 	avatar: `<script type='module' src='/client/js/init_avatar.js'></script>`,
+	create: `<script type='module' src='/client/js/init_create.js'></script>`,
 }
 
 const styles = {
@@ -22,6 +25,7 @@ const styles = {
 	world: `<link rel='stylesheet' href='/client/css/world.css'>`,
 	popup: `<link rel='stylesheet' href='/client/css/popup.css'>`,
 	chat: `<link rel='stylesheet' href='/client/css/chat.css'>`,
+	create: `<link rel='stylesheet' href='/client/css/create.css'>`,
 	'404': `<link rel='stylesheet' href='/client/css/404.css'>`,
 }
 
@@ -207,6 +211,7 @@ const render = function( type, request, error ){
 				</head>
 				<body>
 					${ overlays.alert }
+					${ env.DEV ? '<div id="pass-through" data-email="asdf@asdf.com" data-password="asdfasdf"></div>' : '' }
 					<div id='errors'>
 						${ error || '' }
 					</div>
@@ -260,16 +265,8 @@ const render = function( type, request, error ){
 					</div>
 					<div id='content'>
 						<div id='avatars'>
-							<h3>avatars:</h3>
 							<div id='avatar-content'>
 							</div>
-						</div>
-						<div id='create'>
-							<h3>create an avatar:</h3>
-							<form action='/create_avatar' method='post'>
-								<input id='avatar-name' type='text' placeholder='avatar name' name='name'>
-								<input type='submit' value='create' class='submit button'>
-							</form>
 						</div>
 					</div>
 					<div id='enter-world' class='submit button'>
@@ -277,6 +274,44 @@ const render = function( type, request, error ){
 					</div>
 					<div id='logout' class='submit button'>
 						<a href='/logout'>Logout</a>
+					</div>
+				</body>
+			</html>`
+			break;
+
+		case 'create':
+			css_includes += styles.create
+			js_includes += scripts.create
+			return `
+			<html>
+				<head>
+					${ header_info }
+					${ css_includes }
+					${ js_includes }
+				</head>
+				<body>
+					${ overlays.alert }
+					<div id='create'>
+						<form action='/create_avatar' method='post'>
+							<select id='avatar-race'>
+								<option value='human'>human</option>
+								<option value='gnome'>gnome</option>
+								<option value='elf'>elf</option>
+								<option value='dwarf'>dwarf</option>
+							</select>
+							<div id='create-display'>
+								<div id='stats'>
+
+								</div>
+								<div id='avatar-image'>
+									<img>
+								</div>
+							</div>
+							<input id='avatar-name' type='text' placeholder='avatar name' name='name'>
+							<div class='row'>
+								<input type='submit' value='create' class='submit button'>
+							</div>
+						</form>
 					</div>
 				</body>
 			</html>`
