@@ -31,10 +31,23 @@ document.addEventListener('DOMContentLoaded', function(){
 	window.addEventListener( 'resize', RENDERER.onWindowResize, false )
 
 	ROUTER.bind()
-	.then( res => {
-		init_session( res )
-		zone_render( ZONE, res.ZONE )
+	.then( init_res => {
+		init_session( init_res )
+		zone_render( ZONE, init_res.ZONE )
 		setTimeout(function(){
+			window.SOCKET.send(JSON.stringify({
+				type: 'ping_flora'
+			}))
+		}, 500)
+		setTimeout(function(){
+			window.SOCKET.send(JSON.stringify({
+				type: 'ping_structures'
+			}))
+		}, 1500)
+		setTimeout(function(){
+			window.SOCKET.send(JSON.stringify({
+				type: 'ping_items'
+			}))
 			document.querySelectorAll('img').forEach(function(ele){
 				ele.setAttribute('draggable', false )
 			})

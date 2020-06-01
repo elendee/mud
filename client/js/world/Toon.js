@@ -24,7 +24,7 @@ import * as POPUPS from './ui/POPUPS.js'
 import * as EFFECTS from './ui/EFFECTS.js'
 
 import STATE from './STATE.js'
-import TOONS from './TOONS.js'
+// import TOONS from './TOONS.js'
 import Item from './Item.js'
 
 import TARGET from './ui/TARGET.js'
@@ -125,11 +125,13 @@ export default class Toon {
 	}
 
 
-	set_inventory( inv ){
+	set_inventory( inventory ){
+
+		// const inv = obj ? obj.inventory : {}
 
 		this.INVENTORY = this.INVENTORY || {}
 
-		const init = inv || this._INVENTORY
+		const init = inventory || this._INVENTORY
 
 		for( const mud_id of Object.keys( init ) ){
 			if( !this.INVENTORY[ mud_id ]){
@@ -144,7 +146,7 @@ export default class Toon {
 			}
 		}
 
-		if( inv ){
+		if( inventory ){
 			for( let i = 0; i < this.equipped; i++ ){
 				if( !this.INVENTORY[ this.equipped[ i ]]){
 					ACTION_BAR.render_equip( i, false )
@@ -410,8 +412,10 @@ export default class Toon {
 				TOON.needs_stream = false
 
 				DEV.render('coords', {
-					x: TOON.MODEL.position.x,
-					z: TOON.MODEL.position.z
+					packet: {
+						x: TOON.MODEL.position.x,
+						z: TOON.MODEL.position.z
+					}
 				})
 
 			}

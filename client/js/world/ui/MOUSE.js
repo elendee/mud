@@ -39,6 +39,11 @@ let clearance, toon_offset, new_height, mousehold
 const toToon = new Vector3()
 const wheel_projection = new Vector3()
 
+const wheel_property = (/Firefox/i.test(navigator.userAgent)) ? 'detail' : 'wheelDelta'
+const mousewheel_event = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"
+const wheel_test = (/Firefox/i.test(navigator.userAgent)) ? function( a, b ){ return b > a } : function( a, b ){ return a > b }
+
+
 // const head_pos = new Vector3()
 let zone
 
@@ -50,7 +55,7 @@ function init( ZONE ){
 	RENDERER.domElement.addEventListener('mouseup', click_up )
 	RENDERER.domElement.addEventListener('contextmenu', click_down )
 	RENDERER.domElement.addEventListener('mousemove', mouse_move )
-	RENDERER.domElement.addEventListener('mousewheel', wheel )
+	RENDERER.domElement.addEventListener( mousewheel_event, wheel )
 
 	mousehold = (function(){
 		if( mousehold ) return mousehold
@@ -151,11 +156,13 @@ function wheel( e ){
 
 	toToon.subVectors( GLOBAL.ORIGIN, CAMERA.offset ).normalize().multiplyScalar( 5.5 )
 
-	if( e.wheelDelta < 0 ) toToon.multiplyScalar( -1 )
+	// if( e[ wheel_property ] < 0 ) toToon.multiplyScalar( -1 )
+	if( wheel_test( 0, e[ wheel_property ] ) ) toToon.multiplyScalar( -1 )
 
 	wheel_projection.copy( CAMERA.offset ).add( toToon )
 
-	if( e.wheelDelta > 0 ){
+	// if( e[ wheel_property ] > 0 ){
+	if( wheel_test( e[ wheel_property ], 0 ) ){
 
 		let dist = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		if( dist > ( env.MIN_CAM || GLOBAL.MIN_CAM ) + 5 ){

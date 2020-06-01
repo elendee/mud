@@ -35,6 +35,8 @@ module.exports = {
 
 			const TOON = SOCKETS[ mud_id ].request.session.USER._TOON
 
+			let zone, toon
+
 			switch( packet.type ){
 
 				case 'user_ping':
@@ -49,36 +51,57 @@ module.exports = {
 					break;
 
 				case 'toon_ping':
-					let zone, toon
+					// find toon's zone:
 					for( const zone_id of Object.keys( GAME.ZONES )){
 						for( const toon_id of Object.keys( GAME.ZONES[ zone_id ]._TOONS )){
-							log('flag', 'resident toons.. ', toon_id )
 							if( toon_id === packet.mud_id ){
 								zone = GAME.ZONES[ zone_id ]
 							}
 						}
 					}
+					SOCKETS[ mud_id ].send(JSON.stringify({
+						type: 'toon_pong',
+						data: zone._TOONS[ packet.mud_id ].publish()
+					}))
+					break;
+
+				case 'ping_flora':
+					zone = loop_zones( GAME, mud_id )
 					if( zone ){
-						for( const toon_id of Object.keys( zone._TOONS ) ){
-							if( toon_id === packet.mud_id ){
-								toon = zone._TOONS[ toon_id ]
-							}
-						}
-						if( toon ){
-							SOCKETS[ mud_id ].send(JSON.stringify({
-								type: 'toon_pong',
-								toon: toon.publish()
-							}))
-						}
+						SOCKETS[ mud_id ].send(JSON.stringify({
+							type: 'pong_flora',
+							data: zone._FLORA
+						}))
 					}
-					// if( !zone ) log('flag', 'could not find zone', packet )
-					// if( !toon ) log('flag', 'could not find toon', packet )
+					break;
+
+				case 'ping_structures':
+					zone = loop_zones( GAME, mud_id )
+					if( zone ){
+						SOCKETS[ mud_id ].send(JSON.stringify({
+							type: 'pong_structures',
+							data: zone._STRUCTURES
+						}))
+					}
+					break;
+
+				case 'ping_items':
+					zone = loop_zones( GAME, mud_id )
+					if( zone ){
+						SOCKETS[ mud_id ].send(JSON.stringify({
+							type: 'pong_items',
+							data: zone.bundle_items()
+						}))
+					}
 					break;
 
 				case 'dev_ping':
 					SOCKETS[ mud_id ].send( JSON.stringify({
 						type: 'dev_pong',
-						zones: Object.keys( GAME.ZONES )
+						data: {
+							zones: Object.keys( GAME.ZONES ),
+							toons: Object.keys( GAME.get_all_toons() )
+						}
 					}))
 					break;
 
@@ -210,9 +233,19 @@ module.exports = {
 
 
 
+function loop_zones( GAME, mud_id ){
 
+	for( const zone_id of Object.keys( GAME.ZONES )){
+		for( const toon_id of Object.keys( GAME.ZONES[ zone_id ]._TOONS )){
+			if( toon_id === mud_id ){
+				return GAME.ZONES[ zone_id ]
+			}
+		}
+	}
 
+	return false
 
+}
 
 
 

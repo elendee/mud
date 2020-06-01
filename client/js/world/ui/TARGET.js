@@ -95,6 +95,8 @@ class Target {
 
 		const userData = clicked.userData
 
+		// console.log( userData )
+
 		if( userData && userData.mud_id ){
 
 			if( this.target && clicked.userData.mud_id !== this.target.mud_id )  this.clear()
@@ -112,6 +114,10 @@ class Target {
 				}else if( ZONE.NPCS[ userData.mud_id ] ){
 
 					this.target = ZONE.NPCS[ userData.mud_id ]
+
+				}else if( ZONE.TOONS[ userData.mud_id ] ){
+
+					this.target = ZONE.TOONS[ userData.mud_id ]
 
 				}
 
@@ -135,17 +141,18 @@ class Target {
 			this.status_ele.style.display = 'inline-block'
 
 			if( this.target ){
+
 				this.show_name()
 				if( this.target.type === 'item' ){
 					this.show_item( userData )
 				}else{
 					this.show_status()
 				}
+				TOON.look_at( this.target.MODEL.position )
+
+				this.render_selected()
+
 			}
-
-			this.render_selected()
-
-			TOON.look_at( this.target.MODEL.position )
 
 		}else if( userData && userData.subtype === 'foliage' ){
 
@@ -225,7 +232,7 @@ class Target {
 
 		this.item_ele.setAttribute('data-id', this.target.mud_id )
 
-		console.log( 'renderin from : ', this.target )
+		// console.log( 'renderin from : ', this.target )
 
 	}
 

@@ -26,7 +26,7 @@ import texLoader from '../../three/texLoader.js'
 
 
 const flash_init_scale = 2 // approx image native render
-const flash_step = 100
+const flash_step = 500
 const textures = {
 	flash: texLoader.load('/resource/textures/circle.png'),
 	slice: texLoader.load('/resource/textures/slice.png'),

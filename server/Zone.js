@@ -118,7 +118,7 @@ class Zone extends Persistent {
 
 			if( all_new_trees.length )  await this.save_flora( all_new_trees )
 
-			log('flag', 'just made:', all_new_trees.length )
+			log('zone', 'new trees:', all_new_trees.length )
 
 		}
 
@@ -140,7 +140,7 @@ class Zone extends Persistent {
 			for( const mud_id of Object.keys( SOCKETS ) ){
 				SOCKETS[ mud_id ].send( JSON.stringify({
 					type: 'move_pulse',
-					packet: packet
+					data: packet
 				}))
 			}
 
@@ -168,6 +168,8 @@ class Zone extends Persistent {
 			}
 
 			let entity_type = lib.type_map[ packet.target.type ]
+
+			if( !entity_type ) return false
 
 			let target = this[ entity_type ][ packet.target.mud_id ]
 
@@ -197,12 +199,7 @@ class Zone extends Persistent {
 				this.add_items( resolution.loot, target.ref.position )
 			}
 
-			for( const mud_id of Object.keys( this._TOONS )){
-				SOCKETS[ TOON.mud_id ].send(JSON.stringify({
-					type: 'combat',
-					resolution: resolution
-				}))
-			}
+			this.emit('combat_resolution', SOCKETS, [], resolution )
 
 		}else{
 
@@ -247,17 +244,20 @@ class Zone extends Persistent {
 
 			if( !zone._ITEMS[ item.mud_id ]){
 
+				log('flag', 'droppin: ', item )
+
 				zone._ITEMS[ item.mud_id ] = new ItemFactory( item )
-				zone._ITEMS[ item.mud_id ].ref.position = lib.validate_vec3( new Vector3(
+				// zone._ITEMS[ item.mud_id ].ref.position = lib.validate_vec3( new Vector3(
+				zone._ITEMS[ item.mud_id ].ref.position.set(
 					position.x + ( -1 + Math.random() * 2 ) * 10,
 					1,
 					position.z + ( -1 + Math.random() * 2 ) * 10,
-				))
+				)
 
 				zone._TIMEOUTS.items[ item.mud_id ] = setTimeout(function(){
 					if( zone && zone._ITEMS[ item.mud_id ] ){
 						delete zone._ITEMS[ item.mud_id ]
-						zone.emit( 'items', SOCKETS, false, zone.bundle_items() )
+						zone.emit( 'pong_items', SOCKETS, false, zone.bundle_items() )
 					}
 				}, 1000 * 60 * 5 )
 
@@ -267,7 +267,7 @@ class Zone extends Persistent {
 
 		// log('flag', 'items now: ', zone._ITEMS )
 
-		zone.emit( 'items', SOCKETS, false, zone.bundle_items() )
+		zone.emit( 'pong_items', SOCKETS, false, zone.bundle_items() )
 
 	}
 
@@ -293,7 +293,7 @@ class Zone extends Persistent {
 			if( !exclude.includes( mud_id ) ){
 				SOCKETS[ mud_id ].send(JSON.stringify({
 					type: type,
-					packet: packet
+					data: packet
 				}))
 			}
 		}

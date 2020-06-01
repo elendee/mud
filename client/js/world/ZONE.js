@@ -9,7 +9,7 @@ import * as LIGHT from '../three/LIGHT.js'
 
 
 import GLOBAL from '../GLOBAL.js'
-import TOONS from './TOONS.js'
+// import TOONS from './TOONS.js'
 import Toon from './Toon.js'
 import * as ANIMATE from './animate.js'
 
@@ -27,6 +27,8 @@ import CHAT from './ui/CHAT.js'
 import * as EFFECTS from './ui/EFFECTS.js'
 import TARGET from './ui/TARGET.js'
 
+import Flora from './env/Flora.js'
+import Structure from './env/Structure.js'
 
 // import DIALOGUE from './'
 
@@ -152,7 +154,7 @@ class Zone {
 
 		this.begin_intervals()
 
-		CHAT.begin_pulse()
+		CHAT.begin_pulse( this )
 
 		if( env.EXPOSE ) window.CAMERA = CAMERA
 
@@ -170,13 +172,15 @@ class Zone {
 
 	begin_intervals(){
 
+		const zone = this
+
 		this.intervals.anim_sweeper = setInterval(function(){
 
 			for( const mud_id of ANIMATE.moving_toons ){
-				if( !TOONS[ mud_id ]) ANIMATE.moving_toons.splice( ANIMATE.moving_toons.indexOf( mud_id ), 1 )
+				if( !zone.TOONS[ mud_id ]) ANIMATE.moving_toons.splice( ANIMATE.moving_toons.indexOf( mud_id ), 1 )
 			}
 			for( const mud_id of ANIMATE.rotating_toons ){
-				if( !TOONS[ mud_id ]) ANIMATE.rotating_toons.splice( ANIMATE.rotating_toons.indexOf( mud_id ), 1 )
+				if( !zone.TOONS[ mud_id ]) ANIMATE.rotating_toons.splice( ANIMATE.rotating_toons.indexOf( mud_id ), 1 )
 			}
 
 		}, 10000 )
@@ -200,13 +204,207 @@ class Zone {
 
 
 
+
+
+
+	async prototype_entities( type, group ){
+
+		// const zone = this
+
+		const model_inits = []
+		let entity, entity_address, base_class, color
+
+		switch( type ){
+
+			case 'flora':
+
+				base_class = Flora
+
+				// group = zone_data._FLORA
+
+				color = 'rgb(10, 20, 5)'
+
+				break;
+
+			case 'structures':
+
+				base_class = Structure
+
+				// group = zone_data._STRUCTURES
+
+				color = 'rgb(65, 55, 45)'
+
+				break;
+
+			default: break;
+
+		}
+
+		for( const mud_id of Object.keys( group ) ){
+
+			entity = group[ mud_id ]
+
+			if( entity.subtype ){
+
+				entity_address = entity.type + '_' + entity.subtype
+
+				if( !this.model_map[ entity_address ] ){
+
+					this.model_map[ entity_address ] = 'awaiting'
+
+					if( !this.material_map[ entity_address ] ){
+
+						// this.material_map[ entity_address ] = new ShaderMaterial({
+						// 	uniforms: SHADERS.uniforms,
+						// 	fragmentShader: SHADERS.sampleFragment(),
+						// 	vertexShader: SHADERS.baseVertexShader(),
+						// 	// clipping: true,
+						// 	// lights: true
+						// })
+						if( entity.type === 'flora' ){
+							if( entity.subtype === 'oak' ){
+								color  = 'rgb( 18, 20, 5)'
+							}else if( entity.subtype === 'pine' ){
+								color = 'rgb(10, 20, 5)'
+							}
+						}
+
+						this.material_map[ entity_address ] = new MeshLambertMaterial({
+							color: color
+						})
+
+					}
+
+					const one_time_model = new base_class( entity )
+					model_inits.push( one_time_model.proto({
+							model_map: zone.model_map,
+							address: entity_address
+						}) 
+					)
+
+				}
+
+			}
+
+		}
+
+		// const meshes = 
+		await Promise.all( model_inits )
+
+		return true
+
+	}
+
+
+
+
+	async render_flora( flora_data ){
+
+		await this.prototype_entities( 'flora', flora_data )
+
+		this.instantiate_entities( 'FLORA', flora_data, Flora )
+
+	}
+
+
+	async render_structures( structures_data ){
+
+		await this.prototype_entities( 'structures', structures_data )
+
+		this.instantiate_entities( 'STRUCTURES', structures_data, Structure )
+
+	}
+
+
+	render_items( items_data ){
+
+		for( const mud_id of Object.keys( items_data )){
+			// console.log( 'render item: ', item[ mud_id ] )
+			if( !this.ITEMS[ mud_id ]){
+				this.ITEMS[ mud_id ] = new Item( items_data[ mud_id ] )
+				this.ITEMS[ mud_id ].model()
+				SCENE.add( this.ITEMS[ mud_id ].MODEL )
+			}
+
+		}
+
+		SCENE.traverse(( obj ) => {
+			if( obj.userData && obj.userData.mud_id && obj.userData.type === 'item' ){
+				if( !items_data[ obj.userData.mud_id ] ){
+					console.log('removing _dep item')
+					SCENE.remove( obj )
+				}
+			}
+		})
+
+	}
+
+
+
+
+	async instantiate_entities( dest_group, source_group, base_class ){
+
+		// if( !this.count )  this.count = 0
+
+		for( const mud_id of Object.keys( source_group )){
+
+			// this.count++
+
+			// if( this.count >  50 ) return true
+
+			const entity = new base_class( source_group[ mud_id ])
+
+			const model_key = entity.type + '_' + entity.subtype
+
+			let proto_mesh = this.model_map[ model_key ]
+			let proto_material = this.material_map[ model_key ]
+
+			if( proto_mesh ){
+
+				entity.model({ 
+					proto_mesh: proto_mesh,
+					proto_material: proto_material
+				})
+
+			}else{
+				console.log('no mesh found for: ', model_key )
+			}
+
+			this[ dest_group ][ entity.mud_id ] = entity
+
+			if( !entity.MODEL ){
+				console.log('failed to make model: ', lib.identify( 'generic', entity ))
+				return false
+			}
+
+			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
+
+			// if( entity.type === 'structure' ){
+			// 	console.log( entity.ref.position )
+			// }
+
+			SCENE.add( entity.MODEL )
+
+		}
+
+		RENDERER.frame( SCENE )
+
+	}
+
+
+
+
+
+
 	handle_move( packet ){
+
+		const zone = this
 
 		for( const mud_id of Object.keys( packet ) ){
 
 			if( window.TOON.mud_id !== mud_id ){
 
-				if( !TOONS[ mud_id ] ){
+				if( !zone.TOONS[ mud_id ] ){
 
 					console.log('requesting: ', mud_id )
 
@@ -223,8 +421,8 @@ class Zone {
 					// if( !TOONS[ mud_id ] ) console.log('wtf: ', TOONS[ mud_id ] )
 					new_pos = packet[ mud_id ].position
 					new_quat = packet[ mud_id ].quaternion
-					old_pos = TOONS[ mud_id ].ref.position
-					old_quat = TOONS[ mud_id ].ref.quaternion
+					old_pos = this.TOONS[ mud_id ].ref.position
+					old_quat = this.TOONS[ mud_id ].ref.quaternion
 
 					if( new_pos.x !== old_pos.x || new_pos.y !== old_pos.y || new_pos.z !== old_pos.z )  needs_move = true
 					if( new_quat._x !== old_quat._x || new_quat._y !== old_quat._y || new_quat._z !== old_quat._z || new_quat._w !== old_quat._w )  needs_rotate = true
@@ -257,8 +455,8 @@ class Zone {
 					if( needs_move ) ANIMATE.receive_move()
 					if( needs_rotate ) ANIMATE.receive_rotate()
 
-					TOONS[ mud_id ].needs_move = needs_move
-					TOONS[ mud_id ].needs_rotate = Number( needs_rotate ) * 400
+					this.TOONS[ mud_id ].needs_move = needs_move
+					this.TOONS[ mud_id ].needs_rotate = Number( needs_rotate ) * 400
 
 				}
 
@@ -273,19 +471,19 @@ class Zone {
 	}
 
 
-	touch_toon( packet ){
+	touch_toon( toon_data ){
 
-		if( packet.toon ){
-			if( TOONS[ packet.toon.mud_id ] ){
+		if( toon_data ){
+			if( this.TOONS[ toon_data.mud_id ] ){
 				// update
 			}else{
-				TOONS[ packet.toon.mud_id ] = new Toon( packet.toon )
-				TOONS[ packet.toon.mud_id ].model()
-				SCENE.add( TOONS[ packet.toon.mud_id ].MODEL )
-				TOONS[ packet.toon.mud_id ].MODEL.position.set(
-					TOONS[ packet.toon.mud_id ].ref.position.x,
-					TOONS[ packet.toon.mud_id ].ref.position.y,
-					TOONS[ packet.toon.mud_id ].ref.position.z
+				this.TOONS[ toon_data.mud_id ] = new Toon( toon_data )
+				this.TOONS[ toon_data.mud_id ].model()
+				SCENE.add( this.TOONS[ toon_data.mud_id ].MODEL )
+				this.TOONS[ toon_data.mud_id ].MODEL.position.set(
+					this.TOONS[ toon_data.mud_id ].ref.position.x,
+					this.TOONS[ toon_data.mud_id ].ref.position.y,
+					this.TOONS[ toon_data.mud_id ].ref.position.z
 				)
 
 				RENDERER.frame( SCENE )
@@ -299,9 +497,9 @@ class Zone {
 
 
 
-	apply_resolution( resolution ){
+	apply_resolution( type, resolution ){
 
-		// console.log( resolution )
+		console.log( 'resolution: ', resolution )
 
 		let target, attacker
 
@@ -445,7 +643,7 @@ class Zone {
 
 		}
 
-		hal( type, msg, 2000 )
+		if( msg ) hal( type, msg, 2000 )
 
 	}
 
@@ -466,31 +664,6 @@ class Zone {
 	// }
 
 
-	render_items( packet ){
-
-		const items = packet
-
-		for( const mud_id of Object.keys( items )){
-			// console.log( 'render item: ', item[ mud_id ] )
-			if( !this.ITEMS[ mud_id ]){
-				this.ITEMS[ mud_id ] = new Item( items[ mud_id ] )
-				this.ITEMS[ mud_id ].model()
-				SCENE.add( this.ITEMS[ mud_id ].MODEL )
-			}
-
-		}
-
-		SCENE.traverse(( obj ) => {
-			if( obj.userData && obj.userData.mud_id && obj.userData.type === 'item' ){
-				if( !items[ obj.userData.mud_id ] ){
-					console.log('removing _dep item')
-					SCENE.remove( obj )
-				}
-			}
-		})
-
-	}
-
 
 
 	set_target( clicked ){
@@ -500,12 +673,12 @@ class Zone {
 	}
 
 
-	clear_acquisition( mud_id ){
+	remove_item( data ){
 
-		const mesh = SCENE.get_mud_id( mud_id )
+		const mesh = SCENE.get_mud_id( data.mud_id )
 		SCENE.remove( mesh )
 		TARGET.clear()
-		delete zone.ITEMS[ mud_id ]
+		delete zone.ITEMS[ data.mud_id ]
 		RENDERER.frame( SCENE )
 
 	}

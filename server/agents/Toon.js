@@ -379,7 +379,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		if( update_inv ){
 			SOCKETS[ this.mud_id ].send(JSON.stringify({
-				type: 'inventory',
+				type: 'set_inventory',
 				inventory: this._INVENTORY
 			}))
 		}
@@ -412,10 +412,16 @@ module.exports = class Toon extends AgentPersistent {
 		// log('flag', 'WHY\n',  this._INVENTORY )//publish_inventory() )
 		SOCKETS[ this.mud_id ].request.session.save()
 
+		log('flag', 'toon acquired ', mud_id )
+
+		// emit acquisition (for all other toons)
+		zone.emit('zone_remove_item', SOCKETS, [], { mud_id: mud_id } )
+
+		// emit acquisition (to new owner)
 		SOCKETS[ this.mud_id ].send(JSON.stringify({
-			type: 'acquire',
-			inventory: this._INVENTORY,
-			mud_id: mud_id
+			type: 'set_inventory',
+			data: this._INVENTORY,
+			// mud_id: mud_id
 		}))
 
 	}
@@ -444,7 +450,7 @@ module.exports = class Toon extends AgentPersistent {
 		log('flag', 'skipping toon drop items...')
 
 		return [ new Item({
-			type: 'melee'
+			subtype: 'melee'
 		}).publish() ]
 
 	}

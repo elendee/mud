@@ -51,9 +51,12 @@ const overlays = {
 			</div>
 			<div class='zones'>
 			</div>
+			<div class='toons'>
+			</div>
 		</div>`,
 	chat:`
 		<div id='chat'>
+			<div id='chat-toggle'>&#128101;</div>
 			<div id='chat-content'>
 			</div>
 			<input id='chat-input' type='text' placeholder="say:">

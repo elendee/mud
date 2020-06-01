@@ -8,8 +8,8 @@ import CAMERA from '../../three/CAMERA.js'
 
 import GLOBAL from '../../GLOBAL.js'
 
-import TOONS from '../TOONS.js'
-import NPCS from '../NPCS.js'
+// import TOONS from '../TOONS.js'
+// import NPCS from '../NPCS.js'
 
 import {
 	Vector3
@@ -24,17 +24,40 @@ class Chat {
 		this.ele = document.getElementById('chat')
 		this.input = document.getElementById('chat-input')
 		this.content = document.getElementById('chat-content')
+		this.toggle_ele = document.getElementById('chat-toggle')
 
 		this.chat_check = false
 		this.pulse = false
 
 		this.BUBBLES = {}
 
+		this.toggled = true
+
+	}
+
+
+	toggle(){
+		const chat = this
+		if( chat.toggled ){
+			chat.ele.style.right = '100%'
+			chat.ele.style.left = 'initial'
+			chat.toggled = false
+			chat.input.blur()
+		}else{
+			chat.ele.style.right = 'initial'
+			chat.ele.style.left = '0%'
+			chat.toggled = true
+			chat.input.focus()
+		}
 	}
 
 	init(){
 
 		const chat = this
+
+		chat.toggle_ele.addEventListener('click', function(){
+			chat.toggle()
+		})
 
 		chat.input.addEventListener('blur', function(){
 			STATE.handler = 'world'
@@ -58,7 +81,10 @@ class Chat {
 	}
 
 
-	add_chat( obj ){
+	
+
+
+	add_chat( zone, data ){
 		// type
 		// method
 		// sender_mud_id
@@ -68,21 +94,21 @@ class Chat {
 
 		const CHAT = this		
 
-		if( !obj.sender_mud_id ){
-			console.log('undefined sender_mud_id ', obj )
+		if( !data.sender_mud_id ){
+			console.log('undefined sender_mud_id ', data )
 			return false
 		}
 
-		if( !NPCS[ obj.sender_mud_id ] && !TOONS[ obj.sender_mud_id ] && window.TOON.mud_id !== obj.sender_mud_id ){
-			console.log('no toon found for chat ', obj.sender_mud_id )
+		if( !zone.NPCS[ data.sender_mud_id ] && !zone.TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
+			console.log('no toon found for chat ', data.sender_mud_id )
 			return false
 		}
 
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
-		chat.classList.add( obj.method )
-		if( obj.sender_mud_id == window.TOON.mud_id ) chat.classList.add('self')
-		chat.innerHTML = `<span class="speaker" style="color: ${ obj.color }">${ obj.speaker }: </span>${ obj.chat }`
+		chat.classList.add( data.method )
+		if( data.sender_mud_id == window.TOON.mud_id ) chat.classList.add('self')
+		chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span>${ data.chat }`
 
 		this.content.appendChild( chat )
 
@@ -94,15 +120,15 @@ class Chat {
 			chats[ 0 ].remove()
 		}
 
-		// if( !TOONS[ obj.sender_mud_id ] && window.TOON.mud_id !== obj.sender_mud_id ){
+		// if( !TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
 		// 	console.log('speaker not found for chat')
 		// 	return false
 		// }
 
-		const bubble = new Bubble( obj )
+		const bubble = new Bubble( data )
 
 		setTimeout(function(){
-			bubble.update_position()
+			bubble.update_position( zone.TOONS, zone.NPCS )
 		}, 50)
 
 		this.BUBBLES[ bubble.hash ] = bubble
@@ -140,7 +166,7 @@ class Chat {
 	}
 
 
-	begin_pulse(){
+	begin_pulse( zone ){
 
 		const CHAT = this
 
@@ -151,7 +177,7 @@ class Chat {
 				CHAT.pulse = setInterval(function(){
 
 					for( const hash of Object.keys( CHAT.BUBBLES ) ){
-						CHAT.BUBBLES[ hash ].update_position()
+						CHAT.BUBBLES[ hash ].update_position( zone.TOONS, zone.NPCS )
 					}
 
 				}, 150 )
@@ -209,15 +235,15 @@ class Bubble {
 
 	}
 
-	update_position(){
+	update_position( toons, npcs ){
 
 		let vector
 		if( this.sender_mud_id == window.TOON.mud_id ){
 			vector = new Vector3().copy( window.TOON.MODEL.position )
-		}else if( TOONS[ this.sender_mud_id ] && TOONS[ this.sender_mud_id ].MODEL ){
-			vector = new Vector3().copy( TOONS[ this.sender_mud_id ].MODEL.position )
-		}else if( NPCS[ this.sender_mud_id ] && NPCS[ this.sender_mud_id ].MODEL ){
-			vector = new Vector3().copy( NPCS[ this.sender_mud_id ].MODEL.position )
+		}else if( toons[ this.sender_mud_id ] && toons[ this.sender_mud_id ].MODEL ){
+			vector = new Vector3().copy( toons[ this.sender_mud_id ].MODEL.position )
+		}else if( npcs[ this.sender_mud_id ] && npcs[ this.sender_mud_id ].MODEL ){
+			vector = new Vector3().copy( npcs[ this.sender_mud_id ].MODEL.position )
 		}else{
 			console.log('no model found for chat ', this.sender_mud_id )
 			return false

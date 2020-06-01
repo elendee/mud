@@ -7,9 +7,6 @@ import MAP from '../MAP.js'
 import CAMERA from '../three/CAMERA.js'
 import RENDERER from '../three/RENDERER.js'
 
-import Flora from './env/Flora.js'
-import Structure from './env/Structure.js'
-
 import {
 	// Geometry,
 	// Vector3,
@@ -76,25 +73,29 @@ async function zone_render ( zone, zone_data ){
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// flora
 
-	await prototype_entities( zone, 'flora', zone_data )	
+	// moved to wss
 
-	instantiate_entities( zone, zone.FLORA, zone_data._FLORA, Flora )
+	// await prototype_entities( zone, 'flora', zone_data )	
+
+	// zone.instantiate_entities( 'FLORA', zone_data._FLORA, Flora )
 
 
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// structures
 
-	await prototype_entities( zone, 'structures', zone_data )	
+	// moved to wss
 
-	instantiate_entities( zone, zone.STRUCTURES, zone_data._STRUCTURES, Structure )
+	// await prototype_entities( zone, 'structures', zone_data )	
+
+	// zone.instantiate_entities( 'STRUCTURES', zone_data._STRUCTURES, Structure )
 
 
 
 
 	// await prototype_entities( zone, 'npc', zone_data )	
 
-	// instantiate_entities( zone.NPCS, zone_data._NPCS, Npc )
+	// zone.instantiate_entities( zone.NPCS, zone_data._NPCS, Npc )
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// npc
@@ -231,148 +232,16 @@ async function instantiate_instanced_meshes(){
 
 
 
-async function prototype_entities( zone, type, zone_data ){
-
-	// const zone = this
-
-	const model_inits = []
-	let entity, entity_address, base_class, group, color
-
-	switch( type ){
-
-		case 'flora':
-
-			base_class = Flora
-
-			group = zone_data._FLORA
-
-			color = 'rgb(10, 20, 5)'
-
-			break;
-
-		case 'structures':
-
-			base_class = Structure
-
-			group = zone_data._STRUCTURES
-
-			color = 'rgb(65, 55, 45)'
-
-			break;
-
-		default: break;
-
-	}
-
-	for( const mud_id of Object.keys( group ) ){
-
-		entity = group[ mud_id ]
-
-		if( entity.subtype ){
-
-			entity_address = entity.type + '_' + entity.subtype
-
-			if( !zone.model_map[ entity_address ] ){
-
-				zone.model_map[ entity_address ] = 'awaiting'
-
-				if( !zone.material_map[ entity_address ] ){
-
-					// zone.material_map[ entity_address ] = new ShaderMaterial({
-					// 	uniforms: SHADERS.uniforms,
-					// 	fragmentShader: SHADERS.sampleFragment(),
-					// 	vertexShader: SHADERS.baseVertexShader(),
-					// 	// clipping: true,
-					// 	// lights: true
-					// })
-					if( entity.type === 'flora' ){
-						if( entity.subtype === 'oak' ){
-							color  = 'rgb( 18, 20, 5)'
-						}else if( entity.subtype === 'pine' ){
-							color = 'rgb(10, 20, 5)'
-						}
-					}
-
-					zone.material_map[ entity_address ] = new MeshLambertMaterial({
-						color: color
-					})
-
-				}
-
-				const one_time_model = new base_class( entity )
-				model_inits.push( one_time_model.proto({
-						model_map: zone.model_map,
-						address: entity_address
-						// prototype_mesh: zone.model_map[ entity_address ]
-					}) 
-				)
-
-			}
-
-		}
-
-	}
-
-	// const meshes = 
-	await Promise.all( model_inits )
-
-	return true
-
-}
 
 
 
 
-async function instantiate_entities( zone, dest_group, source_group, base_class ){
 
-	// if( !this.count )  this.count = 0
 
-	for( const mud_id of Object.keys( source_group )){
-
-		// this.count++
-
-		// if( this.count >  50 ) return true
-
-		const entity = new base_class( source_group[ mud_id ])
-
-		const model_key = entity.type + '_' + entity.subtype
-
-		let proto_mesh = zone.model_map[ model_key ]
-		let proto_material = zone.material_map[ model_key ]
-
-		if( proto_mesh ){
-
-			entity.model({ 
-				proto_mesh: proto_mesh,
-				proto_material: proto_material
-			})
-
-		}else{
-			console.log('no mesh found for: ', model_key )
-		}
-
-		dest_group[ entity.mud_id ] = entity
-
-		if( !entity.MODEL ){
-			console.log('failed to make model: ', lib.identify( 'generic', entity ))
-			return false
-		}
-
-		entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
-
-		if( entity.type === 'structure' ){
-			console.log( entity.ref.position )
-		}
-
-		SCENE.add( entity.MODEL )
-
-	}
-
-}
 
 
 
 export{
-	zone_render	
+	zone_render
 }  
 

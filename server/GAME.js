@@ -193,7 +193,7 @@ class Game {
 				type: 'session_init',
 				USER: user,
 				TOON: TOON.publish('_INVENTORY', '_stats' ),
-				ZONE: zone.publish( '_FLORA', '_STRUCTURES', '_ITEMS' ),
+				ZONE: zone.publish(  ), // '_FLORA', '_STRUCTURES'
 				map: MAP,
 			}) )
 
@@ -221,6 +221,12 @@ class Game {
 		let sql, values, zone
 
 		if( lookup_type === 'id' ){
+
+			for( const mud_id of Object.keys( this.ZONES )){
+				if( this.ZONES[ mud_id ]._id === id ){
+					return this.ZONES[ mud_id ]
+				}
+			}
 
 			sql = 'SELECT * FROM `zones` WHERE id=? LIMIT 1'
 
@@ -270,7 +276,7 @@ class Game {
 
 		}
 
-		log('flag', 'returned: ', zone._id )
+		log('zone', 'touched zone: ', zone._id )
 
 		this.ZONES[ zone.mud_id ] = zone
 
@@ -313,6 +319,22 @@ class Game {
 
 
 
+	get_all_toons(){
+
+		const toons = {}
+
+		for( const mud_id of Object.keys( this.ZONES )){
+			for( const toon_id of Object.keys( this.ZONES[ mud_id ]._TOONS )){
+				toons[ toon_id ] = this.ZONES[ mud_id ]._TOONS[ toon_id ]
+			}
+		}
+
+		return toons
+
+	}
+
+
+
 
 	handle_chat( packet, mud_id ){
 
@@ -331,11 +353,13 @@ class Game {
 		for( const socket_mud_id of Object.keys( SOCKETS )){
 			let chat_pack = {
 				type: 'chat',
-				method: packet.method,
-				sender_mud_id: mud_id,
-				speaker: SOCKETS[ mud_id ].request.session.USER._TOON.name,
-				chat: lib.sanitize_chat( packet.chat ),
-				color: SOCKETS[ mud_id ].request.session.USER._TOON.color
+				data: {
+					method: packet.method,
+					sender_mud_id: mud_id,
+					speaker: SOCKETS[ mud_id ].request.session.USER._TOON.name,
+					chat: lib.sanitize_chat( packet.chat ),
+					color: SOCKETS[ mud_id ].request.session.USER._TOON.color
+				}
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))

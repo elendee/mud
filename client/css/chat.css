@@ -1,21 +1,38 @@
 #chat{
 	position: fixed;
 	z-index: 99;
-	width: 48%;
+	width: 40%;
 	height: 160px;
-	left: 2%;
+	left: 0%;
 	bottom: 70px;
 	pointer-events: none;
+	transition: .3s;
 /* 	border: 2px solid red; */
 }
 
 #chat-content{
 	height: 140px;
 	padding: 5px;
-	background: rgba(100, 0, 00, .5);
+	background: rgba(00, 0, 00, .5);
 	overflow-y: auto;
 	padding-bottom: 15px;
+/* 	border: 1px solid wheat; */
+/* 	box-shadow: inset 0px 0px 15px black; */
+/* 	border-radius: 0px 15px 0 0; */
 /* 	pointer-events: none; */
+}
+
+#chat-toggle{
+	background: rgba(0,0,0,.5);
+	display: inline-block;
+	padding: 5px 8px;
+	cursor: pointer;
+	pointer-events:  initial;
+	position: absolute;
+	top: 20px;
+	left: 100%;
+	user-select: none;
+	color: white;
 }
 
 #chat-content .speaker{
@@ -34,11 +51,12 @@
 
 #chat-input{
 	width: 100%;
-	background: rgb(80, 0, 40);
+	background: rgb(0, 0, 0);
 	border: 0px;
+	border-radius: 0px 0px 5px 0;
 	border-bottom: 1px solid grey;
 	line-height: 18px;
-	border: 2px solid rgb(80, 0, 40);
+	border: 2px solid rgb(0, 0, 0);
 	color: white;
 	padding: 0 5px;
 	pointer-events: initial;

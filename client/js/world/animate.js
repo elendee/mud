@@ -11,8 +11,10 @@ import CAMERA from '../three/CAMERA.js'
 //import SKYBOX from '../three/SKYBOX.js'
 // import GROUND from '../three/GROUND.js'
 // import PILLARS from './PILLARS.js'
-import TOONS from './TOONS.js'
+// import TOONS from './TOONS.js'
 import * as LIGHT from '../three/LIGHT.js'
+
+import ZONE from './ZONE.js'
 // import CONTROLS from './three/CONTROLS.js'
 import STATE from './STATE.js'
 import MAP from '../MAP.js'
@@ -277,22 +279,22 @@ function animate( start ){
 		window.TOON.MODEL.rotation.y -= MAP.ROTATE_RATE
 	}
 
-	for( const mud_id of Object.keys( TOONS )){ // should not include player
-		if( TOONS[ mud_id ].needs_move ){
-			TOONS[ mud_id ].MODEL.position.lerp( TOONS[ mud_id ].ref.position, .02 )
-			if( TOONS[ mud_id ].MODEL.position.distanceTo( TOONS[ mud_id ].ref.position ) < .05 ){
-				TOONS[ mud_id ].needs_move = false
+	for( const mud_id of Object.keys( ZONE.TOONS )){ // should not include player
+		if( ZONE.TOONS[ mud_id ].needs_move ){
+			ZONE.TOONS[ mud_id ].MODEL.position.lerp( ZONE.TOONS[ mud_id ].ref.position, .02 )
+			if( ZONE.TOONS[ mud_id ].MODEL.position.distanceTo( ZONE.TOONS[ mud_id ].ref.position ) < .05 ){
+				ZONE.TOONS[ mud_id ].needs_move = false
 				moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
 				// delete moving_toons[ mud_id ]
 				// console.log('lerp arrived')
 			}
 		}
-		if( TOONS[ mud_id ].needs_rotate > 0 ){
-			TOONS[ mud_id ].MODEL.quaternion.slerp( TOONS[ mud_id ].ref.quaternion, .01 )
-			TOONS[ mud_id ].needs_rotate--
-			if( TOONS[ mud_id ].needs_rotate === 0 ){
+		if( ZONE.TOONS[ mud_id ].needs_rotate > 0 ){
+			ZONE.TOONS[ mud_id ].MODEL.quaternion.slerp( ZONE.TOONS[ mud_id ].ref.quaternion, .01 )
+			ZONE.TOONS[ mud_id ].needs_rotate--
+			if( ZONE.TOONS[ mud_id ].needs_rotate === 0 ){
 				// console.log( 'slerp arrived')
-				// TOONS[ mud_id ].
+				// ZONE.TOONS[ mud_id ].
 				rotating_toons.splice( rotating_toons.indexOf( mud_id ), 1 )
 			}
 		}

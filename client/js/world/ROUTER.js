@@ -29,10 +29,10 @@ const bind = function(){
 
 		SOCKET.onmessage = function( msg ){
 
-			let obj = false
+			let packet = false
 
 			try{
-				obj = JSON.parse( msg.data )	
+				packet = JSON.parse( msg.data )	
 			}catch(e){
 				SOCKET.bad_messages++
 				if( SOCKET.bad_messages > 100 ) {
@@ -45,50 +45,69 @@ const bind = function(){
 
 
 
-			// console.log('packet rcvd: ', obj )
+			// console.log('packet rcvd: ', packet )
 
-			switch( obj.type ){
+			switch( packet.type ){
 
 				case 'session_init':
-					console.log('got init: ', obj )
-					for( const key of Object.keys( obj.map )){
-						MAP[ key ] = obj.map[ key ]
+					console.log('got init: ', packet )
+					for( const key of Object.keys( packet.map )){
+						MAP[ key ] = packet.map[ key ]
 					}
 					window.MAP = MAP
-					resolve( obj )
+					resolve( packet )
 					break;
 
 				case 'move_pulse':
-					ZONE.handle_move( obj.packet )
+					ZONE.handle_move( packet.data )
 					break;
 
 				// case 'census':
-				// 	ZONE.census( obj.crowd )
+				// 	ZONE.census( packet.crowd )
 				// 	break;
 
-				case 'profile_pong':
-					ZONE.touch_patron( obj.patron )
-					break;
+				// case 'profile_pong':
+				// 	ZONE.touch_patron( packet.patron )
+				// 	break;
 
 				// case 'floorplan_pong':
-				// 	ZONE.layout( obj.floorplan )
+				// 	ZONE.layout( packet.floorplan )
 				// 	break;
 
+				case 'pong_flora':
+					ZONE.render_flora( packet.data ).catch( err => {
+						console.log('err render flora: ', err )
+					})
+					break;
+
+				case 'pong_structures':
+					ZONE.render_structures( packet.data ).catch( err => {
+						console.log('err render structures: ', err )
+					})
+					break;
+
+				case 'pong_items':
+					ZONE.render_items( packet.data )
+					// .catch( err => {
+					// 	console.log('err render items: ', err )
+					// })
+					break;
+
 				case 'toon_pong':
-					ZONE.touch_toon( obj )
+					ZONE.touch_toon( packet.data )
 					break;
 
 				case 'dev_pong':
-					DEV.render('pong', obj )
+					DEV.render('pong', packet.data )
 					break;
 
 				// case 'forest_pong':
-				// 	ZONE.walk_forest( obj.forest )
+				// 	ZONE.walk_forest( packet.forest )
 				// 	break;
 
 				// case 'pillars':
-				// 	if( obj.pillars ){
-				// 		ZONE.install( obj.pillars, false )
+				// 	if( packet.pillars ){
+				// 		ZONE.install( packet.pillars, false )
 				// 	}else{
 				// 		setTimeout(function(){
 				// 			SOCKET.send( JSON.stringify({ 
@@ -99,16 +118,16 @@ const bind = function(){
 				// 	break;
 
 				case 'chat':
-					CHAT.add_chat( obj )
+					CHAT.add_chat( ZONE, packet.data )
 					break;
 
 				case 'login':
 					// console.error('finish switching logout to http .... ')
-					// if( obj.success ) {
-						// if( obj.patron.mud_id === window.TOON.mud_id ){
+					// if( packet.success ) {
+						// if( packet.patron.mud_id === window.TOON.mud_id ){
 						// 	hal('success', 'welcome back!', 3000)
 						// }
-						ZONE.touch_patron( obj.patron )
+						ZONE.touch_patron( packet.patron )
 					// }
 					break;
 
@@ -122,88 +141,53 @@ const bind = function(){
 
 				case 'register':
 					// console.error('finish switching register to http .... ')
-					// if( obj.success ) {
-					if( obj.patron.mud_id === window.TOON.mud_id ){
+					// if( packet.success ) {
+					if( packet.patron.mud_id === window.TOON.mud_id ){
 						hal('success', 'artist created', 4000)
 					}
-					ZONE.touch_patron( obj.patron )
+					ZONE.touch_patron( packet.patron )
 					// }
 					break;
 
 				case 'profile':
 					// console.error('finish switching update to http .... ')
-					// if( obj.msg == 'success' ){
-					ZONE.update_toon( obj )
+					// if( packet.msg == 'success' ){
+					ZONE.update_toon( packet )
 					// }else{
-					// 	console.log('error changing profile: ', obj )
+					// 	console.log('error changing profile: ', packet )
 					// }
 					break;
 
 				case 'new_img':
-					ZONE.new_img( obj )
+					ZONE.new_img( packet )
 					break;
 
 				case 'equip':
-					window.TOON.refresh_equipped( obj.equipment )
+					window.TOON.refresh_equipped( packet.equipment )
 					break;
 
-				case 'inventory':
-					window.TOON.set_inventory( obj.inventory )
+				case 'set_inventory':
+					window.TOON.set_inventory( packet.data )
 					break;
 
-				case 'combat':
-					ZONE.apply_resolution( obj.resolution )
+				case 'combat_resolution':
+					ZONE.apply_resolution( packet.type, packet.data )
 					break;
 
-				// case 'decomposers':
-				// 	ZONE.render_decomposers( obj.packet )
-				// 	break;
-
-				case 'items':
-					ZONE.render_items( obj.packet )
+				case 'zone_remove_item':
+					ZONE.remove_item( packet.data )
+					// ZONE.clear_acquisition( packet.mud_id )
 					break;
 
-				case 'acquire':
-					window.TOON.set_inventory( obj.inventory )
-					ZONE.clear_acquisition( obj.mud_id )
-					break;
 
-				// case 'bot_begin_path':
-				// 	ZONE.handle_bot( obj )
-				// 	break;
 
-				// case 'bot_walk':
-				// 	ZONE.handle_bot( obj )
-				// 	break;
-
-				// case 'bot_pulse':
-				// 	console.log('bot pulse should be deprecated...')
-				// 	ZONE.handle_bot( obj )
-				// 	break;
-
-				// case 'bot_thought':
-				// 	ZONE.handle_bot( obj )
-				// 	break;
-
-				// case 'zoom':
-				// 	window.TOON.zoom()
-				// 	break;
-
-				// case 'pulse_pillar_key':
-				// 	ZONE.check_pillar_keys( obj.keys )
-				// 	break;
-
-				// case 'pillar_ping_single':
-				// 	console.log('single...')
-				// 	// ZONE.install( obj.pillar, true )
-				// 	break;
 
 				case 'error':
-					hal('error', obj.msg, obj.time, obj.redirect )
+					hal('error', packet.msg, packet.time, packet.redirect )
 					break;
 
 				case 'hal':
-					hal( obj.hal_type, obj.msg, obj.time || 10000 )
+					hal( packet.hal_type, packet.msg, packet.time || 10000 )
 					break;
 
 				default: break;
