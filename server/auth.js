@@ -332,7 +332,7 @@ const reset = ( request ) => {
 		log('mail', 'skipping email resets')
 		resolve({
 			success: false,
-			msg: 'email resets ALMOST active, sorry.  Email multyplecks@zoho.com until then.'
+			msg: 'email resets coming very soon, sorry!  Email multyplecks@zoho.com until then.'
 		})
 
 		// transporter.sendMail( mailOptions, function( error, info ){
