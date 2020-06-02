@@ -335,7 +335,10 @@ const reset = ( request ) => {
 				reject('sendmail error')
 			} else {
 				log('mail', 'Email sent: ' + info.response)
-				resolve('sendmail success')
+				resolve({
+					success: true,
+					msg: 'sendmail success'
+				})
 			}
 		})
 
