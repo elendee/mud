@@ -28,6 +28,7 @@
     "memorystore": "^1.6.2",
     "mkdirp": "^1.0.4",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.4.8",
     "password-validator": "^5.0.3",
     "three": "^0.115.0",
     "uuid": "^7.0.3",

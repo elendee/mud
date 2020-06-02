@@ -53,6 +53,8 @@ const STORE = new MemoryStore({
 
 const render = require('./client/mud_html.js')
 
+const mail = require('./server/mail.js')
+
 // CACHED SESSIONS
 const lru_session = session({
 	cookie: { maxAge: 1000 * 60 * 60 * 24 * 2 },
@@ -476,6 +478,8 @@ DB.initPool(( err, pool ) => {
 						socket.send(JSON.stringify({ type: 'error', msg: 'failed to initialize user'}))
 						log('flag', 'err init user:', err )
 					})
+
+					// mail
 			
 				})
 				.catch( err => {
