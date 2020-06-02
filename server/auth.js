@@ -19,7 +19,7 @@ const User = require('./User.js')
 
 const Toon = require('./agents/Toon.js')
 
-const transporter = require('./mail.js')
+const { transporter } = require('./mail.js')
 
 log('call', 'auth.js')
 

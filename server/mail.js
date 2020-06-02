@@ -17,21 +17,25 @@ const transporter = nodemailer.createTransport({
 	}
 });
 
-const mailOptions = {
-	from: 'info@oko.nyc',
-	to: 'kerryoco@gmail.com',
-	subject: 'A sample email from multymud',
-	text: 'That was easy!'
-};
+// const mailOptions = {
+// 	from: 'info@oko.nyc',
+// 	to: 'kerryoco@gmail.com',
+// 	subject: 'A sample email from multymud',
+// 	text: 'That was easy!'
+// };
 
-if( env.MAIL_PW ){
-	transporter.sendMail(mailOptions, function(error, info){
-		if (error) {
-			log('flag', 'mail error: ', error);
-		} else {
-			log('mail', 'Email sent: ' + info.response);
-		}
-	})
-}else{
-	log('mail', 'skipping mail send: ', mailOptions.to )
+// if( env.MAIL_PW ){
+// 	transporter.sendMail(mailOptions, function(error, info){
+// 		if (error) {
+// 			log('flag', 'mail error: ', error);
+// 		} else {
+// 			log('mail', 'Email sent: ' + info.response);
+// 		}
+// 	})
+// }else{
+// 	log('mail', 'skipping mail send: ', mailOptions.to )
+// }
+
+module.exports = {
+	transporter
 }
