@@ -46,6 +46,7 @@ form input::placeholder{
     border: 1px solid;
     display: inline-block;
     text-align: center;
+/*     opacity: .2; */
 }
 
 #play-contain form{
@@ -123,5 +124,15 @@ form input::placeholder{
 /*     color: white; */
     font-size: initial;
     text-align: center;
+}
 
+#mud-flats{
+    position: fixed;
+    bottom: 0%;
+    right: 0%;
+    z-index: 0;
+/*     border: 2px solid red; */
+    width: 100vw;
+    height: 100%;
+    pointer-events: none;
 }

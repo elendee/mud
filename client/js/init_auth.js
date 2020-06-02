@@ -1,5 +1,6 @@
 import hal from './hal.js'
 import env from './env.js'
+import auth_canvas from './auth_canvas.js'
 
 document.addEventListener('DOMContentLoaded', function(){
 
