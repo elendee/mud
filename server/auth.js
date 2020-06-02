@@ -19,7 +19,7 @@ const User = require('./User.js')
 
 const Toon = require('./agents/Toon.js')
 
-const mail = require('./mail.js')
+const transporter = require('./mail.js')
 
 log('call', 'auth.js')
 
@@ -329,7 +329,7 @@ const reset = ( request ) => {
 			text: 'click <a href="https://mud.oko.nyc/reset">https://mud.oko.nyc/reset</a> to reset password'
 		};
 
-		mail.sendMail( mailOptions, function( error, info ){
+		transporter.sendMail( mailOptions, function( error, info ){
 			if (error) {
 				log('flag', 'mail error: ', error)
 				reject('sendmail error')
