@@ -329,7 +329,7 @@ const reset = ( request ) => {
 			text: 'click <a href="https://mud.oko.nyc/reset">https://mud.oko.nyc/reset</a> to reset password'
 		};
 
-		transporter.sendMail( mailOptions, function( error, info ){
+		mail.sendMail( mailOptions, function( error, info ){
 			if (error) {
 				log('flag', 'mail error: ', error)
 				reject('sendmail error')
