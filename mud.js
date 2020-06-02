@@ -53,7 +53,7 @@ const STORE = new MemoryStore({
 
 const render = require('./client/mud_html.js')
 
-const mail = require('./server/mail.js')
+// const mail = require('./server/mail.js')
 
 // CACHED SESSIONS
 const lru_session = session({
@@ -273,6 +273,21 @@ exp.post('/update', function( request, response ){
 		response.json({
 			success: false,
 			msg: 'error updating'
+		})
+	})
+})
+
+
+exp.post('/reset', function( request, response ){
+	auth.reset( request )
+	.then( res => {
+		// includes success false's :
+		response.json( res )
+	}).catch( err => {
+		log('flag', 'err reset pw: ', err )
+		response.json({
+			success: false,
+			msg: 'reset password error'
 		})
 	})
 })

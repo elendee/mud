@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 // const Avatar = require('../models/Avatar.js');
 
 const log = require('./log.js')
+const env = require('./.env.js')
 const lib = require('./lib.js')
 
 // const axp = require('./pure.js');
@@ -17,6 +18,8 @@ const SALT_ROUNDS = 10
 const User = require('./User.js')
 
 const Toon = require('./agents/Toon.js')
+
+const mail = require('./mail.js')
 
 log('call', 'auth.js')
 
@@ -297,6 +300,50 @@ const create_avatar = async( request ) => {
 }
 
 
+
+const reset = ( request ) => {
+
+	return new Promise(function(resolve, reject){
+
+		if( !lib.is_valid_email( request.body.email ) ){
+			resolve({
+				success: false,
+				msg: 'invalid email'
+			})
+			return false
+		}
+
+		if( !env.MAIL_PW ){
+			log('mail', 'skipping email: ', request.body.email )
+			resolve({
+				success: false,
+				msg: 'skipping resets'
+			})
+			return false
+		}
+
+		const mailOptions = {
+			from: 'info@oko.nyc',
+			to: request.body.email,
+			subject: 'mud password reset',
+			text: 'click <a href="https://mud.oko.nyc/reset">https://mud.oko.nyc/reset</a> to reset password'
+		};
+
+		transporter.sendMail( mailOptions, function( error, info ){
+			if (error) {
+				log('flag', 'mail error: ', error)
+				reject('sendmail error')
+			} else {
+				log('mail', 'Email sent: ' + info.response)
+				resolve('sendmail success')
+			}
+		})
+
+	})
+
+}
+
+
 	// const update = 'INSERT INTO `' + doc._table + '` (' + field_string + ') VALUES (' + value_string + ') ON DUPLICATE KEY UPDATE ' + full_string
 
 	// log('query', 'attempting UPDATE: ', update )
@@ -332,7 +379,8 @@ module.exports = {
 	login_user,
 	logout_user,
 	fetch_avatars,
-	create_avatar
+	create_avatar,
+	reset
 }
 
 

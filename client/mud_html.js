@@ -225,7 +225,14 @@ const render = function( type, request, error ){
 								<input id='login-email' type='email' name='email' placeholder='email'>
 								<input id='login-password' type='password' name='password' placeholder='password'>
 								<input type='submit' class='submit button'>
+								<br>
+								<br>
+								<div id='forgot-password'>forgot password</div>
 							</form>
+							<div id='forgot-form'>
+								<input type='email'>
+								<div id='forgot-submit' class='submit button'>send reset</div>
+							</div>
 							<form id='register-form' method='post' class='auth-form' action='/register'>
 								Register
 								<input id='regsiter-email' type='email' name='email' placeholder='email'>
