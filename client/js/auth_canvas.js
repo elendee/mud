@@ -54,9 +54,9 @@ RENDERER.onWindowResize = function(){
 
 	if( window.innerWidth < 1000 ){
 		CAMERA.position.z = 15
-		CAMERA.position.y = -1.5
+		CAMERA.position.y = -1.9
 	}else{
-		CAMERA.position.set( 0,-.7, 10 )
+		CAMERA.position.set( 0,-.9, 10 )
 	}
 
 	// RENDERER.setSize( 
@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', function(){
 		CAMERA.lookAt( sword1.position )
 		if( window.innerWidth < 1000 ){
 			CAMERA.position.z = 15
-			CAMERA.position.y = -1.5
+			CAMERA.position.y = -1.9
 		}else{
-			CAMERA.position.set( 0,-.7, 10 )
+			CAMERA.position.set( 0,-.9, 10 )
 		}
 		
 		LIGHT.directional.target = sword1
