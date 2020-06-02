@@ -20,14 +20,16 @@ class AgentPersistent extends Persistent {
 
 		this.name = init.name || 'Toon_' + lib.random_hex(4)
 
+		log('flag', 'toon has strings ya: ', init._stats )
+
 		this._stats = init._stats || {}
-		this._stats.strength = lib.validate_number( this._stats.strength, 5 )
-		this._stats.vitality = lib.validate_number( this._stats.vitality, 5 )
-		this._stats.dexterity = lib.validate_number( this._stats.strength, 5 )
-		this._stats.charisma = lib.validate_number( this._stats.charisma, 5 )
-		this._stats.perception = lib.validate_number( this._stats.perception, 5 )
-		this._stats.luck = lib.validate_number( this._stats.luck, 5 )
-		this._stats.intellect = lib.validate_number( this._stats.intellect, 5 )
+		this._stats.strength = lib.validate_number( this._stats.strength, init.strength, 5 )
+		this._stats.vitality = lib.validate_number( this._stats.vitality, init.vitality, 5 )
+		this._stats.dexterity = lib.validate_number( this._stats.strength, init.strength, 5 )
+		this._stats.perception = lib.validate_number( this._stats.perception, init.perception, 5 )
+		this._stats.luck = lib.validate_number( this._stats.luck, init.luck, 5 )
+		this._stats.intellect = lib.validate_number( this._stats.intellect, init.intellect, 5 )
+		this._stats.speed = lib.validate_number( this._stats.speed, init.speed, 5 )
 
 		this.health = init.health || {}
 		this.health.capacity = lib.validate_number( this.health.capacity, init.health_cap, this.calculate_health() )

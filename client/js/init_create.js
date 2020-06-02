@@ -2,10 +2,15 @@
 
 import * as lib from './lib.js'
 import hal from './hal.js'
+import env from './env.js'
 
 let MAP
 
 const panels = {}
+
+let SINGLE_STAT_CAP = 15
+let TOTAL_STAT_CAP = 50
+if( env.LOCAL ) SINGLE_STAT_CAP = 50
 
 document.addEventListener('DOMContentLoaded', function(){
 
@@ -46,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function(){
 			.then( res => {
 				console.log( res )
 				if( res.success && res.avatar ){
-					console.log('success')
-					location.href = '/world'
+					console.log('success', res )
+					// location.href = '/world'
 					// render_avatars( [ res.avatar ] )
 				}else{
 					hal('error', res.msg )
@@ -94,15 +99,15 @@ async function build_selections(){
 			const input = document.createElement('input')
 			input.setAttribute('data-stat', stat )
 			input.type = 'range'
-			input.max = race[ stat ]
+			input.max = env.LOCAL ? TOTAL_STAT_CAP : race[ stat ]
 			input.min = 0
 			input.value = 0
 
-			input.style.width =  Math.floor( input.max / 15 * 100 ) + '%'
+			input.style.width =  Math.floor( input.max / SINGLE_STAT_CAP * 100 ) + '%'
 
 			input.addEventListener('change', function(){
 				const points = get_points( stat_panel )
-				display.innerHTML = 'total:' + '<span>' + points + '/' + ' 50</span>'
+				display.innerHTML = 'total:' + '<span>' + points + '/' + TOTAL_STAT_CAP + '</span>'
 				name.innerHTML = stat + ': <span>' + this.value + ' / ' + this.max + '</span>'
 			})
 
@@ -152,15 +157,15 @@ function get_points( panel ){
 
 function validate_avatar(){
 	const stats = document.getElementById('stats')
-	if( get_points( stats ) === 50 ) return true
-	if( get_points( stats ) < 50 ){
+	if( get_points( stats ) === TOTAL_STAT_CAP ) return true
+	if( get_points( stats ) < TOTAL_STAT_CAP ){
 		if( confirm('You have points to spare, are you sure?') ){
 			return true
 		}else{
 			return 'Spend away.'
 		}
 	}
-	if( get_points( stats ) > 50 ) return 'YOU SHALL NOT PASS!!!  Decrease your points.'
+	if( get_points( stats ) > TOTAL_STAT_CAP ) return 'YOU SHALL NOT PASS!!!  Decrease your points.'
 }
 
 

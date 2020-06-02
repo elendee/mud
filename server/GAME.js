@@ -99,17 +99,19 @@ class Game {
 
 			}else{
 
-				if( USER._TOON && USER._TOON._id === USER.active_avatar ){ // still have session
+				if( USER._TOON && USER._TOON._id === USER.active_avatar ){ // still have session avatar
 
-					USER._TOON = new Toon( USER._TOON )
+					log('toon', 'returning existing avatar: ', USER._TOON._id )
 
-				}else{ // no session
+					USER._TOON = TOON = new Toon( USER._TOON )
 
-					log('flag', 'OH NOES, need to pass http session to socket again here ... (after create)' )
+				}else{ // no session avatar
 
 					const toon = await this.get_toon( socket.request.session.USER.active_avatar )
 
 					if( toon ){
+
+						log('toon', 'looked up avatar: ', toon )
 
 						USER._TOON = TOON = new Toon( toon )
 					
@@ -308,11 +310,14 @@ class Game {
 
 		// })
 
-		const { error, results, fields } = await pool.query( toon_sql )
+		const { error, results, fields } = await pool.queryPromise( toon_sql )
 		if( error ){
 			log('flag', 'err get_toon: ', error )
 		}
-
+		if( !results ){
+			log('flag', 'no avatar found for: ', _id )
+			// return false
+		}
 		return results[0]
 
 	}

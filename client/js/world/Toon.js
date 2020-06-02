@@ -1,7 +1,7 @@
 
 import * as lib from '../lib.js'
 import env from '../env.js'
-
+import MAP from '../MAP.js'
 
 import { 
 	Vector3,
@@ -108,6 +108,8 @@ export default class Toon {
 		}
 
 		this.direction = 'north'
+
+		this._stats.speed += MAP.SPEED_FLOOR
 
 		// this.speed = init.speed || env.SPEED
 

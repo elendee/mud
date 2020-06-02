@@ -253,13 +253,13 @@ const create_avatar = async( request ) => {
 		request.session.USER._id, 
 		lib.validate_string( request.body.name ),
 		lib.validate_string( request.body.race ),
-		lib.validate_number( request.body.stats.strength, 0 ),
-		lib.validate_number( request.body.stats.vitality, 0 ),
-		lib.validate_number( request.body.stats.dexterity, 0 ),
-		lib.validate_number( request.body.stats.perception, 0 ),
-		lib.validate_number( request.body.stats.luck, 0 ),
-		lib.validate_number( request.body.stats.intellect, 0 ),
-		lib.validate_number( request.body.stats.speed, 0 ),
+		lib.validate_number( Number( request.body.stats.strength ), 0 ),
+		lib.validate_number( Number( request.body.stats.vitality ), 0 ),
+		lib.validate_number( Number( request.body.stats.dexterity ), 0 ),
+		lib.validate_number( Number( request.body.stats.perception ), 0 ),
+		lib.validate_number( Number( request.body.stats.luck ), 0 ),
+		lib.validate_number( Number( request.body.stats.intellect ), 0 ),
+		lib.validate_number( Number( request.body.stats.speed ), 0 ),
 	])
 	if( error ) {
 		log('flag', 'err: ', error )
@@ -276,10 +276,17 @@ const create_avatar = async( request ) => {
 			msg: 'error creating avatar'
 		}
 		request.session.USER.active_avatar = results.insertId
+		const sess_save = await new Promise((resolve, reject)=>{
+			request.session.save(function(err){
+				if( err ) reject( err )
+				resolve('oko')
+			})
+		})
 		return {
 			success: true,
 			avatar: res.avatars[0]
 		}
+
 	}
 
 	return { 
