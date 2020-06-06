@@ -180,7 +180,7 @@ function validate_quat( ...inputs ){
 
 function load( type, filepath ){
 
-	console.log('model load: ', type, filepath )
+	console.log('load: ', type, filepath )
 
 	return new Promise((resolve, reject)=>{
 
@@ -188,6 +188,19 @@ function load( type, filepath ){
 
 			case 'buffer_geometry':
 				BuffGeoLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found', filepath )
+				})
+
+				break;
+
+			case 'glb':
+				GLTF.load( filepath, 
 				( obj ) => {
 					resolve( obj )
 				}, (xhr) => {

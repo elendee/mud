@@ -43,46 +43,74 @@ export default class Entity {
 	}
 
 	async proto( init ){
+		// proto_map
+		// model_type
+		// address
  
 		// const url = '/resource/geometries/' + lib.identify( this ) + '.json'
-		const url = '/resource/geometries/' + lib.identify( 'model', this ) + '.obj'
+		const url = '/resource/geometries/' + lib.identify( 'model', this ) + '.' + init.proto_map[ init.address ].type
 
-		console.log( '>>> ' + lib.identify( false, this ) )
+		// console.log( 'proto: ' + lib.identify( false, this ) + '.' + init.proto_map[ init.address ] )
 
 		// const scene = await lib.load('json', url )
-		const group = await lib.load('obj', url )
+		const group = await lib.load( init.proto_map[ init.address ].type, url )
 
-		const mesh = group.children[0]
+		// console.log('group: ', group)
 
-		if( !mesh || !mesh.isMesh ){
+		let mesh 
+		if( init.proto_map[ init.address ].type === 'obj' ) mesh = group.children[0]
+		if( init.proto_map[ init.address ].type === 'glb' ) mesh = group.scene
+
+		if( !mesh ){
 			console.log('invalid obj prototype requested: ', lib.identify( 'generic', this ) )
 			return false
+		}
+		if( init.proto_map[ init.address ].type === 'glb' ){
+			for( const child of mesh.children ){
+				if( child.name.match(/_cs_/)){
+					child.castShadow = true
+				}
+			}
 		}
 		mesh.castShadow = true
 		mesh.receiveShadow = true
 
-		init.model_map[ init.address ] = mesh
+		init.proto_map[ init.address ].model = mesh
 
 		return true
 
 	}
 
 	model( init ){
+		// address
+		// proto_map
+		let proto = init.proto_map[ init.address ]
+		let key = init.address
 
-		if( init.proto_mesh.isMesh ){ 
+		if( proto.model.isMesh || proto.model.isGroup ){ 
 
-			this.MODEL = init.proto_mesh.clone()
-			this.MODEL.material = init.proto_material
+			this.MODEL = proto.model.clone()
+			if( proto.type === 'obj' && proto.material )  this.MODEL.material = proto.material
+			// if( init.this.MODEL.material = init.proto_material
 			this.inflate()
 
 			this.MODEL.userData = new Clickable( this )
 
-		}else if( init.proto_mesh.isScene ){
+		}else if( proto.model.isScene ){
 
 			console.log( 'bad, collapse to object, ', lib.identify( 'generic', this ) )
 
+		// }
+		// else if( proto.model.isGroup ){
+
+		// 	this.MODEL = proto.model.clone()
+
+		// 	this.inflate()
+
+
+
 		}else{
-			console.log('invalid mesh passed.....', init.proto_mesh )
+			console.log('invalid mesh passed.....', init )
 		}
 
 	}

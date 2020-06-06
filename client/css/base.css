@@ -56,7 +56,6 @@ input{
     font-family: sans-serif;
 }
 
-
 #alert-contain{
 	position: fixed;
 	bottom: 70px;
@@ -65,7 +64,6 @@ input{
 	text-align: right;
 	width: 100%;
 	pointer-events: none;
-
 }
 
 #alert-contain .alert-msg{
@@ -87,6 +85,7 @@ input{
     pointer-events: initial;
 /*     overflow: hidden; */
 }
+
 .alert-close{
     position: absolute;
     right: 0;
@@ -95,7 +94,7 @@ input{
 	display: inline-block;
 	padding: 5px;
 	cursor: pointer;
-	    pointer-events: initial;
+    pointer-events: initial;
 }
 
 .ui-fader{
@@ -123,7 +122,6 @@ input{
 #alert-contain .error{
 	background: maroon;
 	color: white;
-/* 	background: rgb(200, 100, 0 ); */
 }
 #alert-contain .success{
 	background: rgb(35, 141, 52)

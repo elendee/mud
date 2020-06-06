@@ -84,8 +84,7 @@ class Zone {
 
 		this.ITEMS = {}
 
-		this.model_map = []
-		this.material_map = []
+		this.proto_map = {}
 
 	}
 
@@ -212,7 +211,7 @@ class Zone {
 		// const zone = this
 
 		const model_inits = []
-		let entity, entity_address, base_class, color
+		let entity, entity_address, model_type, base_class, color
 
 		switch( type ){
 
@@ -240,7 +239,7 @@ class Zone {
 
 		}
 
-		for( const mud_id of Object.keys( group ) ){
+		for( const mud_id of Object.keys( group ) ){  // iterating to prototype each UNIQUE model 
 
 			entity = group[ mud_id ]
 
@@ -248,41 +247,50 @@ class Zone {
 
 				entity_address = entity.type + '_' + entity.subtype
 
-				if( !this.model_map[ entity_address ] ){
+				// console.log( 'ead: ', entity_address)
 
-					this.model_map[ entity_address ] = 'awaiting'
+				model_type = GLOBAL.MODEL_TYPES[ entity_address ];      if( !model_type ){ console.log( 'invalid model type: ', entity_address); return false }
 
-					if( !this.material_map[ entity_address ] ){
+				if( !this.proto_map[ entity_address ] || !this.proto_map[ entity_address ].model ){  ///// prototype models
+					
+					this.proto_map[ entity_address ] = {}
+					this.proto_map[ entity_address ].model = 'awaiting'
+					this.proto_map[ entity_address ].type = model_type
 
-						// this.material_map[ entity_address ] = new ShaderMaterial({
-						// 	uniforms: SHADERS.uniforms,
-						// 	fragmentShader: SHADERS.sampleFragment(),
-						// 	vertexShader: SHADERS.baseVertexShader(),
-						// 	// clipping: true,
-						// 	// lights: true
-						// })
-						if( entity.type === 'flora' ){
-							if( entity.subtype === 'oak' ){
-								color  = 'rgb( 18, 20, 5)'
-							}else if( entity.subtype === 'pine' ){
-								color = 'rgb(10, 20, 5)'
-							}
-						}
-
-						this.material_map[ entity_address ] = new MeshLambertMaterial({
-							color: color
-						})
-
-					}
-
-					const one_time_model = new base_class( entity )
-					model_inits.push( one_time_model.proto({
-							model_map: zone.model_map,
+					const proto_model = new base_class( entity )
+					model_inits.push( proto_model.proto({
+							proto_map: zone.proto_map,
 							address: entity_address
 						}) 
 					)
 
 				}
+
+				if( model_type === 'obj' && !this.proto_map[ entity_address ].material ){ ///// prototype materials
+
+					// this.proto_map[ entity_address ].material = new ShaderMaterial({
+					// 	uniforms: SHADERS.uniforms,
+					// 	fragmentShader: SHADERS.sampleFragment(),
+					// 	vertexShader: SHADERS.baseVertexShader(),
+					// 	// clipping: true,
+					// 	// lights: true
+					// })
+					if( entity.type === 'flora' ){
+						if( entity.subtype === 'oak' ){
+							color  = 'rgb( 18, 20, 5)'
+						}else if( entity.subtype === 'pine' ){
+							color = 'rgb(10, 20, 5)'
+						}
+					}
+
+					this.proto_map[ entity_address ].material = new MeshLambertMaterial({
+						color: color
+					})
+
+				}
+				// else{
+					// console.log('no material requested for: ', entity_address )
+				// }
 
 			}
 
@@ -298,11 +306,11 @@ class Zone {
 
 
 
-	async render_flora( flora_data ){
+	async render_flora( floras ){
 
-		await this.prototype_entities( 'flora', flora_data )
+		await this.prototype_entities( 'flora', floras )
 
-		this.instantiate_entities( 'FLORA', flora_data, Flora )
+		this.instantiate_entities( 'FLORA', floras, Flora )
 
 	}
 
@@ -356,18 +364,20 @@ class Zone {
 
 			const model_key = entity.type + '_' + entity.subtype
 
-			let proto_mesh = this.model_map[ model_key ]
-			let proto_material = this.material_map[ model_key ]
+			let proto_mesh = this.proto_map[ model_key ].model
+			let proto_material = this.proto_map[ model_key ].material
 
 			if( proto_mesh ){
 
 				entity.model({ 
-					proto_mesh: proto_mesh,
-					proto_material: proto_material
+					address: model_key,
+					proto_map: this.proto_map,
+					// proto_mesh: proto_mesh,
+					// proto_material: proto_material
 				})
 
 			}else{
-				console.log('no mesh found for: ', model_key )
+				console.log('no prototype found for: ', model_key )
 			}
 
 			this[ dest_group ][ entity.mud_id ] = entity
@@ -379,9 +389,10 @@ class Zone {
 
 			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
 
-			// if( entity.type === 'structure' ){
-			// 	console.log( entity.ref.position )
-			// }
+			if( entity.type === 'structure' ){
+				entity.MODEL.rotation.y += .1
+				// console.log( entity.ref.position )
+			}
 
 			SCENE.add( entity.MODEL )
 
