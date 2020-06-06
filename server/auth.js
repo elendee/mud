@@ -124,6 +124,15 @@ async function register_user( request ){
 	const sql = 'INSERT INTO `users` (`email`, `password`, `level`, `confirmed`) VALUES ( ?, ?, 1, false )'
 
 	const { error, results, fields } = await pool.queryPromise( sql, [ email, hash ] ) // , ( err, result ) => { // INSERT does not return fields
+	if( error ){
+		log('flag', 'err: ', Object.keys( error ), error.code )
+		let msg = 'unable to register'
+		if( error.code === 'ER_DUP_ENTRY' ) msg = 'email already registered'
+		return {
+			success: false,
+			msg: msg
+		}
+	}
 
 	const user = await select_user( 'id', results.insertId )
 
