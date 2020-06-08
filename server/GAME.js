@@ -91,7 +91,12 @@ class Game {
 
 		if( USER._id ){ // auth'd users
 
-			if( typeof( USER.active_avatar ) !== 'number' ){ 
+			// if( socket.request.session ){
+
+			// 	log('flag', 'huzzah', socket.request.body.desired_avatar )
+
+			// }else 
+			if( typeof( USER.active_avatar ) !== 'string' ){ 
 
 				// USER._TOON = TOON = 
 				socket.send(JSON.stringify({ type: 'error', msg: 'cannot use anon avatars while logged in <a href="/">back</a>'}))
@@ -99,7 +104,7 @@ class Game {
 
 			}else{
 
-				if( USER._TOON && USER._TOON._id === USER.active_avatar ){ // still have session avatar
+				if( USER._TOON && USER._TOON.name === USER.active_avatar ){ // still have session avatar
 
 					log('toon', 'returning existing avatar: ', USER._TOON._id )
 
@@ -107,7 +112,7 @@ class Game {
 
 				}else{ // no session avatar
 
-					const toon = await this.get_toon( socket.request.session.USER.active_avatar )
+					const toon = await this.get_toon( 'name', socket.request.session.USER, socket.request.session.USER.active_avatar )
 
 					if( toon ){
 
@@ -130,6 +135,7 @@ class Game {
 		}else{ // non-auth'd users
 
 			USER._TOON = TOON = new Toon( USER._TOON )
+			TOON.starter_equip = true
 
 		}
 
@@ -295,28 +301,38 @@ class Game {
 
 
 
-	async get_toon( _id ){
+	async get_toon( type, user, identifier ){
 
-		if( !_id ){
-			log('flag', 'invalid get_toon id: ', _id )
+		if( !identifier ){
+			log('flag', 'invalid get_toon id: ', identifier )
 			return false
 		}
 
 		const pool = DB.getPool()
 
-		const toon_sql = 'SELECT * FROM avatars WHERE id=' + _id + ' LIMIT 1'
+		let toon_sql
 
-		// return new Promise((resolve, reject)=>{
+		switch( type ){
 
-		// })
+			case 'name':
+				toon_sql = 'SELECT * FROM avatars WHERE user_key=' + user._id + ' AND name="' + identifier + '" LIMIT 1'
+				break;
+
+			case 'id':
+				toon_sql = 'SELECT * FROM avatars WHERE id=' + identifier + ' LIMIT 1'
+				break;
+
+			default: 
+				return false
+		}
 
 		const { error, results, fields } = await pool.queryPromise( toon_sql )
 		if( error ){
 			log('flag', 'err get_toon: ', error )
 		}
-		if( !results ){
-			log('flag', 'no avatar found for: ', _id )
-			// return false
+		if( !results || !results.length ){
+			log('flag', 'no avatar found for: ', identifier )
+			return false
 		}
 		return results[0]
 

@@ -33,7 +33,7 @@ class Dev {
 		// }else 
 		if( type == 'coords' ){
 
-			this.coords.innerHTML = 'x: ' + data.x + '<br>z: ' + data.z
+			this.coords.innerHTML = 'x: ' + data.packet.x + '<br>z: ' + data.packet.z
 
 		}else if( type == 'modulo' ){
 

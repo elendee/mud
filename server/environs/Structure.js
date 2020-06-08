@@ -32,6 +32,10 @@ class Structure extends EnvironPersistent {
 
 		this.orientation = lib.validate_number( init.orientation, 0 )
 
+		this._private = lib.validate_number( init._private, init.private, false )
+		this._owners = init._owners || []
+		this._residents = []
+
 	}
 
 

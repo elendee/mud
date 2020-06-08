@@ -1,6 +1,7 @@
 import env from '../env.js'
 
 import hal from '../hal.js'
+import * as lib from '../lib.js'
 
 import ZONE from './ZONE.js'
 
@@ -177,6 +178,15 @@ const bind = function(){
 				case 'zone_remove_item':
 					ZONE.remove_item( packet.data )
 					// ZONE.clear_acquisition( packet.mud_id )
+					break;
+
+				case 'entry':
+					// console.log('entry: ', packet )
+					if( packet.success ){
+						hal( 'success', 'you enter ' + lib.identify( 'name', ZONE.STRUCTURES[ packet.mud_id ] ) + ' (coming soon)', 3000 )
+					}else{
+						hal( 'error', packet.msg, 3000 )
+					}
 					break;
 
 

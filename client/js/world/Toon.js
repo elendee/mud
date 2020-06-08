@@ -388,6 +388,18 @@ export default class Toon {
 
 
 
+	attempt_entry( mud_id ){
+
+		SOCKET.send(JSON.stringify({
+			type: 'enter',
+			mud_id: mud_id
+		}))
+
+	}
+
+
+
+
 	begin_intervals(){
 
 		const toon = this

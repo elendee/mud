@@ -35,7 +35,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._INVENTORY = init._INVENTORY || {}
 
-		this.surname = init.surname || 'O\'Toon'
+		// this.surname = init.surname || 'O\'Toon'
+		this.surname = init.surname 
 
 		this.height = lib.validate_number( init.height, 3 )
 
@@ -77,7 +78,11 @@ module.exports = class Toon extends AgentPersistent {
 			range: 15
 		})
 
+		this.starter_equip = init.starter_equip || false
+
 		this.equipped = init.equipped 
+
+		this._abiding = init._abiding 
 
 		this.logistic = this.logistic || []
 		this.logistic.push('equipped', 'right_hand', 'left_hand')
@@ -96,15 +101,27 @@ module.exports = class Toon extends AgentPersistent {
 
 				if( this._created === this._edited ){
 
-					log('flag', 'yeehaw \n\n\n yeehaw')
-					
 					const stick = new FACTORY({
 						subtype: 'melee',
 						name: 'Unwieldy Stick',
 						power: 2
 					})
 					this._INVENTORY[ stick.mud_id ] = stick
+
+					const trousers = new FACTORY({
+						subtype: 'armor',
+						name: 'Unwieldy Trousers',
+						// icon_url: 'noun_trousers',
+					})
+					this._INVENTORY[ trousers.mud_id ] = trousers
+					const belt = new FACTORY({
+						subtype: 'armor',
+						name: 'Unwieldy Vest',
+						// icon_url: 'noun_shirt',
+					})
+					this._INVENTORY[ belt.mud_id ] = belt
 				}
+
 				return true
 
 
@@ -125,6 +142,15 @@ module.exports = class Toon extends AgentPersistent {
 					this._INVENTORY[ this_item.mud_id ] = this_item
 				}
 
+				if( !results.length ){
+					const stick = new FACTORY({
+						subtype: 'melee',
+						name: 'Unwieldy Stick',
+						power: 2
+					})
+					this._INVENTORY[ stick.mud_id ] = stick
+				}
+
 				return true
 
 			}
@@ -133,7 +159,7 @@ module.exports = class Toon extends AgentPersistent {
 
 			log('toon', 'unregistered user login: ', this._id, lib.identify( 'name', this ))
 
-			if( !this._INVENTORY || env.ETERNAL_NOOB ){
+			if( !this._INVENTORY || env.ETERNAL_NOOB || this.starter_equip ){
 
 				this._INVENTORY = {}
 
@@ -464,6 +490,50 @@ module.exports = class Toon extends AgentPersistent {
 		return [ new Item({
 			subtype: 'melee'
 		}).publish() ]
+
+	}
+
+
+
+
+
+
+	attempt_entry( zone, mud_id ){
+
+		const structure = zone._STRUCTURES[ mud_id ]
+
+		if( !structure ){
+			SOCKETS[ this.mud_id ].send(JSON.stringify({
+				type: 'entry',
+				success: false,
+				msg: 'no structure found'
+			}))
+			return false
+		}
+
+		// log('flag', 'attempting entry: ', zone._STRUCTURES[ mud_id ] )
+
+		if( structure._private ){
+			if( structure.owner !== this.mud_id ){
+				SOCKETS[ this.mud_id ].send(JSON.stringify({
+					type: 'entry',
+					success: false,
+					msg: 'this structure is locked'
+				}))
+				return false
+			}
+		}
+
+		zone._STRUCTURES[ mud_id ]._residents[ this.mud_id ] = this
+
+		SOCKETS[ this.mud_id ].send(JSON.stringify({
+			type: 'entry',
+			success: true,
+			mud_id: mud_id
+			// structure: zone._STRUCTURES[ mud_id ].publish()
+		}))
+
+		this._abiding = mud_id
 
 	}
 

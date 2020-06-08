@@ -85,7 +85,12 @@ export default class Entity {
 		// address
 		// proto_map
 		let proto = init.proto_map[ init.address ]
-		let key = init.address
+		// let key = init.address
+
+		// if( key.match(/blacksmith/)){
+		// 	console.log("model: ", proto, key )
+
+		// }
 
 		if( proto.model.isMesh || proto.model.isGroup ){ 
 

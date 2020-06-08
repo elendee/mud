@@ -13,9 +13,6 @@ import SCENE from '../../three/SCENE.js'
 
 import * as MOUSE from './MOUSE.js'
 
-// import { getView } from '../../View.js'
-// import VIEW from '../../VIEW.js'
-
 import texLoader from '../../three/texLoader.js'
 
 import { 
@@ -62,24 +59,22 @@ class Target {
 		this.health_ele = document.querySelector('#target-health .status')
 		this.mana_ele = document.querySelector('#target-mana .status')
 		this.item_ele = document.querySelector('#target-item')
+		this.structure_ele = document.querySelector('#structure-key')
 		this.health_readout = document.querySelector('#target-health .readout')
 		this.mana_readout = document.querySelector('#target-mana .readout')
 		this.profile_img = document.getElementById('target-profile')
-		// this.helper = document.getElementById('target-helper')
-
-		// this.parent = init.parent
 
 		this.reticule = reticule
 
 		this.target = init.target
 
 		this.last_rendered = false
-		// this.FLORA = init.FLORA
-		// this.STRUCTURES = init.STRUCTURES
-		// this.NPCS = init.NPCS
-		// this.TOONS = init.TOONS
 		this.item_ele.addEventListener('click', ( e ) => {
 			MOUSE.mousehold.pickup( this.item_ele.getAttribute('data-id'), 'zone' )
+		})
+
+		this.structure_ele.addEventListener('click', ( e )=>{
+			TOON.attempt_entry( this.target.mud_id )
 		})
 
 	}
@@ -143,11 +138,17 @@ class Target {
 			if( this.target ){
 
 				this.show_name()
+
+				if( this.target.type === 'structure' ){
+					this.show_structure( userData )
+				}
+
 				if( this.target.type === 'item' ){
 					this.show_item( userData )
 				}else{
 					this.show_status()
 				}
+				
 				TOON.look_at( this.target.MODEL.position )
 
 				this.render_selected()
@@ -186,27 +187,25 @@ class Target {
 
 		let bbox_size_vector = new Vector3()
 		let target_size = new Box3().setFromObject( this.target.MODEL ).getSize()
+		target_size.x = target_size.x / this.target.MODEL.scale.x
+		target_size.y = target_size.y / this.target.MODEL.scale.y
+		target_size.z = target_size.z / this.target.MODEL.scale.z
 
-		// console.log( target_size , '<<<')
-
-		// reticule rotated 90deg, so z === y 
 		if( this.target.type === 'item' ){
 			this.reticule.scale.x =  Math.max( 1 )
 			this.reticule.scale.y =  Math.max( 1 )
 		}else{
-			this.reticule.scale.x =  Math.max( .5, .18 + ( target_size.x / this.target.MODEL.scale.x ) / reticule_size )
-			this.reticule.scale.y =  Math.max( .5, .18 + ( target_size.z / this.target.MODEL.scale.z ) / reticule_size )
+			this.reticule.scale.x = Math.max( .5, ( target_size.x / reticule_size ) * 1.2 )
+			this.reticule.scale.y = Math.max( .5, ( target_size.z / reticule_size ) * 1.2 )
 		}
-		// this.reticule.scale.x =  Math.max( .5, .18 + target_size.x / reticule_size )
-		// this.reticule.scale.y =  Math.max( .5, .18 + target_size.z / reticule_size )
 
 		const wpos = new Vector3()
 		this.target.MODEL.getWorldPosition( wpos )
 
-		this.reticule.position.set( 0, ( wpos.y / this.target.MODEL.scale.y ) + .01, 0 )
-		this.target.MODEL.add( this.reticule )
+		this.reticule.position.set( 0, .2, 0 )
+		this.reticule.rotation.z = this.target.MODEL.rotation.y
 
-		// SOUND.play( SOUND.ui.blip[0] )
+		this.target.MODEL.add( this.reticule )
 
 		this.last_rendered = this.target.mud_id
 
@@ -217,7 +216,9 @@ class Target {
 
 
 	show_name(){
+
 		this.name_ele.style.display = 'initial'
+
 	}
 
 
@@ -233,6 +234,13 @@ class Target {
 		this.item_ele.setAttribute('data-id', this.target.mud_id )
 
 		// console.log( 'renderin from : ', this.target )
+
+	}
+
+
+	show_structure(){
+
+		this.structure_ele.style.display = 'initial'
 
 	}
 
@@ -277,19 +285,11 @@ class Target {
 	clear( clear ){
 
 		this.element.style.display = 'none'
-		this.status_ele.style.display = this.name_ele.style.display = this.item_ele.style.display = 'none'
+		this.status_ele.style.display = this.name_ele.style.display = this.structure_ele.style.display = this.item_ele.style.display = 'none'
 		this.profile_url = ''
 
 		if( !this.target || !this.target.MODEL ) return false
 
-		// for( const child of this.target.MODEL.children ){
-		// 	child.material.opacity = 1
-		// 	child.material.transparent = false
-		// }
-
-
-		// this.helper.innerHTML = ''
-		// this.helper.style.display = 'none'
 		if( clear ) this.last_rendered = false
 
 		this.target.MODEL.remove( this.reticule )
@@ -298,16 +298,6 @@ class Target {
 	
 
 		RENDERER.frame( SCENE )
-
-		// delete this.parent.is_target
-
-		// this.reticule.scale.set( 1, 1, 1 )
-		
-		// delete this.parent
-		// delete this.entropic
-		// delete this.sentient
-
-		// delete this.model ?
 
 	}
 

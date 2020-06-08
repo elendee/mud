@@ -247,7 +247,7 @@ class Attack {
 		const attack = this
 		const toon_bod = TOON.BODY.clone()
 
-		toon_bod.translateZ( 5 )
+		toon_bod.translateZ( 3 )
 		attack.bbox.position.copy( TOON.MODEL.position ).add( toon_bod.position )
 		attack.bbox.position.y += 5
 

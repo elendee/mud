@@ -40,13 +40,15 @@ document.addEventListener('DOMContentLoaded', function(){
 	// 	document.getElementById('create').style.bottom = '-60%'
 	// })
 
-
-	document.getElementById('enter-world').addEventListener('click', function(e){
+	document.querySelector('#enter-world a').addEventListener('click', function( e ){
+		e.preventDefault()
 		const avatar = localStorage.getItem('mud-active-avatar')
 		if( typeof avatar !== 'string' ){
-			e.preventDefault()
 			hal('error', 'must choose an avatar first')
+		}else{
+			location.href = '/world?avatar=' + avatar
 		}
+
 	})
 
 })

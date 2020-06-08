@@ -178,9 +178,22 @@ canvas#mud-flats{
 	box-shadow: inset 0px 0px 5px lightblue;
 }
 
+#structure-key{
+	display: none;
+    z-index: 99;
+}
+#structure-key.icon{
+    top: 60px;
+    left: 130px;
+    box-shadow: 0px 0px 5px black;
+}
+#structure-key.icon:hover{
+	box-shadow: inset 0px 0px 5px lightblue;
+}
 
 #target-name,
-#target-item{
+#target-item,
+#structure-key{
 	display: none;
 	position: fixed;
 }
@@ -303,7 +316,8 @@ canvas#mud-flats{
 
 .popup .stat .icon,
 #mousehold,
-#target-item.icon{
+#target-item.icon,
+#structure-key.icon{
 	width: 30px;
 	height: 30px;
 	border-radius: 5px;

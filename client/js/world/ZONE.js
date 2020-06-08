@@ -249,7 +249,7 @@ class Zone {
 
 				// console.log( 'ead: ', entity_address)
 
-				model_type = GLOBAL.MODEL_TYPES[ entity_address ];      if( !model_type ){ console.log( 'invalid model type: ', entity_address); return false }
+				model_type = GLOBAL.MODEL_TYPES[ entity_address ];      if( !model_type ){ console.log( 'invalid model type: ', entity_address); continue }
 
 				if( !this.proto_map[ entity_address ] || !this.proto_map[ entity_address ].model ){  ///// prototype models
 					
@@ -286,6 +286,7 @@ class Zone {
 					this.proto_map[ entity_address ].material = new MeshLambertMaterial({
 						color: color
 					})
+
 
 				}
 				// else{
@@ -367,6 +368,8 @@ class Zone {
 			let proto_mesh = this.proto_map[ model_key ].model
 			let proto_material = this.proto_map[ model_key ].material
 
+			
+
 			if( proto_mesh ){
 
 				entity.model({ 
@@ -390,11 +393,17 @@ class Zone {
 			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
 
 			if( entity.type === 'structure' ){
-				entity.MODEL.rotation.y += .1
+				// entity.MODEL.rotation.y += .1
+				entity.MODEL.rotation.y = entity.orientation
 				// console.log( entity.ref.position )
 			}
 
 			SCENE.add( entity.MODEL )
+
+			if( model_key.match(/blacksmith/)){
+				window.asdf = entity.MODEL
+				console.log( entity.MODEL.position )
+			}
 
 		}
 

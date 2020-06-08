@@ -311,6 +311,8 @@ const map_entity = {
 const map_weapon = {
 	'left hand': 'hand_swing',
 	'right hand': 'hand_swing',
+	// 'left hand': 'melee_basic',
+	// 'right hand': 'melee_basic',
 	'melee': 'melee_basic',
 	'ranged': 'ranged_basic',
 	'magic': 'magic_basic',

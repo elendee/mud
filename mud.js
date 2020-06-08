@@ -230,6 +230,10 @@ exp.use('/world', function( request, response ){
 	// }else{
 	// 	response.send( render( 'index', request ) )
 	// }
+	if( request.query.avatar && request.session.USER ){
+		log('flag', 'av: ', request.query.avatar )
+		request.session.USER.active_avatar = request.query.avatar
+	}
 
 	response.send( render('world') )
 	

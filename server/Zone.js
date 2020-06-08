@@ -70,6 +70,8 @@ class Zone extends Persistent {
 			// decomposers: {}
 		}
 
+		this._owner = lib.validate_number( this._owner )
+
 		// this.LOOT = init.LOOT || {}
 
 	}

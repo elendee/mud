@@ -73,6 +73,8 @@ export default {
 	MODEL_TYPES: {
 
 		'structure_tavern': 'glb',
+		'structure_hut': 'glb',
+		'structure_blacksmith': 'obj',
 		'flora_oak': 'obj',
 		'flora_pine': 'obj',
 		// 'plainsgrass': 'obj',

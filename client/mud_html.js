@@ -69,6 +69,7 @@ const overlays = {
 		</div>
 		<div id='target-name'></div>
 		<img id='target-item' class='icon'/>
+		<img id='structure-key' src='/resource/images/icons/key.png' class='icon'>
 		<div id='status'>
 			<div id='target-health' class='bar'>
 				<div class='status'></div>

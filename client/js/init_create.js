@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function(){
 			.then( res => {
 				console.log( res )
 				if( res.success && res.avatar ){
-					console.log('success', res )
-					// location.href = '/world'
+					// console.log('success', res )
+					location.href = '/world'
 					// render_avatars( [ res.avatar ] )
 				}else{
 					hal('error', res.msg )
