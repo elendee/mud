@@ -12,6 +12,7 @@ const COMBAT = require('./combat.js')
 
 const Persistent = require('./Persistent.js')
 const Toon = require('./agents/Toon.js')
+const Npc = require('./agents/Npc.js')
 const Structure = require('./environs/Structure.js')
 const Flora = require('./environs/Flora.js')
 
@@ -62,6 +63,7 @@ class Zone extends Persistent {
 		// this._NPCS = init._NPCS || {}
 		this._TOONS = init._TOONS || {}
 		this._ITEMS = init._ITEMS || {}
+		// this._AGENTS = init._AGENTS || {}
 		this._NPCS = init._NPCS || {}
 
 		// this._DECOMPOSERS = init._DECOMPOSERS || {} // never persisted, so no _INSTANTIATER ^^
@@ -88,7 +90,6 @@ class Zone extends Persistent {
 		if( env.READ.STRUCTURES )  await this.read_structures()
 		if( env.READ.NPCS ) await this.read_npcs()
 
-		// if( env.READ.STRUCTURES )  
 		await this.read_items()
 
 		// creates
@@ -96,13 +97,11 @@ class Zone extends Persistent {
 		if( env.READ.FLORA ){
 
 			const current_ISO_ms = new Date().getTime()
-			// how many days since last grow:
 			const growth_days = Math.floor( Math.min( GLOBAL.MAX_GROW_DAYS, ( current_ISO_ms - this._last_growth ) / ( 1000 * 60 * 60 * 24 ) ) )
 			let all_new_trees = []
 			let days_trees
 			for( let i = 0; i < growth_days; i++ ){
 				days_trees = this.grow_day()
-				// log('flag', 'growday: ', days_trees )
 				if( days_trees ){
 					all_new_trees = all_new_trees.concat( days_trees )
 				}
@@ -132,23 +131,24 @@ class Zone extends Persistent {
 
 			zone.emit( 'move_pulse', SOCKETS, false, packet )
 
-			// for( const mud_id of Object.keys( SOCKETS ) ){
-			// 	SOCKETS[ mud_id ].send( JSON.stringify({
-			// 		type: 'move_pulse',
-			// 		data: packet
-			// 	}))
-			// }
-
 			let npc_packet = {}
 
 			for( const mud_id of Object.keys( zone._NPCS )){
+
+				if( !zone._NPCS[ mud_id ]._objective ){
+					zone._NPCS[ mud_id ].assign_objective()
+				}else{
+					zone._NPCS[ mud_id ].move()
+				}
+
 				npc_packet[ mud_id ] = {
 					position: zone._NPCS[ mud_id ].ref.position,
 					quaternion: zone._NPCS[ mud_id ].ref.quaternion
 				}
+
 			}
 
-			zone.emit( 'npc_pulse', SOCKETS, false, npc_packet )
+			zone.emit( 'npc_move_pulse', SOCKETS, false, npc_packet )
 
 		}, GLOBAL.PULSES.MOVE )
 
@@ -238,20 +238,16 @@ class Zone extends Persistent {
 
 			let dist = lib.get_dist( TOON.ref.position, target.ref.position )
 
-			// let name = item.name || 'your ' + ( slot === 2 ? 'left' : 'right' ) + ' hand'
-
 			let resolution = COMBAT.resolve({
 				type: 'attack',
 				attacker:TOON, 
 				item: item, 
 				target: target, 
 				dist: dist,
-				// this: this
 			})
 
 			if( resolution.status === 'dead' ){
 				delete this[ entity_type ][ target.mud_id ]
-				// this.add_decomposers( target )
 			}
 			if( resolution.loot && resolution.loot.length ){
 				this.add_items( resolution.loot, target.ref.position )
@@ -270,30 +266,6 @@ class Zone extends Persistent {
 
 
 
-	// add_decomposers( target ){
-
-	// 	const zone = this
-
-	// 	if( !zone._DECOMPOSERS[ target.mud_id ]){
-
-	// 		zone._DECOMPOSERS[ target.mud_id ] = { // can be any entity type (!)
-	// 			entity: {
-	// 				type: target.type,
-	// 				name: lib.identify('name', target )
-	// 			}
-	// 		}
-	// 		zone._TIMEOUTS.decomposers[ target.mud_id ] = setTimeout(function(){
-	// 			delete zone._DECOMPOSERS[ target.mud_id ]
-	// 			// zone.emit( 'decomposers', SOCKETS, false, zone._DECOMPOSERS )
-	// 		}, 1000 * 3 ) //* 5 )
-
-	// 		// zone.emit( 'decomposers', SOCKETS, false, zone._DECOMPOSERS )
-
-	// 	}
-
-	// }
-
-
 	add_items( items_array, position ){
 
 		const zone = this
@@ -305,7 +277,6 @@ class Zone extends Persistent {
 				log('flag', 'droppin: ', item )
 
 				zone._ITEMS[ item.mud_id ] = new ItemFactory( item )
-				// zone._ITEMS[ item.mud_id ].ref.position = lib.validate_vec3( new Vector3(
 				zone._ITEMS[ item.mud_id ].ref.position.set(
 					position.x + ( -1 + Math.random() * 2 ) * 10,
 					1,
@@ -322,8 +293,6 @@ class Zone extends Persistent {
 			}
 
 		}
-
-		// log('flag', 'items now: ', zone._ITEMS )
 
 		zone.emit( 'pong_items', SOCKETS, false, zone.bundle_items() )
 
@@ -435,13 +404,9 @@ class Zone extends Persistent {
 		const flora = new Flora({
 			_zone_key: this._id,
 			subtype: subtype,
-			// scale: .5 + Math.random(),
 			x: vector.x,
 			y: vector.y,
 			z: vector.z,
-			// width: rand_radial,
-			// length: rand_radial,
-			// height: rand_vertical,
 		})
 
 		return flora
@@ -490,13 +455,10 @@ class Zone extends Persistent {
 
 		const pool = DB.getPool()
 
-		// const limit = this._structure_target
-
 		const sql = 'SELECT * FROM structures WHERE zone_key=' + this._id 
 
 		const { error, results, fields } = await pool.queryPromise( sql )
 		if( error ) log('flag', 'structure looukp  err: ', error )
-		// log('flag', 'results: ', results )
 		for ( const structure of results ){
 			let struct = new Structure( structure )
 			this._STRUCTURES[ struct.mud_id ] = struct
@@ -512,15 +474,14 @@ class Zone extends Persistent {
 
 		const pool = DB.getPool()
 
-		// const limit = this._structure_target
-
 		const sql = 'SELECT * FROM npcs WHERE zone_key=' + this._id 
 
 		const { error, results, fields } = await pool.queryPromise( sql )
 		if( error ) log('flag', 'npc looukp  err: ', error )
-		// log('flag', 'results: ', results )
 		for ( const npc of results ){
-			let n = new Toon( npc )
+			let n = new Npc( npc )
+			await n.touch_inventory()
+			await n.touch_equipped()
 			this._NPCS[ n.mud_id ] = n
 		}
 
@@ -552,9 +513,6 @@ class Zone extends Persistent {
 
 	async save_flora( value_sets ){
 
-		// log('flag', value_sets )
-		// return true
-
 		if( !value_sets ) return true
 		if( !this._id ) return false
 
@@ -564,16 +522,8 @@ class Zone extends Persistent {
 
 			let set = value_sets[ i ]
 
-			// if( !set.type ){
-			// 	log('flag', 'wot now: ', set )
-			// 	return false
-			// }
-			// log('flag', set )
-
 			for( const key of Object.keys( set ) ){
-				// log('flag', key, set[ key ] )
 				if( typeof( set[ key ] ) === 'string' ){
-					// log('flag', 'ya', set[ key ])
 					set[ key ] = '"' + set[ key ] + '"'
 				}
 			}
@@ -605,8 +555,6 @@ class Zone extends Persistent {
 
 			const sql = 'INSERT INTO `flora` (id, zone_key, subtype, scale, x, y, z, width, height, length) VALUES (' + insert_string + ') ON DUPLICATE KEY UPDATE ' + update_string
 
-			// log('query', 'attempting UPDATE: ', insert_string, update_string )
-
 			const { error, results, fields } = await pool.queryPromise( sql ) // blorb massive await for loop ...
 
 			if( error || !results ){
@@ -614,12 +562,9 @@ class Zone extends Persistent {
 					log('flag', 'sql err:', error.sqlMessage, error.sql )
 					return false
 				}else{
-					// throw new Error( 'UPDATE error: ', error.sqlMessage, 'attempted: ', '\nATTEMPTED: ', sql, doc._table )
 					throw new Error( 'no results: ' + sql )
 				}
 			}
-
-			// log('query', 'results: ', JSON.stringify( results ) )
 
 		}
 
@@ -673,9 +618,6 @@ class Zone extends Persistent {
 				clearTimeout( zone._TIMEOUTS[ key ][ mud_id ] )
 			}
 		}
-		// for( const mud_id of Object.keys( zone._DECOMPOSERS )){
-		// 	clearTimeout( zone._DECOMPOSERS[ mud_id ].timeout )
-		// }
 
 		log('zone', 'closing: ', zone.mud_id )
 		await zone.save()

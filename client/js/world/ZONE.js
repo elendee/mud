@@ -6,11 +6,16 @@ import SCENE from '../three/SCENE.js'
 import CAMERA from '../three/CAMERA.js'
 import RENDERER from '../three/RENDERER.js'
 import * as LIGHT from '../three/LIGHT.js'
+import {
+	dirt 
+} from '../three/GROUND.js'
 
 
 import GLOBAL from '../GLOBAL.js'
 // import TOONS from './TOONS.js'
 import Toon from './Toon.js'
+// import Npc from './Npc.js'
+
 import * as ANIMATE from './animate.js'
 
 // import BuffGeoLoader from '../three/BuffGeoLoader.js'
@@ -18,7 +23,6 @@ import * as SHADERS from './env/shaders.js'
 
 import Item from './Item.js'
 
-// import Npc from './Npc.js'
 import grass_mesh from './env/grass_mesh.js'
 
 import * as KEYS from './ui/KEYS.js'
@@ -32,11 +36,13 @@ import Structure from './env/Structure.js'
 
 import STRUCTURE from './ui/STRUCTURE.js'
 
+
 // import DIALOGUE from './'
 
 
 import {
 	Geometry,
+	Vector2,
 	Vector3,
 	Quaternion,
 	PlaneBufferGeometry,
@@ -49,7 +55,8 @@ import {
 	Object3D,
 	Matrix4,
 	Color,
-	ShaderMaterial
+	ShaderMaterial,
+	Box3
 } from '../lib/three.module.js'
 
 
@@ -395,17 +402,26 @@ class Zone {
 			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
 
 			if( entity.type === 'structure' ){
-				// entity.MODEL.rotation.y += .1
+
 				entity.MODEL.rotation.y = entity.orientation
-				// console.log( entity.ref.position )
+				
+				const structure_dirt = dirt.clone()
+				const bbox_source = new Box3().setFromObject( entity.MODEL ).getSize()
+
+				structure_dirt.scale.x = ( bbox_source.x / 10 ) * 1.2 // 10 == standard size..
+				structure_dirt.scale.y = ( bbox_source.z  / 10 ) * 1.2
+
+				structure_dirt.position.copy( entity.MODEL.position )
+				structure_dirt.position.y += 1
+				structure_dirt.receiveShadow = true
+				SCENE.add( structure_dirt )
+
+				if( !window.structure_dirts ) window.structure_dirts = []
+				window.structure_dirts.push( structure_dirt )
+				
 			}
 
 			SCENE.add( entity.MODEL )
-
-			if( model_key.match(/blacksmith/)){
-				window.asdf = entity.MODEL
-				console.log( entity.MODEL.position )
-			}
 
 		}
 
@@ -450,17 +466,19 @@ class Zone {
 
 			}else{
 
+				console.log( 'movin toon: ', packet )
+
 				// console.log('updating patron pos: ', mud_id )
 				needs_move = needs_rotate = false
 
 				// if( !NPCS[ mud_id ] ) console.log('wtf: ', NPCS[ mud_id ] )
 				new_pos = packet[ mud_id ].position
-				new_quat = packet[ mud_id ].quaternion
+				// new_quat = packet[ mud_id ].quaternion
 				old_pos = this.NPCS[ mud_id ].ref.position
-				old_quat = this.NPCS[ mud_id ].ref.quaternion
+				// old_quat = this.NPCS[ mud_id ].ref.quaternion
 
 				if( new_pos.x !== old_pos.x || new_pos.y !== old_pos.y || new_pos.z !== old_pos.z )  needs_move = true
-				if( new_quat._x !== old_quat._x || new_quat._y !== old_quat._y || new_quat._z !== old_quat._z || new_quat._w !== old_quat._w )  needs_rotate = true
+				// if( new_quat._x !== old_quat._x || new_quat._y !== old_quat._y || new_quat._z !== old_quat._z || new_quat._w !== old_quat._w )  needs_rotate = true
 
 				if( needs_move ){
 
@@ -472,22 +490,22 @@ class Zone {
 
 				}
 
-				if( needs_rotate ){
+				// if( needs_rotate ){
 
-					old_quat.set( 
-						new_quat._x,
-						new_quat._y,
-						new_quat._z,
-						new_quat._w
-					)
+				// 	old_quat.set( 
+				// 		new_quat._x,
+				// 		new_quat._y,
+				// 		new_quat._z,
+				// 		new_quat._w
+				// 	)
 
-				}
+				// }
 
-				if( needs_move ) ANIMATE.receive_move()
-				if( needs_rotate ) ANIMATE.receive_rotate()
+				if( needs_move ) ANIMATE.receive_move( mud_id )
+				// if( needs_rotate ) ANIMATE.receive_rotate()
 
-				this.TOONS[ mud_id ].needs_move = needs_move
-				this.TOONS[ mud_id ].needs_rotate = Number( needs_rotate ) * 400
+				this.NPCS[ mud_id ].needs_move = needs_move
+				// this.NPCS[ mud_id ].needs_rotate = Number( needs_rotate ) * 400
 
 			}
 
@@ -702,7 +720,11 @@ class Zone {
 
 	render_npc( data ){
 
-		console.log( 'render npc', data )
+		this.NPCS[ data.mud_id ] = new Toon( data )
+		this.NPCS[ data.mud_id ].type = 'npc'
+		this.NPCS[ data.mud_id ].model()
+		// this.NPCS[ data.mud_id ].MODEL.position.set( 75, 0, 75 )
+		SCENE.add( this.NPCS[ data.mud_id ].MODEL )
 
 	}
 

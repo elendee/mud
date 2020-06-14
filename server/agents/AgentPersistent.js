@@ -1,8 +1,11 @@
 
+const env = require('../.env.js')
 const lib = require('../lib.js')
 const log = require('../log.js')
 
 const Persistent = require('../Persistent.js')
+
+const { Vector3 } = require('three')
 
 
 class AgentPersistent extends Persistent {
@@ -29,7 +32,7 @@ class AgentPersistent extends Persistent {
 		this._stats.perception = lib.validate_number( this._stats.perception, init.perception, 5 )
 		this._stats.luck = lib.validate_number( this._stats.luck, init.luck, 5 )
 		this._stats.intellect = lib.validate_number( this._stats.intellect, init.intellect, 5 )
-		this._stats.speed = lib.validate_number( this._stats.speed, init.speed, 25 )
+		this._stats.speed = lib.validate_number( this._stats.speed, init.speed, env.FALLBACK_TOON_SPEED )
 
 		this.health = init.health || {}
 		this.health.capacity = lib.validate_number( this.health.capacity, init.health_cap, this.calculate_health() )
@@ -47,6 +50,11 @@ class AgentPersistent extends Persistent {
 		// this.x = lib.validate_number( init._x, init.x, 0 )
 		// this.y = lib.validate_number( init._y, init.y, 0 )
 		// this.z = lib.validate_number( init._z, init.z, 0 )
+
+		this._scratch = {
+			facing: new Vector3(1, 0, 0),
+			projection: new Vector3()
+		}
 
 		this.ref = init.ref || {}
 

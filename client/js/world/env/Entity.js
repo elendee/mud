@@ -20,13 +20,6 @@ import {
 	// RepeatWrapping
 } from '../../lib/three.module.js'
 
-// import Loader from '../../three/texLoader.js'
-// import GLTF from '../../three/GLTF.js'
-// import BuffGeoLoader from '../../three/BuffGeoLoader.js'
-// import ObjectLoader from '../../three/ObjectLoader.js'
-
-// let tree_geo 
-// let tree_mat
 
 export default class Entity {
 

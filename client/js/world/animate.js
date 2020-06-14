@@ -300,6 +300,28 @@ function animate( start ){
 		}
 	}
 
+	for( const mud_id of Object.keys( ZONE.NPCS )){ // should not include player
+		if( ZONE.NPCS[ mud_id ].needs_move ){
+			ZONE.NPCS[ mud_id ].MODEL.position.lerp( ZONE.NPCS[ mud_id ].ref.position, .02 )
+			if( ZONE.NPCS[ mud_id ].MODEL.position.distanceTo( ZONE.NPCS[ mud_id ].ref.position ) < .05 ){
+				ZONE.NPCS[ mud_id ].needs_move = false
+				moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
+				// delete moving_toons[ mud_id ]
+				// console.log('lerp arrived')
+			}
+		}
+		if( ZONE.NPCS[ mud_id ].needs_rotate > 0 ){
+			console.log( 'skipping npc slerp')
+			// ZONE.NPCS[ mud_id ].MODEL.quaternion.slerp( ZONE.NPCS[ mud_id ].ref.quaternion, .01 )
+			// ZONE.NPCS[ mud_id ].needs_rotate--
+			// if( ZONE.NPCS[ mud_id ].needs_rotate === 0 ){
+			// 	// console.log( 'slerp arrived')
+			// 	// ZONE.TOONS[ mud_id ].
+			// 	rotating_toons.splice( rotating_toons.indexOf( mud_id ), 1 )
+			// }
+		}
+	}
+
 	anim_length = animators.length - 1
 
 	for( let i = anim_length; i >= 0; i-- ){

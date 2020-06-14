@@ -329,7 +329,8 @@ const type_map = {
 	'npc': '_NPCS',
 	'toon': '_TOONS',
 	'structure': '_STRUCTURES',
-	'resource': '_RESOURCE'
+	'resource': '_RESOURCE',
+	'npc': '_NPCS'
 }
 
 

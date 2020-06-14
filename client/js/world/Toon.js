@@ -44,7 +44,7 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
-		this.type = 'toon'
+		this.type = init.type || 'toon'
 
 		this.bindings = this.bindings || {}
 
@@ -436,9 +436,9 @@ export default class Toon {
 
 		}, 750 )
 
-		
-
 	}
+
+
 
 }
 

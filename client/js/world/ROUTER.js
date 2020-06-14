@@ -63,7 +63,7 @@ const bind = function(){
 					ZONE.handle_move( packet.data )
 					break;
 
-				case 'npc_pulse':
+				case 'npc_move_pulse':
 					ZONE.handle_npc_move( packet.data )
 					break;
 
