@@ -40,7 +40,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.height = lib.validate_number( init.height, 3 )
 
-		// this.speed = env.TOON_SPEED || lib.validate_number( init.speed, 20 )
+		this.speed = lib.validate_number( init._stats ? init._stats.speed : undefined, init.speed, 20 )
 
 		let random_seed = Math.floor( Math.random() * 100 )
 		this.color = init.color || lib.random_rgb( 
@@ -79,6 +79,8 @@ module.exports = class Toon extends AgentPersistent {
 		})
 
 		this.starter_equip = init.starter_equip || false
+
+		this.inside = init.inside
 
 		this.equipped = init.equipped 
 
@@ -502,11 +504,15 @@ module.exports = class Toon extends AgentPersistent {
 
 		const structure = zone._STRUCTURES[ mud_id ]
 
+		const toon = this
+
 		if( !structure ){
 			SOCKETS[ this.mud_id ].send(JSON.stringify({
 				type: 'entry',
-				success: false,
-				msg: 'no structure found'
+				data: {
+					success: false,
+					msg: 'no structure found'
+				}
 			}))
 			return false
 		}
@@ -517,8 +523,10 @@ module.exports = class Toon extends AgentPersistent {
 			if( structure.owner !== this.mud_id ){
 				SOCKETS[ this.mud_id ].send(JSON.stringify({
 					type: 'entry',
-					success: false,
-					msg: 'this structure is locked'
+					data: {
+						success: false,
+						msg: 'this structure is locked'
+					}
 				}))
 				return false
 			}
@@ -526,15 +534,32 @@ module.exports = class Toon extends AgentPersistent {
 
 		zone._STRUCTURES[ mud_id ]._residents[ this.mud_id ] = this
 
-		SOCKETS[ this.mud_id ].send(JSON.stringify({
-			type: 'entry',
-			success: true,
-			mud_id: mud_id
-			// structure: zone._STRUCTURES[ mud_id ].publish()
-		}))
+		this.inside = mud_id
+
+		// SOCKETS[ this.mud_id ].send(JSON.stringify({
+		// 	type: 'entry',
+		// 	success: true,
+		// 	mud_id: mud_id
+		// }))
+
+		setTimeout(()=>{
+			zone.emit('entry', SOCKETS, [], {
+				toon_id: toon.mud_id,
+				structure_id: mud_id,
+				success: true
+			})			
+		}, 1000 )
+
+		// emit( type, group, exclude, packet ){
+		// if( typeof exclude === 'string' )  exclude = [ exclude ]
 
 		this._abiding = mud_id
 
+	}
+
+
+	exit_structure( zone, structure_id ){
+		this.inside = false
 	}
 
 	

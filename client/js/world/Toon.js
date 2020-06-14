@@ -109,7 +109,7 @@ export default class Toon {
 
 		this.direction = 'north'
 
-		this._stats.speed += MAP.SPEED_FLOOR
+		// this._stats.speed += MAP.SPEED_FLOOR
 
 		// this.speed = init.speed || env.SPEED
 
@@ -391,7 +391,7 @@ export default class Toon {
 	attempt_entry( mud_id ){
 
 		SOCKET.send(JSON.stringify({
-			type: 'enter',
+			type: 'enter_structure',
 			mud_id: mud_id
 		}))
 

@@ -76,16 +76,6 @@ class Zone extends Persistent {
 
 	}
 
-	get_id(){
-
-		if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
-			log('flag', 'could not build zone id: ', this._x, this._z, this._layer )
-			return false
-		}
-
-		return this._x + '-' + this._z + '-' + this._layer
-
-	}
 
 	async bring_online(){
 
@@ -154,6 +144,58 @@ class Zone extends Persistent {
 		}
 
 	}
+
+
+
+
+	get_id(){
+
+		if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
+			log('flag', 'could not build zone id: ', this._x, this._z, this._layer )
+			return false
+		}
+
+		return this._x + '-' + this._z + '-' + this._layer
+
+	}
+
+
+
+	get_toons( type, data ){
+
+		const t = {}
+
+		switch( type ){
+			case 'structure':
+				for( const mud_id of Object.keys( this._TOONS )){
+					if( this._TOONS[ mud_id ].inside === data.inside && typeof data.inside === 'string' ){
+						t[ mud_id ] = this._TOONS[ mud_id ]
+					}
+				}
+				break;
+			case 'chat':
+				for( const mud_id of Object.keys( this._TOONS )){
+					if( this._TOONS[ mud_id ].ref.position.distanceTo( data.position ) < MAP.CHAT_DIST && !this._TOONS[ mud_id ].inside ){
+						t[ mud_id ] = this._TOONS[ mud_id ]
+					}
+				}
+				break;
+			case 'mumble_chat':
+				let dist
+				for( const mud_id of Object.keys( this._TOONS )){
+					dist = this._TOONS[ mud_id ].ref.position.distanceTo( data.position )
+					if( dist > MAP.CHAT_DIST && dist < MAP.MUMBLE_DIST && !this._TOONS[ mud_id ].inside ){
+						t[ mud_id ] = this._TOONS[ mud_id ]
+					}
+				}
+				break;
+			default: break;
+		}
+
+		return t
+
+	}
+
 
 
 	resolve_attack( TOON, packet ){

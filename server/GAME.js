@@ -357,33 +357,64 @@ class Game {
 
 
 
-	handle_chat( packet, mud_id ){
+	handle_chat( packet, zone, toon_id ){
 
 		if( packet.chat.match(/^\/.*/)){
-			this.handle_command( packet, mud_id )
+			this.handle_command( packet, toon_id )
 			return true
 		}
 
 		if( packet.chat == 'xyzzy'){
-			// SOCKETS[ mud_id ].send( JSON.stringify({
+			// SOCKETS[ toon_id ].send( JSON.stringify({
 			// 	type: 'zoom'
 			// }))
 			return true
 		}
 
-		for( const socket_mud_id of Object.keys( SOCKETS )){
+		let group
+
+		// log('flag','chat inside: ', typeof zone._TOONS[ toon_id ].inside )
+
+		if( zone._TOONS[ toon_id ].inside ){
+			group = zone.get_toons( 'structure', { inside: zone._TOONS[ toon_id ].inside } )
+		}else{
+			group = zone.get_toons( 'chat', { position: zone._TOONS[ toon_id ].ref.position } )
+		}
+
+		for( const mud_id of Object.keys( group ) ){ // normal range chats
 			let chat_pack = {
 				type: 'chat',
 				data: {
 					method: packet.method,
-					sender_mud_id: mud_id,
-					speaker: SOCKETS[ mud_id ].request.session.USER._TOON.name,
+					sender_mud_id: toon_id,
+					speaker: SOCKETS[ toon_id ].request.session.USER._TOON.name,
 					chat: lib.sanitize_chat( packet.chat ),
-					color: SOCKETS[ mud_id ].request.session.USER._TOON.color
+					color: SOCKETS[ toon_id ].request.session.USER._TOON.color
 				}
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
-			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))
+			SOCKETS[ mud_id ].send(JSON.stringify( chat_pack ))
+		}
+
+		if( !zone._TOONS[ toon_id ].inside ){ // mumble range chats
+
+			let mumble_group = zone.get_toons( 'mumble_chat', { position: zone._TOONS[ toon_id ].ref.position } )
+
+			for( const mud_id of Object.keys( mumble_group ) ){
+				let chat_pack = {
+					type: 'chat',
+					data: {
+						method: packet.method,
+						sender_mud_id: toon_id,
+						speaker: SOCKETS[ toon_id ].request.session.USER._TOON.name,
+						chat: lib.mumble( lib.sanitize_chat( packet.chat ) ),
+						color: SOCKETS[ toon_id ].request.session.USER._TOON.color
+					}
+				}
+				log('chat', chat_pack.speaker, chat_pack.chat )
+				SOCKETS[ mud_id ].send(JSON.stringify( chat_pack ))
+			}
+
 		}
 
 	}

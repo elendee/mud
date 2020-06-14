@@ -23,6 +23,7 @@ const styles = {
 	index: `<link rel='stylesheet' href='/client/css/index.css'>`,
 	avatar: `<link rel='stylesheet' href='/client/css/avatar.css'>`,
 	world: `<link rel='stylesheet' href='/client/css/world.css'>`,
+	structureGUI: `<link rel='stylesheet' href='/client/css/structureGUI.css'>`,
 	popup: `<link rel='stylesheet' href='/client/css/popup.css'>`,
 	chat: `<link rel='stylesheet' href='/client/css/chat.css'>`,
 	create: `<link rel='stylesheet' href='/client/css/create.css'>`,
@@ -329,7 +330,7 @@ const render = function( type, request, error ){
 			break;
 
 		case 'world':
-			css_includes += styles.world + styles.chat + styles.popup
+			css_includes += styles.world + styles.chat + styles.popup + styles.structureGUI
 			js_includes += scripts.world
 			return `
 			<html>

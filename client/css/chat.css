@@ -77,3 +77,25 @@
 	border: 1px solid;
 	font-size: 14px;
 }
+
+#chat.inside{
+	bottom: 22%;
+	left: 4%;
+	border: 1px solid rgb(50, 50, 50);
+	width: 92%;
+	height: 30%;
+/* 	border-radius: 5px; */
+}
+
+#chat.inside #chat-content{
+	height: 100%;
+}
+
+#chat.inside input{
+	border: 1px solid grey;
+}
+
+#chat.inside #chat-toggle{
+	display: none;
+}
+

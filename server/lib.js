@@ -440,6 +440,30 @@ function identify( type, entity ){
 }
 
 
+function mumble( chat ){
+
+	const chat_array = chat.split('')
+
+	let mumbling
+	let response = ''
+	let new_array = []
+	for( const letter of chat_array ){
+		new_array.push( mumbling > 0 ? '..' : letter )
+		if( mumbling > 0 ){
+			mumbling--
+		}else{
+			mumbling = Math.random() > .6 ? 3 : 0
+		}
+	}
+
+	for( const new_letter of new_array ){
+		response += new_letter
+	}
+	return response
+
+}
+
+
 module.exports = {
 	tables,
 	// gen_portrait,
@@ -468,6 +492,7 @@ module.exports = {
 	type_map,
 	// range_map,
 	get_dist,
-	identify
+	identify,
+	mumble
 }
 

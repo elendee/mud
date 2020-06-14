@@ -46,6 +46,10 @@ module.exports = {
 
 	// IMAGE_DEPTH: .3,
 
+	CHAT_DIST: 50,
+
+	MUMBLE_DIST: 100,
+
 	TARGET_DIST: 25,
 
 	ROTATE_RATE: .05,

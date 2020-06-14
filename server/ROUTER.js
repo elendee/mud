@@ -147,7 +147,7 @@ module.exports = {
 					break;
 
 				case 'chat':
-					GAME.handle_chat( packet, mud_id )
+					GAME.handle_chat( packet, GAME.ZONES[ TOON._current_zone ], mud_id )
 					break;
 
 				case 'equip':
@@ -166,8 +166,12 @@ module.exports = {
 					TOON.acquire( GAME.ZONES[ TOON._current_zone ], packet.mud_id )
 					break;
 
-				case 'enter':
+				case 'enter_structure':
 					TOON.attempt_entry( GAME.ZONES[ TOON._current_zone ], packet.mud_id )
+					break;
+
+				case 'exit_structure':
+					TOON.exit_structure( GAME.ZONES[ TOON._current_zone ], packet.mud_id )
 					break;
 				// case 'register':
 				// 	auth.register( SOCKETS[ mud_id ].request.session.USER, packet )

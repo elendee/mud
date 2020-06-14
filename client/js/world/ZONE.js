@@ -30,6 +30,8 @@ import TARGET from './ui/TARGET.js'
 import Flora from './env/Flora.js'
 import Structure from './env/Structure.js'
 
+import STRUCTURE from './ui/STRUCTURE.js'
+
 // import DIALOGUE from './'
 
 
@@ -413,6 +415,21 @@ class Zone {
 
 
 
+	handle_entry( data ){
+		if( data.success ){
+			if( data.toon_id === TOON.mud_id ){
+				TARGET.structure_ele.src = '/resource/images/icons/key.png'
+				TARGET.clear()
+				// console.log( data )
+				STRUCTURE.show( this.STRUCTURES[ data.structure_id ] )
+			}else{
+				
+				console.log('remove toon for entry..')	
+			}
+		}else{
+			hal( 'error', data.msg, 3000 )
+		}
+	}
 
 
 

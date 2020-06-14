@@ -125,18 +125,22 @@ class Chat {
 		// 	return false
 		// }
 
-		const bubble = new Bubble( data )
+		if( !TOON.inside ){
 
-		setTimeout(function(){
-			bubble.update_position( zone.TOONS, zone.NPCS )
-		}, 50)
+			const bubble = new Bubble( data )
 
-		this.BUBBLES[ bubble.hash ] = bubble
+			setTimeout(function(){
+				bubble.update_position( zone.TOONS, zone.NPCS )
+			}, 50)
 
-		setTimeout(function(){
-			bubble.ele.remove()
-			delete CHAT.BUBBLES[ bubble.hash ]
-		}, 6000 )
+			this.BUBBLES[ bubble.hash ] = bubble
+
+			setTimeout(function(){
+				bubble.ele.remove()
+				delete CHAT.BUBBLES[ bubble.hash ]
+			}, 6000 )
+			
+		}
 
 	}
 

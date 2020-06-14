@@ -67,6 +67,7 @@ export default class Entity {
 		}
 		if( init.proto_map[ init.address ].type === 'glb' ){
 			for( const child of mesh.children ){
+				console.log('name: ', child.name )
 				if( child.name.match(/_cs_/)){
 					child.castShadow = true
 				}

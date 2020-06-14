@@ -74,7 +74,10 @@ class Target {
 		})
 
 		this.structure_ele.addEventListener('click', ( e )=>{
-			TOON.attempt_entry( this.target.mud_id )
+			if( !this.structure_ele.src.match(/hourglass/)){
+				TOON.attempt_entry( this.target.mud_id )
+				this.structure_ele.src = '/resource/images/icons/hourglass.png'
+			}
 		})
 
 	}

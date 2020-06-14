@@ -181,12 +181,7 @@ const bind = function(){
 					break;
 
 				case 'entry':
-					// console.log('entry: ', packet )
-					if( packet.success ){
-						hal( 'success', 'you enter ' + lib.identify( 'name', ZONE.STRUCTURES[ packet.mud_id ] ) + ' (coming soon)', 3000 )
-					}else{
-						hal( 'error', packet.msg, 3000 )
-					}
+					ZONE.handle_entry( packet.data )
 					break;
 
 

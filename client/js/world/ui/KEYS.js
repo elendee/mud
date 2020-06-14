@@ -130,6 +130,16 @@ function handle_keydown( e ){
 
 			}//switch
 
+		}else if( STATE.handler === 'structure' ){
+
+			switch( e.keyCode ){
+				case BINDS.global.chat:
+					CHAT.input.focus()
+					break;
+
+				default: break;
+			}
+
 		}
 
 	}
