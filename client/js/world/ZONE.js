@@ -433,6 +433,70 @@ class Zone {
 
 
 
+	handle_npc_move( packet ){
+
+		const zone = this
+
+		for( const mud_id of Object.keys( packet ) ){
+
+			if( !zone.NPCS[ mud_id ] ){
+
+				console.log('requesting npc: ', mud_id )
+
+				window.SOCKET.send(JSON.stringify({
+					type: 'npc_ping',
+					mud_id: mud_id
+				}))
+
+			}else{
+
+				// console.log('updating patron pos: ', mud_id )
+				needs_move = needs_rotate = false
+
+				// if( !NPCS[ mud_id ] ) console.log('wtf: ', NPCS[ mud_id ] )
+				new_pos = packet[ mud_id ].position
+				new_quat = packet[ mud_id ].quaternion
+				old_pos = this.NPCS[ mud_id ].ref.position
+				old_quat = this.NPCS[ mud_id ].ref.quaternion
+
+				if( new_pos.x !== old_pos.x || new_pos.y !== old_pos.y || new_pos.z !== old_pos.z )  needs_move = true
+				if( new_quat._x !== old_quat._x || new_quat._y !== old_quat._y || new_quat._z !== old_quat._z || new_quat._w !== old_quat._w )  needs_rotate = true
+
+				if( needs_move ){
+
+					old_pos.set(
+						new_pos.x,
+						new_pos.y,
+						new_pos.z
+					)
+
+				}
+
+				if( needs_rotate ){
+
+					old_quat.set( 
+						new_quat._x,
+						new_quat._y,
+						new_quat._z,
+						new_quat._w
+					)
+
+				}
+
+				if( needs_move ) ANIMATE.receive_move()
+				if( needs_rotate ) ANIMATE.receive_rotate()
+
+				this.TOONS[ mud_id ].needs_move = needs_move
+				this.TOONS[ mud_id ].needs_rotate = Number( needs_rotate ) * 400
+
+			}
+
+		}
+
+	}
+
+
+
 	handle_move( packet ){
 
 		const zone = this
@@ -634,6 +698,13 @@ class Zone {
 
 	}
 
+
+
+	render_npc( data ){
+
+		console.log( 'render npc', data )
+
+	}
 
 
 

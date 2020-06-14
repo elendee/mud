@@ -62,6 +62,7 @@ class Zone extends Persistent {
 		// this._NPCS = init._NPCS || {}
 		this._TOONS = init._TOONS || {}
 		this._ITEMS = init._ITEMS || {}
+		this._NPCS = init._NPCS || {}
 
 		// this._DECOMPOSERS = init._DECOMPOSERS || {} // never persisted, so no _INSTANTIATER ^^
 
@@ -84,8 +85,8 @@ class Zone extends Persistent {
 		// reads
 
 		if( env.READ.FLORA )  await this.read_flora()
-
 		if( env.READ.STRUCTURES )  await this.read_structures()
+		if( env.READ.NPCS ) await this.read_npcs()
 
 		// if( env.READ.STRUCTURES )  
 		await this.read_items()
@@ -129,12 +130,25 @@ class Zone extends Persistent {
 				}
 			}
 
-			for( const mud_id of Object.keys( SOCKETS ) ){
-				SOCKETS[ mud_id ].send( JSON.stringify({
-					type: 'move_pulse',
-					data: packet
-				}))
+			zone.emit( 'move_pulse', SOCKETS, false, packet )
+
+			// for( const mud_id of Object.keys( SOCKETS ) ){
+			// 	SOCKETS[ mud_id ].send( JSON.stringify({
+			// 		type: 'move_pulse',
+			// 		data: packet
+			// 	}))
+			// }
+
+			let npc_packet = {}
+
+			for( const mud_id of Object.keys( zone._NPCS )){
+				npc_packet[ mud_id ] = {
+					position: zone._NPCS[ mud_id ].ref.position,
+					quaternion: zone._NPCS[ mud_id ].ref.quaternion
+				}
 			}
+
+			zone.emit( 'npc_pulse', SOCKETS, false, npc_packet )
 
 		}, GLOBAL.PULSES.MOVE )
 
@@ -486,6 +500,28 @@ class Zone extends Persistent {
 		for ( const structure of results ){
 			let struct = new Structure( structure )
 			this._STRUCTURES[ struct.mud_id ] = struct
+		}
+
+	}
+
+
+
+	async read_npcs(){
+
+		if( !this._id )  return false
+
+		const pool = DB.getPool()
+
+		// const limit = this._structure_target
+
+		const sql = 'SELECT * FROM npcs WHERE zone_key=' + this._id 
+
+		const { error, results, fields } = await pool.queryPromise( sql )
+		if( error ) log('flag', 'npc looukp  err: ', error )
+		// log('flag', 'results: ', results )
+		for ( const npc of results ){
+			let n = new Toon( npc )
+			this._NPCS[ n.mud_id ] = n
 		}
 
 	}

@@ -65,6 +65,21 @@ module.exports = {
 					}))
 					break;
 
+				case 'npc_ping':
+					// find toon's zone:
+					for( const zone_id of Object.keys( GAME.ZONES )){
+						for( const mud_id of Object.keys( GAME.ZONES[ zone_id ]._NPCS )){
+							if( mud_id === packet.mud_id ){
+								zone = GAME.ZONES[ zone_id ]
+							}
+						}
+					}
+					SOCKETS[ mud_id ].send(JSON.stringify({
+						type: 'npc_pong',
+						data: zone._NPCS[ packet.mud_id ].publish()
+					}))
+					break;
+
 				case 'ping_flora':
 					zone = loop_zones( GAME, mud_id )
 					if( zone ){

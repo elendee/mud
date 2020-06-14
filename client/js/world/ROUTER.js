@@ -63,17 +63,9 @@ const bind = function(){
 					ZONE.handle_move( packet.data )
 					break;
 
-				// case 'census':
-				// 	ZONE.census( packet.crowd )
-				// 	break;
-
-				// case 'profile_pong':
-				// 	ZONE.touch_patron( packet.patron )
-				// 	break;
-
-				// case 'floorplan_pong':
-				// 	ZONE.layout( packet.floorplan )
-				// 	break;
+				case 'npc_pulse':
+					ZONE.handle_npc_move( packet.data )
+					break;
 
 				case 'pong_flora':
 					ZONE.render_flora( packet.data ).catch( err => {
@@ -89,74 +81,41 @@ const bind = function(){
 
 				case 'pong_items':
 					ZONE.render_items( packet.data )
-					// .catch( err => {
-					// 	console.log('err render items: ', err )
-					// })
 					break;
 
 				case 'toon_pong':
 					ZONE.touch_toon( packet.data )
 					break;
 
+				case 'npc_pong':
+					ZONE.render_npc( packet.data )
+					break;
+
 				case 'dev_pong':
 					DEV.render('pong', packet.data )
 					break;
-
-				// case 'forest_pong':
-				// 	ZONE.walk_forest( packet.forest )
-				// 	break;
-
-				// case 'pillars':
-				// 	if( packet.pillars ){
-				// 		ZONE.install( packet.pillars, false )
-				// 	}else{
-				// 		setTimeout(function(){
-				// 			SOCKET.send( JSON.stringify({ 
-				// 				type: 'pillar_ping' 
-				// 			}))
-				// 		}, 1000 )
-				// 	}
-				// 	break;
 
 				case 'chat':
 					CHAT.add_chat( ZONE, packet.data )
 					break;
 
 				case 'login':
-					// console.error('finish switching logout to http .... ')
-					// if( packet.success ) {
-						// if( packet.patron.mud_id === window.TOON.mud_id ){
-						// 	hal('success', 'welcome back!', 3000)
-						// }
-						ZONE.touch_patron( packet.patron )
-					// }
+					ZONE.touch_patron( packet.patron )
 					break;
 
 				case 'logout':
 					console.error('finish switching logout to http .... ')
-					// hal('npc', 'adios!')
-					// setTimeout(function(){
-					// 	location.reload()
-					// }, 1000)
 					break;
 
 				case 'register':
-					// console.error('finish switching register to http .... ')
-					// if( packet.success ) {
 					if( packet.patron.mud_id === window.TOON.mud_id ){
 						hal('success', 'artist created', 4000)
 					}
 					ZONE.touch_patron( packet.patron )
-					// }
 					break;
 
 				case 'profile':
-					// console.error('finish switching update to http .... ')
-					// if( packet.msg == 'success' ){
 					ZONE.update_toon( packet )
-					// }else{
-					// 	console.log('error changing profile: ', packet )
-					// }
 					break;
 
 				case 'new_img':
