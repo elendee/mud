@@ -720,6 +720,8 @@ class Zone {
 
 	render_npc( data ){
 
+		console.log('adding npc: ', data )
+
 		this.NPCS[ data.mud_id ] = new Toon( data )
 		this.NPCS[ data.mud_id ].type = 'npc'
 		this.NPCS[ data.mud_id ].model()
