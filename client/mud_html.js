@@ -54,6 +54,8 @@ const overlays = {
 			</div>
 			<div class='toons'>
 			</div>
+			<div class='movers'>
+			</div>
 		</div>`,
 	chat:`
 		<div id='chat'>

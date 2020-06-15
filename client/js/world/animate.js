@@ -30,7 +30,7 @@ const facing = new Vector3()
 const FORWARD = new Vector3(0, 0, 1)
 
 const moving_toons = []
-const rotating_toons = []
+const rotating_toons = window.rotating_toons = []
 const animators = []
 
 
@@ -282,12 +282,6 @@ function animate( start ){
 	for( const mud_id of Object.keys( ZONE.TOONS )){ // should not include player
 		if( ZONE.TOONS[ mud_id ].needs_move ){
 			ZONE.TOONS[ mud_id ].MODEL.position.lerp( ZONE.TOONS[ mud_id ].ref.position, .02 )
-			if( ZONE.TOONS[ mud_id ].MODEL.position.distanceTo( ZONE.TOONS[ mud_id ].ref.position ) < .05 ){
-				ZONE.TOONS[ mud_id ].needs_move = false
-				moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
-				// delete moving_toons[ mud_id ]
-				// console.log('lerp arrived')
-			}
 		}
 		if( ZONE.TOONS[ mud_id ].needs_rotate > 0 ){
 			ZONE.TOONS[ mud_id ].MODEL.quaternion.slerp( ZONE.TOONS[ mud_id ].ref.quaternion, .01 )
@@ -302,13 +296,8 @@ function animate( start ){
 
 	for( const mud_id of Object.keys( ZONE.NPCS )){ // should not include player
 		if( ZONE.NPCS[ mud_id ].needs_move ){
+			// console.log('lerpin npc')
 			ZONE.NPCS[ mud_id ].MODEL.position.lerp( ZONE.NPCS[ mud_id ].ref.position, .02 )
-			if( ZONE.NPCS[ mud_id ].MODEL.position.distanceTo( ZONE.NPCS[ mud_id ].ref.position ) < .05 ){
-				ZONE.NPCS[ mud_id ].needs_move = false
-				moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
-				// delete moving_toons[ mud_id ]
-				// console.log('lerp arrived')
-			}
 		}
 		if( ZONE.NPCS[ mud_id ].needs_rotate > 0 ){
 			console.log( 'skipping npc slerp')

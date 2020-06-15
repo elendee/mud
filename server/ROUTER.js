@@ -5,7 +5,7 @@ const SOCKETS = require('./SOCKETS.js')
 const MAP = require('./MAP.js')
 // const PILLARS = require('./PILLARS.js')
 
-const EMIT = require('./EMIT.js')
+// const EMIT = require('./EMIT.js')
 
 const auth = require('./auth.js')
 

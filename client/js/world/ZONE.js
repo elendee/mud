@@ -18,6 +18,8 @@ import Toon from './Toon.js'
 
 import * as ANIMATE from './animate.js'
 
+import DEV from './ui/DEV.js'
+
 // import BuffGeoLoader from '../three/BuffGeoLoader.js'
 import * as SHADERS from './env/shaders.js'
 
@@ -182,10 +184,12 @@ class Zone {
 
 		const zone = this
 
-		this.intervals.anim_sweeper = setInterval(function(){
+		const moving_toons = window.moving_toons = ANIMATE.moving_toons
 
-			for( const mud_id of ANIMATE.moving_toons ){
-				if( !zone.TOONS[ mud_id ]) ANIMATE.moving_toons.splice( ANIMATE.moving_toons.indexOf( mud_id ), 1 )
+		zone.intervals.anim_sweeper = setInterval(function(){
+
+			for( const mud_id of moving_toons ){
+				if( !zone.TOONS[ mud_id ]) moving_toons.splice( moving_toons.indexOf( mud_id ), 1 )
 			}
 			for( const mud_id of ANIMATE.rotating_toons ){
 				if( !zone.TOONS[ mud_id ]) ANIMATE.rotating_toons.splice( ANIMATE.rotating_toons.indexOf( mud_id ), 1 )
@@ -193,9 +197,49 @@ class Zone {
 
 		}, 10000 )
 
+		zone.intervals.dist_sweeper = setInterval(function(){ // toggle off movement (and animation) for 'out of frame's
+
+			let removes = []
+
+			for( const mud_id of moving_toons ){
+
+				if( mud_id === TOON.mud_id ) continue
+
+				if( zone.TOONS[ mud_id ] ){
+					if( zone.TOONS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
+						zone.TOONS[ mud_id ].needs_move = false
+						if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
+					}else{
+						zone.TOONS[ mud_id ].needs_move = true
+						if( moving_toons.indexOf( mud_id ) < 0 )  moving_toons.push( mud_id )
+					}
+				}
+
+				if( zone.NPCS[ mud_id ] ){
+					if( zone.NPCS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
+						zone.NPCS[ mud_id ].needs_move = false
+						if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
+					}else{
+						zone.NPCS[ mud_id ].needs_move = true
+						if( moving_toons.indexOf( mud_id ) < 0 )  moving_toons.push( mud_id )
+					}
+				}
+
+			}
+
+			for( const r of removes ){
+				// console.log( 'removing ', r )
+				moving_toons.splice( moving_toons.indexOf( r ), 1 )
+			}
+
+			// DEV.render('movers', moving_toons )
+			// console.log('mvoing toons: ', moving_toons.length )
+
+		}, 2000 )
+
 		if( env.LOCAL ){
 
-			this.intervals.dev = setInterval(function(){
+			zone.intervals.dev = setInterval(function(){
 
 				SOCKET.send(JSON.stringify({
 					type: 'dev_ping'
@@ -466,7 +510,7 @@ class Zone {
 
 			}else{
 
-				console.log( 'movin toon: ', packet )
+				// console.log( 'movin toon: ', packet )
 
 				// console.log('updating patron pos: ', mud_id )
 				needs_move = needs_rotate = false

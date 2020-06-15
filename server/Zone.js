@@ -310,18 +310,35 @@ class Zone extends Persistent {
 
 
 
-	emit( type, group, exclude, packet ){
+	emit( type, group, exclude, packet, origin ){
 
 		if( typeof exclude === 'string' )  exclude = [ exclude ]
 
 		if( !exclude ) exclude = []
 
-		for( const mud_id of Object.keys( group )){
-			if( !exclude.includes( mud_id ) ){
-				SOCKETS[ mud_id ].send(JSON.stringify({
-					type: type,
-					data: packet
-				}))
+		// for( const mud_id of Object.keys( group )){
+		for( const mud_id of Object.keys( this._TOONS )){
+			let new_packet = {}
+			if( SOCKETS[ mud_id ]){
+				if( !exclude.includes( mud_id ) ){
+					// if( origin && origin.position.distanceTo( this._TOONS[ mud_id ].ref.position ) > origin.range ){
+					if( type === 'move_pulse' || type === 'npc_move_pulse' ){
+						for( const toon_id of Object.keys( packet )){
+							if( packet[ toon_id ].position.distanceTo( this._TOONS[ mud_id ].ref.position ) < 150 ){
+								new_packet[ toon_id ] = packet[ toon_id ]
+							}
+						}
+						SOCKETS[ mud_id ].send(JSON.stringify({
+							type: type,
+							data: new_packet
+						}))
+					}else{
+						SOCKETS[ mud_id ].send(JSON.stringify({
+							type: type,
+							data: packet
+						}))
+					}
+				}
 			}
 		}
 

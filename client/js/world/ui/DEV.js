@@ -1,5 +1,6 @@
 
 
+
 class Dev {
 
 	constructor( init ){
@@ -12,25 +13,13 @@ class Dev {
 		this.modulo = this.ele.querySelector('.anim-modulo')
 		this.zones = this.ele.querySelector('.zones')
 		this.toons = this.ele.querySelector('.toons')
+		this.movers = this.ele.querySelector('.movers')
 
 		this.anim_count = 0
 	}
 
 	render( type, data ){
 
-		// const data = obj ? obj.packet : false
-
-		// if( type == 'crowd' ){
-
-		// 	let toons = 'crowd:<br>'
-
-		// 	for( const mud_id of Object.keys( data )){
-		// 		toons += data[ mud_id ].name + '<br>'
-		// 	}
-
-		// 	this.crowd.innerHTML = toons
-
-		// }else 
 		if( type == 'coords' ){
 
 			this.coords.innerHTML = 'x: ' + data.packet.x + '<br>z: ' + data.packet.z
@@ -51,6 +40,13 @@ class Dev {
 			for( const mud_id of data.toons ){
 				this.toons.innerHTML += mud_id + '<br>'
 			}			
+
+		}else if( type == 'movers' ){
+
+			this.movers.innerHTML = 'movers: <br>'
+			for( const mover of data ){
+				this.movers.innerHTML += mover + '<br>'
+			}
 
 		}
 
