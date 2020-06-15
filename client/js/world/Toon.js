@@ -109,9 +109,9 @@ export default class Toon {
 
 		this.direction = 'north'
 
-		// this._stats.speed += MAP.SPEED_FLOOR
-
-		// this.speed = init.speed || env.SPEED
+		if( env.SPEED && this._stats ){
+			this._stats.speed = env.SPEED
+		}
 
 		this.MODEL = init.MODEL
 

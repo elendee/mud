@@ -88,7 +88,7 @@ const bind = function(){
 					break;
 
 				case 'npc_pong':
-					ZONE.render_npc( packet.data )
+					ZONE.touch_npc( packet.data )
 					break;
 
 				case 'dev_pong':

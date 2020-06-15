@@ -197,45 +197,45 @@ class Zone {
 
 		}, 10000 )
 
-		zone.intervals.dist_sweeper = setInterval(function(){ // toggle off movement (and animation) for 'out of frame's
+		// zone.intervals.dist_sweeper = setInterval(function(){ // toggle off movement (and animation) for 'out of frame's
 
-			let removes = []
+		// 	let removes = []
 
-			for( const mud_id of moving_toons ){
+		// 	for( const mud_id of moving_toons ){
 
-				if( mud_id === TOON.mud_id ) continue
+		// 		if( mud_id === TOON.mud_id ) continue
 
-				if( zone.TOONS[ mud_id ] ){
-					if( zone.TOONS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
-						zone.TOONS[ mud_id ].needs_move = false
-						if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
-					}else{
-						zone.TOONS[ mud_id ].needs_move = true
-						if( moving_toons.indexOf( mud_id ) < 0 )  moving_toons.push( mud_id )
-					}
-				}
+		// 		if( zone.TOONS[ mud_id ] ){
+		// 			if( zone.TOONS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
+		// 				zone.TOONS[ mud_id ].needs_move = false
+		// 				if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
+		// 			}else{
+		// 				zone.TOONS[ mud_id ].needs_move = true
+		// 				if( moving_toons.indexOf( mud_id ) < 0 )  moving_toons.push( mud_id )
+		// 			}
+		// 		}
 
-				if( zone.NPCS[ mud_id ] ){
-					if( zone.NPCS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
-						zone.NPCS[ mud_id ].needs_move = false
-						if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
-					}else{
-						zone.NPCS[ mud_id ].needs_move = true
-						if( moving_toons.indexOf( mud_id ) < 0 )  moving_toons.push( mud_id )
-					}
-				}
+		// 		if( zone.NPCS[ mud_id ] ){
+		// 			if( zone.NPCS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
+		// 				zone.NPCS[ mud_id ].needs_move = false
+		// 				if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
+		// 			}else{
+		// 				zone.NPCS[ mud_id ].needs_move = true
+		// 				if( moving_toons.indexOf( mud_id ) < 0 )  moving_toons.push( mud_id )
+		// 			}
+		// 		}
 
-			}
+		// 	}
 
-			for( const r of removes ){
-				// console.log( 'removing ', r )
-				moving_toons.splice( moving_toons.indexOf( r ), 1 )
-			}
+		// 	for( const r of removes ){
+		// 		// console.log( 'removing ', r )
+		// 		moving_toons.splice( moving_toons.indexOf( r ), 1 )
+		// 	}
 
-			// DEV.render('movers', moving_toons )
-			// console.log('mvoing toons: ', moving_toons.length )
+		// 	// DEV.render('movers', moving_toons )
+		// 	// console.log('mvoing toons: ', moving_toons.length )
 
-		}, 2000 )
+		// }, 2000 )
 
 		if( env.LOCAL ){
 
@@ -545,12 +545,26 @@ class Zone {
 
 				// }
 
-				if( needs_move ) ANIMATE.receive_move( mud_id )
+				if( needs_move ){
+					// if( zone.NPCS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) < 150 ){
+					 ANIMATE.receive_move( mud_id )
+					// }
+					this.NPCS[ mud_id ].needs_move = needs_move
+				}
 				// if( needs_rotate ) ANIMATE.receive_rotate()
 
-				this.NPCS[ mud_id ].needs_move = needs_move
 				// this.NPCS[ mud_id ].needs_rotate = Number( needs_rotate ) * 400
 
+			}
+
+		}
+
+		for( const mud_id of Object.keys( zone.NPCS )){
+
+			if( !packet[ mud_id ] && zone.NPCS[ mud_id ] ){
+				zone.remove_npc({
+					mud_id: mud_id 
+				})
 			}
 
 		}
@@ -643,11 +657,12 @@ class Zone {
 				this.TOONS[ toon_data.mud_id ] = new Toon( toon_data )
 				this.TOONS[ toon_data.mud_id ].model()
 				SCENE.add( this.TOONS[ toon_data.mud_id ].MODEL )
-				this.TOONS[ toon_data.mud_id ].MODEL.position.set(
-					this.TOONS[ toon_data.mud_id ].ref.position.x,
-					this.TOONS[ toon_data.mud_id ].ref.position.y,
-					this.TOONS[ toon_data.mud_id ].ref.position.z
-				)
+				this.TOONS[ toon_data.mud_id ].MODEL.position.copy( this.TOONS[ toon_data.mud_id ].ref.position )
+				// set(
+				// 	this.TOONS[ toon_data.mud_id ].ref.position.x,
+				// 	this.TOONS[ toon_data.mud_id ].ref.position.y,
+				// 	this.TOONS[ toon_data.mud_id ].ref.position.z
+				// )
 
 				RENDERER.frame( SCENE )
 
@@ -762,7 +777,7 @@ class Zone {
 
 
 
-	render_npc( data ){
+	touch_npc( data ){
 
 		console.log('adding npc: ', data )
 
@@ -770,6 +785,7 @@ class Zone {
 		this.NPCS[ data.mud_id ].type = 'npc'
 		this.NPCS[ data.mud_id ].model()
 		// this.NPCS[ data.mud_id ].MODEL.position.set( 75, 0, 75 )
+		this.NPCS[ data.mud_id ].MODEL.position.copy( this.NPCS[ data.mud_id ].ref.position )
 		SCENE.add( this.NPCS[ data.mud_id ].MODEL )
 
 	}
@@ -859,7 +875,24 @@ class Zone {
 
 	}
 
-						
+
+	remove_toon( data ){
+
+		if( TARGET.target.mud_id === data.mud_id ) TARGET.clear()
+		SCENE.remove( this.TOONS[ data.mud_id ].MODEL )
+		delete this.TOONS[ mud_id ]
+		RENDERER.frame( SCENE )
+
+	}
+
+	remove_npc( data ){
+
+		if( TARGET.target && TARGET.target.mud_id === data.mud_id ) TARGET.clear()
+		SCENE.remove( this.NPCS[ data.mud_id ].MODEL )
+		delete this.NPCS[ data.mud_id ]
+		RENDERER.frame( SCENE )
+
+	}
 
 
 

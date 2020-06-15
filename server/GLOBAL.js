@@ -6,12 +6,14 @@ module.exports = {
 		MOVE: 2000
 	},
 
+	RENDER_RANGE: 200,
+
 	START_RADIUS: 100,
 
 	TOON_START_POS: 100,
 
 	MAX_GROW_DAYS: 30,
 
-	MIN_FLORA_DIST: 10
+	MIN_FLORA_DIST: 10,
 
 }

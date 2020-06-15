@@ -321,10 +321,9 @@ class Zone extends Persistent {
 			let new_packet = {}
 			if( SOCKETS[ mud_id ]){
 				if( !exclude.includes( mud_id ) ){
-					// if( origin && origin.position.distanceTo( this._TOONS[ mud_id ].ref.position ) > origin.range ){
 					if( type === 'move_pulse' || type === 'npc_move_pulse' ){
 						for( const toon_id of Object.keys( packet )){
-							if( packet[ toon_id ].position.distanceTo( this._TOONS[ mud_id ].ref.position ) < 150 ){
+							if( packet[ toon_id ].position.distanceTo( this._TOONS[ mud_id ].ref.position ) < GLOBAL.RENDER_RANGE ){
 								new_packet[ toon_id ] = packet[ toon_id ]
 							}
 						}
