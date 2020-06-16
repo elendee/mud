@@ -17,6 +17,8 @@ module.exports = class Persistent {
 
 		this.subtype = init.subtype
 
+		this.race = init.race
+
 		this.icon_url = init.icon_url
 
 		this.model_url = init.model_url

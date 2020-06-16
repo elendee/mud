@@ -103,7 +103,7 @@ class Target {
 
 				this.target = ZONE.FLORA[ userData.mud_id ]
 
-			}else if( userData.type === 'toon' ){
+			}else if( userData.type === 'toon' || userData.type === 'npc' ){
 
 				if( userData.self ){
 

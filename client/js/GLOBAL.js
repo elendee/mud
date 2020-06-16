@@ -72,6 +72,15 @@ export default {
 
 	MODEL_TYPES: {
 
+		// toon:
+		'toon': 'glb',
+		'npc': 'glb',
+
+		'human': 'glb',
+		'gorgon': 'glb',
+		'gargoyle': 'glb',
+
+		// entity:
 		'structure_tavern': 'glb',
 		'structure_hut': 'glb',
 		'structure_blacksmith': 'obj',

@@ -60,7 +60,7 @@ export default class Entity {
 		}
 		if( init.proto_map[ init.address ].type === 'glb' ){
 			for( const child of mesh.children ){
-				console.log('name: ', child.name )
+				// console.log('name: ', child.name )
 				if( child.name.match(/_cs_/)){
 					child.castShadow = true
 				}
@@ -85,6 +85,8 @@ export default class Entity {
 		// 	console.log("model: ", proto, key )
 
 		// }
+
+		// console.log('model Entity: ', init )
 
 		if( proto.model.isMesh || proto.model.isGroup ){ 
 

@@ -2,6 +2,9 @@
 import * as lib from '../lib.js'
 import env from '../env.js'
 import MAP from '../MAP.js'
+import GLOBAL from '../GLOBAL.js'
+
+import Clickable from './Clickable.js'
 
 import { 
 	Vector3,
@@ -13,6 +16,9 @@ import {
 	Color,
 	Group
 } from '../lib/three.module.js'
+
+import gltfLoader from '../three/loader_GLTF.js'
+import objLoader from '../three/loader_OBJLoader.js'
 
 import RENDERER from '../three/RENDERER.js'
 import SCENE from '../three/SCENE.js'
@@ -117,7 +123,7 @@ export default class Toon {
 
 		this.logistic = this.logistic || []
 		this.logistic = this.logistic.concat( init.logistic )
-		this.logistic.push('needs_rotate', 'needs_move', 'needs_stream', 'direction', 'intervals', 'MODEL', 'BODY', 'HEAD', 'ARM_LEFT', 'ARM_RIGHT', 'LEG_LEFT', 'LEG_RIGHT', 'INVENTORY', '_INVENTORY', 'bindings')
+		this.logistic.push('needs_rotate','starter_equip', 'needs_move', 'needs_stream', 'direction', 'intervals', 'MODEL', 'BODY', 'HEAD', 'ARM_LEFT', 'ARM_RIGHT', 'LEG_LEFT', 'LEG_RIGHT', 'INVENTORY', '_INVENTORY', 'bindings')
 
 	}
 
@@ -162,98 +168,196 @@ export default class Toon {
 	}
 
 
-	model(){
+	model( proto_map ){
 
-		this.MODEL = new Group()
-		this.MODEL.castShadow = true
-		this.MODEL.receiveShadow = true
-		this.MODEL.userData = {
-			clickable: true,
-			mud_id: this.mud_id,
-			type: 'toon',
-			icon_url: this.icon_url,
-			// website: this.website,
-			name: this.name
+		if( !proto_map ){
+			debugger
 		}
 
-		this.BODY = new Group()
-		this.MODEL.add( this.BODY )
+		const toon = this
 
-		const material = new MeshLambertMaterial({
-			color: new Color( this.color )
+		return new Promise(( resolve, reject ) => {
+
+			const model = lib.identify( 'model', toon )
+			// console.log( model )
+
+			if( model === 'npc' || model === 'toon' ){
+
+				toon.MODEL = new Group()
+				toon.MODEL.castShadow = true
+				toon.MODEL.receiveShadow = true
+				toon.MODEL.userData = new Clickable( this )
+				// {
+				// 	clickable: true,
+				// 	mud_id: toon.mud_id,
+				// 	type: 'toon',
+				// 	icon_url: toon.icon_url,
+				// 	// website: toon.website,
+				// 	name: toon.name
+				// }
+
+				toon.BODY = new Group()
+				toon.MODEL.add( toon.BODY )
+
+				const material = new MeshLambertMaterial({
+					color: new Color( toon.color )
+				})
+
+				if( env.LOCAL && 0 ){
+					const gaze_geo = new BoxBufferGeometry(3, 3, 3)
+					const gaze_mat = material
+					toon.GAZE = new Mesh( gaze_geo, gaze_mat )
+					SCENE.add( toon.GAZE )
+				}
+
+				const torso_width = 1.3
+				const torso_depth = .5
+				const torso_geo = new BoxBufferGeometry( torso_width, toon.height * .4, torso_depth )
+				const torso = new Mesh( torso_geo, material )
+				torso.position.set( 0, .55, 0 )
+				toon.BODY.add( torso )
+
+				const hip_width = 1.3
+				const hip_depth = .5
+				const hip_geo = new BoxBufferGeometry( hip_width, toon.height * .2, hip_depth )
+				const hip = new Mesh( hip_geo, material )
+				hip.position.set( 0, 0, .01 )
+				toon.BODY.add( hip )
+
+				const head_geometry = new SphereBufferGeometry( .5, 8, 6 )
+				const head_material = material
+				toon.HEAD = new Mesh( head_geometry, material )
+				// toon.HEAD.castShadow = true
+				toon.HEAD.receiveShadow = true
+				toon.HEAD.position.set( 0, ( toon.height / 2 ) + .2, .1 ) 
+
+				const arm_length = 1.5
+				const arm_radius = .3
+				const arm_displace_x = .75
+				const arm_displace_y = (toon.height / 2) * .25
+				const arm_displace_z = .12
+
+				const arm_left = new BoxBufferGeometry( arm_radius, arm_length, arm_radius )
+				const arm_material = material
+				toon.ARM_LEFT = new Mesh( arm_left, arm_material )
+				// toon.ARM_LEFT.castShadow = true
+				toon.ARM_LEFT.receiveShadow = true
+				toon.ARM_LEFT.position.set( -arm_displace_x, arm_displace_y, arm_displace_z )
+
+				const arm_right = new BoxBufferGeometry( arm_radius, arm_length, arm_radius )
+				toon.ARM_RIGHT = new Mesh( arm_right, arm_material )
+				// toon.ARM_RIGHT.castShadow = true
+				toon.ARM_RIGHT.receiveShadow = true
+				toon.ARM_RIGHT.position.set( arm_displace_x, arm_displace_y, arm_displace_z )
+
+				const leg_length = 1.8
+				const leg_radius = .4
+				const leg_displace_x = .35
+				const leg_displace_y = -(toon.height / 2) * .5
+				const leg_displace_z = .12
+
+				const leg_left = new BoxBufferGeometry( leg_radius, leg_length, leg_radius )
+				const leg_material = material
+				toon.LEG_LEFT = new Mesh( leg_left, leg_material )
+				toon.LEG_LEFT.castShadow = true
+				toon.LEG_LEFT.receiveShadow = true
+				toon.LEG_LEFT.position.set( -leg_displace_x, leg_displace_y, leg_displace_z )
+
+				const leg_right = new BoxBufferGeometry( leg_radius, leg_length, leg_radius )
+				toon.LEG_RIGHT = new Mesh( leg_right, leg_material )
+				// toon.LEG_RIGHT.castShadow = true
+				toon.LEG_RIGHT.receiveShadow = true
+				toon.LEG_RIGHT.position.set( leg_displace_x, leg_displace_y, leg_displace_z )
+
+				toon.BODY.add( toon.HEAD )
+				toon.BODY.add( toon.ARM_LEFT )
+				toon.BODY.add( toon.ARM_RIGHT )
+				toon.BODY.add( toon.LEG_LEFT )
+				toon.BODY.add( toon.LEG_RIGHT )
+
+				resolve()
+
+			}else{
+
+				const type = GLOBAL.MODEL_TYPES[ model ]
+
+				const url  = '/resource/geometries/' + model + '.' + type
+
+				if( type === 'glb' ){
+
+					if( !proto_map[ model ] ){
+					
+						gltfLoader.load(
+							url,
+							function ( model ) {
+								proto_map[ model ] = model.scene
+								toon.MODEL = model.scene
+								toon.MODEL.traverse(function(ele){
+									if( ele.name.match(/_cs_/)){
+										ele.castShadow = true
+									}
+									toon.MODEL.userData = new Clickable( toon )
+									resolve( model.scene )
+								})
+								// gltf.animations; // Array<THREE.AnimationClip>
+								// gltf.scene; // THREE.Group
+								// gltf.scenes; // Array<THREE.Group>
+								// gltf.cameras; // Array<THREE.Camera>
+								// gltf.asset; // Object
+							},
+							function ( xhr ) {
+								console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+							},
+							function ( error ) {
+								reject( error )
+							}
+						)
+
+					}else{
+
+						toon.MODEL = proto_map[ model ]
+						resolve( proto_map[ model ] )
+
+					}
+
+				}else if( type === 'obj' ){
+
+					if( !proto_map[ model ] ){
+
+						objLoader.load(
+							url,
+							function ( model ) {
+
+								console.log( 'how to handle obj model: ', model )
+								debugger
+
+								// proto_map[ model ] = model.scene
+								// toon.MODEL = model.scene
+								// toon.MODEL.traverse(function(ele){
+								// 	if( ele.name.match(/_cs_/)){
+								// 		ele.castShadow = true
+								// 	}
+								// 	resolve( model.scene )
+								// })
+							},
+							function ( xhr ) {
+								console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+							},
+							function ( error ) {
+								reject( error )
+							}
+						)
+
+					}else{
+						toon.MODEL = proto_map[ model ]
+						resolve( proto_map[ model ] )
+					}
+
+				}
+
+			}
+
 		})
-
-		if( env.LOCAL && 0 ){
-			const gaze_geo = new BoxBufferGeometry(3, 3, 3)
-			const gaze_mat = material
-			this.GAZE = new Mesh( gaze_geo, gaze_mat )
-			SCENE.add( this.GAZE )
-		}
-
-		const torso_width = 1.3
-		const torso_depth = .5
-		const torso_geo = new BoxBufferGeometry( torso_width, this.height * .4, torso_depth )
-		const torso = new Mesh( torso_geo, material )
-		torso.position.set( 0, .55, 0 )
-		this.BODY.add( torso )
-
-		const hip_width = 1.3
-		const hip_depth = .5
-		const hip_geo = new BoxBufferGeometry( hip_width, this.height * .2, hip_depth )
-		const hip = new Mesh( hip_geo, material )
-		hip.position.set( 0, 0, .01 )
-		this.BODY.add( hip )
-
-		const head_geometry = new SphereBufferGeometry( .5, 8, 6 )
-		const head_material = material
-		this.HEAD = new Mesh( head_geometry, material )
-		this.HEAD.castShadow = true
-		this.HEAD.receiveShadow = true
-		this.HEAD.position.set( 0, ( this.height / 2 ) + .2, .1 ) 
-
-		const arm_length = 1.5
-		const arm_radius = .3
-		const arm_displace_x = .75
-		const arm_displace_y = (this.height / 2) * .25
-		const arm_displace_z = .12
-
-		const arm_left = new BoxBufferGeometry( arm_radius, arm_length, arm_radius )
-		const arm_material = material
-		this.ARM_LEFT = new Mesh( arm_left, arm_material )
-		this.ARM_LEFT.castShadow = true
-		this.ARM_LEFT.receiveShadow = true
-		this.ARM_LEFT.position.set( -arm_displace_x, arm_displace_y, arm_displace_z )
-
-		const arm_right = new BoxBufferGeometry( arm_radius, arm_length, arm_radius )
-		this.ARM_RIGHT = new Mesh( arm_right, arm_material )
-		this.ARM_RIGHT.castShadow = true
-		this.ARM_RIGHT.receiveShadow = true
-		this.ARM_RIGHT.position.set( arm_displace_x, arm_displace_y, arm_displace_z )
-
-		const leg_length = 1.8
-		const leg_radius = .4
-		const leg_displace_x = .35
-		const leg_displace_y = -(this.height / 2) * .5
-		const leg_displace_z = .12
-
-		const leg_left = new BoxBufferGeometry( leg_radius, leg_length, leg_radius )
-		const leg_material = material
-		this.LEG_LEFT = new Mesh( leg_left, leg_material )
-		this.LEG_LEFT.castShadow = true
-		this.LEG_LEFT.receiveShadow = true
-		this.LEG_LEFT.position.set( -leg_displace_x, leg_displace_y, leg_displace_z )
-
-		const leg_right = new BoxBufferGeometry( leg_radius, leg_length, leg_radius )
-		this.LEG_RIGHT = new Mesh( leg_right, leg_material )
-		this.LEG_RIGHT.castShadow = true
-		this.LEG_RIGHT.receiveShadow = true
-		this.LEG_RIGHT.position.set( leg_displace_x, leg_displace_y, leg_displace_z )
-
-		this.BODY.add( this.HEAD )
-		this.BODY.add( this.ARM_LEFT )
-		this.BODY.add( this.ARM_RIGHT )
-		this.BODY.add( this.LEG_LEFT )
-		this.BODY.add( this.LEG_RIGHT )
 
 	}
 

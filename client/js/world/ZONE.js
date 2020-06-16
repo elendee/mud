@@ -95,11 +95,12 @@ class Zone {
 
 		this.ITEMS = {}
 
-		this.proto_map = {}
+		this.entity_proto_map = {}
+		this.toon_proto_map = {}
 
 	}
 
-	initialize(){
+	async initialize(){
 
 		KEYS.init( this )
 		MOUSE.init( this )
@@ -108,7 +109,7 @@ class Zone {
 
 		const TOON = window.TOON
 
-		TOON.model()
+		await TOON.model( this.toon_proto_map )
 		TOON.MODEL.userData.self = true
 
 		this.TOONS[ TOON.mud_id ] = TOON
@@ -304,24 +305,24 @@ class Zone {
 
 				model_type = GLOBAL.MODEL_TYPES[ entity_address ];      if( !model_type ){ console.log( 'invalid model type: ', entity_address); continue }
 
-				if( !this.proto_map[ entity_address ] || !this.proto_map[ entity_address ].model ){  ///// prototype models
+				if( !this.entity_proto_map[ entity_address ] || !this.entity_proto_map[ entity_address ].model ){  ///// prototype models
 					
-					this.proto_map[ entity_address ] = {}
-					this.proto_map[ entity_address ].model = 'awaiting'
-					this.proto_map[ entity_address ].type = model_type
+					this.entity_proto_map[ entity_address ] = {}
+					this.entity_proto_map[ entity_address ].model = 'awaiting'
+					this.entity_proto_map[ entity_address ].type = model_type
 
 					const proto_model = new base_class( entity )
 					model_inits.push( proto_model.proto({
-							proto_map: zone.proto_map,
+							proto_map: zone.entity_proto_map,
 							address: entity_address
 						}) 
 					)
 
 				}
 
-				if( model_type === 'obj' && !this.proto_map[ entity_address ].material ){ ///// prototype materials
+				if( model_type === 'obj' && !this.entity_proto_map[ entity_address ].material ){ ///// prototype materials
 
-					// this.proto_map[ entity_address ].material = new ShaderMaterial({
+					// this.entity_proto_map[ entity_address ].material = new ShaderMaterial({
 					// 	uniforms: SHADERS.uniforms,
 					// 	fragmentShader: SHADERS.sampleFragment(),
 					// 	vertexShader: SHADERS.baseVertexShader(),
@@ -336,7 +337,7 @@ class Zone {
 						}
 					}
 
-					this.proto_map[ entity_address ].material = new MeshLambertMaterial({
+					this.entity_proto_map[ entity_address ].material = new MeshLambertMaterial({
 						color: color
 					})
 
@@ -418,8 +419,8 @@ class Zone {
 
 			const model_key = entity.type + '_' + entity.subtype
 
-			let proto_mesh = this.proto_map[ model_key ].model
-			let proto_material = this.proto_map[ model_key ].material
+			let proto_mesh = this.entity_proto_map[ model_key ].model
+			let proto_material = this.entity_proto_map[ model_key ].material
 
 			
 
@@ -427,7 +428,7 @@ class Zone {
 
 				entity.model({ 
 					address: model_key,
-					proto_map: this.proto_map,
+					proto_map: this.entity_proto_map,
 					// proto_mesh: proto_mesh,
 					// proto_material: proto_material
 				})
@@ -648,14 +649,17 @@ class Zone {
 	}
 
 
-	touch_toon( toon_data ){
+	async touch_toon( toon_data ){
 
 		if( toon_data ){
 			if( this.TOONS[ toon_data.mud_id ] ){
 				// update
 			}else{
 				this.TOONS[ toon_data.mud_id ] = new Toon( toon_data )
-				this.TOONS[ toon_data.mud_id ].model()
+
+				await this.TOONS[ toon_data.mud_id ].model( this.toon_proto_map )
+				// .catch( err=> { console.log('err modeling: ', err )})
+				
 				SCENE.add( this.TOONS[ toon_data.mud_id ].MODEL )
 				this.TOONS[ toon_data.mud_id ].MODEL.position.copy( this.TOONS[ toon_data.mud_id ].ref.position )
 				// set(
@@ -783,10 +787,11 @@ class Zone {
 
 		this.NPCS[ data.mud_id ] = new Toon( data )
 		this.NPCS[ data.mud_id ].type = 'npc'
-		this.NPCS[ data.mud_id ].model()
-		// this.NPCS[ data.mud_id ].MODEL.position.set( 75, 0, 75 )
-		this.NPCS[ data.mud_id ].MODEL.position.copy( this.NPCS[ data.mud_id ].ref.position )
-		SCENE.add( this.NPCS[ data.mud_id ].MODEL )
+		this.NPCS[ data.mud_id ].model( this.toon_proto_map )
+		.then( res => {
+			this.NPCS[ data.mud_id ].MODEL.position.copy( this.NPCS[ data.mud_id ].ref.position )
+			SCENE.add( this.NPCS[ data.mud_id ].MODEL )
+		})
 
 	}
 

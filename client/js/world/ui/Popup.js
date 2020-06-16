@@ -3,6 +3,8 @@ import * as MOUSE from './MOUSE.js'
 import * as POPUPS from './POPUPS.js'
 import * as lib from '../../lib.js'
 import TARGET from './TARGET.js'
+import BINDS from './BINDS.js'
+import { keyCodes } from './KEYS.js'
 
 export default class Popup {
 	
@@ -31,6 +33,8 @@ export default class Popup {
 		this.diffX = 0
 		this.diffY = 0
         
+        this.rendered = false
+
         this.init()
 
 		POPUPS.all.push( this )
@@ -61,7 +65,7 @@ export default class Popup {
 
 		this.close = document.createElement('div')
 		this.close.classList.add('close')
-		this.close.innerHTML = 'X'
+		this.close.innerHTML = '&times;'
 		this.topbar.appendChild( this.close )
 
 		this.content = document.createElement('div')
@@ -244,6 +248,35 @@ export default class Popup {
 	}
 
 	render_settings(){
+
+		// this.content_equip.innerHTML = this.content_resource.innerHTML = ''
+
+		if( !this.rendered ){
+			this.content.innerHTML = ''
+			this.content.innerHTML = 'Keybinds: '
+			for( const category of Object.keys( BINDS ) ){
+				const cat = document.createElement('div')
+				cat.innerHTML = category + ': <br>'
+				cat.classList.add('bind-category')
+				this.content.appendChild( cat )
+				for( const bind of Object.keys( BINDS[ category ] ) ){
+					if( typeof BINDS[ category ][ bind ] === 'object' ){
+						for( const sub_bind of Object.keys( BINDS[ category ][ bind ] ) ){
+							const row = document.createElement('div')
+							row.classList.add('sub-bind')
+							row.innerHTML = sub_bind + ': <span>' + keyCodes[ BINDS[ category ][ bind ][ sub_bind ] ]+ '</span>'
+							cat.appendChild( row )
+						}
+					}else{
+						const row = document.createElement('div')
+						row.classList.add('bind')
+						row.innerHTML = bind + ': <span>' + keyCodes[ BINDS[ category ][ bind ] ] + '</span>'
+						cat.appendChild( row )
+					}
+				}
+			}
+			this.rendered = true
+		}
 
 		console.log('render settings')
 

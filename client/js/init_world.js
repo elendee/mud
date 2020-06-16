@@ -84,7 +84,7 @@ async function init_session( res ){
 
 	// SCENE.add( SKYBOX )
 
-	ZONE.initialize()
+	await ZONE.initialize()
 
 	// const box = new BoxBufferGeometry(3, 3, 3)
 	// const wires = new WireframeGeometry( box )

@@ -295,9 +295,13 @@ function animate( start ){
 	}
 
 	for( const mud_id of Object.keys( ZONE.NPCS )){ // should not include player
-		if( ZONE.NPCS[ mud_id ].needs_move ){
-			// console.log('lerpin npc')
-			ZONE.NPCS[ mud_id ].MODEL.position.lerp( ZONE.NPCS[ mud_id ].ref.position, .02 )
+		if( ZONE.NPCS[ mud_id ].MODEL ){
+			if( ZONE.NPCS[ mud_id ].needs_move ){
+				// console.log('lerpin npc')
+				ZONE.NPCS[ mud_id ].MODEL.position.lerp( ZONE.NPCS[ mud_id ].ref.position, .02 )
+			}
+		}else{
+			console.log('no model for : ', lib.identify( 'name', ZONE.NPCS[ mud_id ] ) )
 		}
 		if( ZONE.NPCS[ mud_id ].needs_rotate > 0 ){
 			console.log( 'skipping npc slerp')

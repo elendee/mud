@@ -40,6 +40,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.height = lib.validate_number( init.height, 3 )
 
+		this.race = init.race
+
 		this.speed = lib.validate_number( init._stats ? init._stats.speed : undefined, init.speed, 20 )
 
 		let random_seed = Math.floor( Math.random() * 100 )

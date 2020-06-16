@@ -340,13 +340,13 @@ function identify( type, entity ){
 			return ( entity.name || entity.resource_type || entity.subtype || entity.type )
 
 		case 'model':
-			return ( entity.model_url || entity.subtype || entity.type )
+			return ( entity.model_url || entity.race || entity.subtype || entity.type ).toLowerCase()
 
 		case 'icon':
-			return ( entity.resource_type || entity.icon_url || entity.subtype || entity.type )
+			return ( entity.icon_url || entity.race || entity.resource_type || entity.subtype || entity.type ).toLowerCase()
 
 		default: 
-			return entity.subtype || entity.type
+			return ( entity.subtype || entity.type ).toLowerCase()
 
 	}
 
