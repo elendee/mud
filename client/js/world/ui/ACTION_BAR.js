@@ -99,20 +99,28 @@ function init_character_buttons(){
 		id: 'character'
 	})
 	char_pop.render = function(){
-
 		char_pop.render_stats( window.TOON )
-
 	}
+
 	const inv_pop = new Popup({
 		id: 'inventory',
 		curX: 200, 
 		curY: 100
 	})
 	inv_pop.render = function(){
-
 		inv_pop.render_inventory( window.TOON.INVENTORY )
-
 	}
+
+	const settings_pop = new Popup({
+		id: 'settings',
+		curX: 250, 
+		curY: 150
+	})
+	settings_pop.render = function(){
+		settings_pop.render_settings()
+	}
+
+	// settings_wrapper.appendChild( character )
 
 	const character_wrapper = document.createElement('div')
 	character_wrapper.id = 'character-wrapper'
@@ -136,6 +144,20 @@ function init_character_buttons(){
 	})
 
 	character_wrapper.appendChild( inventory )
+
+	// const settings_wrapper = document.createElement('div')
+	// settings_wrapper.id = 'settings-wrapper'
+
+	const settings = document.createElement('div')
+	settings.innerHTML = '<img src="/resource/images/icons/settings.png">'
+	settings.id = 'ab-settings'
+	settings.classList.add('bar-button')
+	settings.addEventListener('click', function(){
+		settings_pop.set_visible( true )
+		// char_pop.set_visible(true)
+	})
+
+	character_wrapper.appendChild( settings )
 
 	action_bar.appendChild( character_wrapper )
 

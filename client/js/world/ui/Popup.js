@@ -243,6 +243,12 @@ export default class Popup {
 
 	}
 
+	render_settings(){
+
+		console.log('render settings')
+
+	}
+
 	render_item( category, mud_id, INVENTORY ){
 
 		let item = INVENTORY[ mud_id ]
