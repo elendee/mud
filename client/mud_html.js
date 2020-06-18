@@ -66,7 +66,7 @@ const overlays = {
 		</div>`,
 	target:`
 		<div id='target' class='dialogue hold-click' data-name='target'>
-			<div class='inner'>
+			<div class='inner circle-rimmed'>
 				<img id='target-profile' src=''>
 			</div>
 		</div>
@@ -81,6 +81,13 @@ const overlays = {
 			<div id='target-mana' class='bar'>
 				<div class='status'></div>
 				<div class='readout flex-wrapper'></div>
+			</div>
+		</div>`,
+	dedders: `
+		<div id='dedders'>
+			<div class='flex-liner'>
+				<img class='circle-rimmed' src='/resource/images/icons/skull.png'>
+				<a href='/' class='button'>respawn</a>
 			</div>
 		</div>`,
 	shaders: `
@@ -347,6 +354,7 @@ const render = function( type, request, error ){
 					${ overlays.world_ui }
 					${ overlays.chat }
 					${ overlays.target }
+					${ overlays.dedders }
 					${ overlays.shaders }
 				</body>
 			</html>`

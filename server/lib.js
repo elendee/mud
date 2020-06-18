@@ -324,14 +324,6 @@ function validate_seconds( ...vals ){
 }
 
 
-const type_map = {
-	'flora': '_FLORA',
-	'npc': '_NPCS',
-	'toon': '_TOONS',
-	'structure': '_STRUCTURES',
-	'resource': '_RESOURCE',
-	'npc': '_NPCS'
-}
 
 
 // const range_map = {
@@ -465,6 +457,25 @@ function mumble( chat ){
 }
 
 
+const _enum = {
+	objectives: {
+		'travel': 'travel',
+		'wait': 'wait',
+		'attack': 'attack'
+	},
+	types: {
+		'flora': '_FLORA',
+		'npc': '_NPCS',
+		'toon': '_TOONS',
+		'structure': '_STRUCTURES',
+		'resource': '_RESOURCE',
+		'npc': '_NPCS',
+		'item': '_ITEMS'
+	}
+}
+
+
+
 module.exports = {
 	tables,
 	// gen_portrait,
@@ -490,10 +501,10 @@ module.exports = {
 	validate_seconds,
 	validate_vec3,
 	validate_quat,
-	type_map,
 	// range_map,
 	get_dist,
 	identify,
-	mumble
+	mumble,
+	_enum,
 }
 

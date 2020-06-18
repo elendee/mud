@@ -25,6 +25,16 @@ class Resolver {
 
 				}else{
 
+					// npc retaliate:
+					if( data.target.type === 'npc' ){
+						data.target.assign_objective( lib._enum.objectives['attack'], data.zone, {
+							target: data.attacker
+						})
+					}
+
+					// log('flag', 'attack response here combat.js 29', data.target._objective )
+					// }
+
 					// log('flag', 'attacker: ', data.attacker )
 
 					let power = ( data.item.power || 0 ) + ( data.attacker._stats.strength || 0 )
@@ -32,18 +42,20 @@ class Resolver {
 					let dmg = Math.max( 0, Math.floor( Math.random() * ( power - defense ) ) )
 
 					// log('flag', 'wtf mate: ', data.item.power, data.attacker._stats.strength )
-
-					let loot = false
-
-					if( dmg >= data.target.health.current ){
-						
-						data.target._status = 'dead'
-						
-						loot = data.target.drop_loot()
-
+					if( typeof power !== 'number' || typeof defense !== 'number' || typeof dmg !== 'number' || typeof data.target.health.current !== 'number'){
+						log('flag', 'invalid combat', power, defense, dmg, data.target.health.current )
+						return false
 					}
 
 					data.target.health.current = Math.max( 0, data.target.health.current - dmg )
+					log('flag', 'target_health: ', data.target.health.current )
+
+					let loot = false
+					if( data.target.health.current <= 0 ){
+						loot = data.target.drop_loot()
+						data.target.die()
+						// log('flag', 'should be sendin DEDDERS', data.target._status)
+					}
 
 					return {
 						type: 'combat',
@@ -60,6 +72,7 @@ class Resolver {
 					}
 				}
 
+				// out of range or dead fails:
 				return {
 					type: 'combat',
 					success: false,
@@ -71,6 +84,7 @@ class Resolver {
 				}
 
 				break;
+
 			default: 
 				log('flag', 'unresolved combat type')
 				break;

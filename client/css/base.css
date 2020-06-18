@@ -55,6 +55,9 @@ input{
     letter-spacing: 2px;
     font-family: sans-serif;
 }
+a.button{
+	text-decoration: none;
+}
 
 #alert-contain{
 	position: fixed;

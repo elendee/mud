@@ -726,6 +726,11 @@ class Zone {
 				RENDERER.frame( SCENE )
 			}, 1000 * 60 * 1 )
 
+			if( target.mud_id === TOON.mud_id ){
+				STATE.handler = 'dedders'
+				document.getElementById('dedders').style.display = 'initial'
+			}
+
 		}
 
 		this.render_resolution_flash( target, attacker, resolution )

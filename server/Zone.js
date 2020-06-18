@@ -136,9 +136,9 @@ class Zone extends Persistent {
 			for( const mud_id of Object.keys( zone._NPCS )){
 
 				if( !zone._NPCS[ mud_id ]._objective ){
-					zone._NPCS[ mud_id ].assign_objective()
+					zone._NPCS[ mud_id ].idle( zone )
 				}else{
-					zone._NPCS[ mud_id ].move()
+					zone._NPCS[ mud_id ].move( zone )
 				}
 
 				npc_packet[ mud_id ] = {
@@ -212,20 +212,20 @@ class Zone extends Persistent {
 
 
 
-	resolve_attack( TOON, packet ){
+	resolve_attack( AGENT, packet ){
 
 		let slot = Number( packet.slot )
 
 		if( slot === 2 || slot === 3 ){
 
-			let item = TOON._INVENTORY[ TOON.equipped[ slot ] ]
+			let item = AGENT._INVENTORY[ AGENT.equipped[ slot ] ]
 
 			if( !item ){
-				if( slot == 2 ) item = TOON.left_hand
-				if( slot == 3 ) item = TOON.right_hand
+				if( slot == 2 ) item = AGENT.left_hand
+				if( slot == 3 ) item = AGENT.right_hand
 			}
 
-			let entity_type = lib.type_map[ packet.target.type ]
+			let entity_type = lib._enum.types[ packet.target.type ]
 
 			if( !entity_type ) return false
 
@@ -233,18 +233,23 @@ class Zone extends Persistent {
 
 			if( !target ){
 				log('flag', 'no target found to attack', packet )
+				if( AGENT.type === 'npc' )  AGENT.idle( this )
 				return false
 			}
 
-			let dist = lib.get_dist( TOON.ref.position, target.ref.position )
+			let dist = lib.get_dist( AGENT.ref.position, target.ref.position )
 
 			let resolution = COMBAT.resolve({
 				type: 'attack',
-				attacker:TOON, 
+				attacker: AGENT, 
 				item: item, 
 				target: target, 
 				dist: dist,
+				zone: this
 			})
+
+			this.emit('combat_resolution', SOCKETS, [], resolution )
+			// emit before delete !! ^^ vv
 
 			if( resolution.status === 'dead' ){
 				delete this[ entity_type ][ target.mud_id ]
@@ -252,8 +257,6 @@ class Zone extends Persistent {
 			if( resolution.loot && resolution.loot.length ){
 				this.add_items( resolution.loot, target.ref.position )
 			}
-
-			this.emit('combat_resolution', SOCKETS, [], resolution )
 
 		}else{
 

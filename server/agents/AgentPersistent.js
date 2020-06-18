@@ -68,6 +68,13 @@ class AgentPersistent extends Persistent {
 		this.height = lib.validate_number( init.height, 5 )
 		this.length = lib.validate_number( init.length, 5 )
 
+		this.intervals = {
+			attack: {
+				left: false,
+				right: false,
+			}
+		}
+
 		this.ref.quaternion = lib.validate_quat( this.ref.quaternion )
 
 		this.logistic = this.logistic || []
@@ -85,6 +92,36 @@ class AgentPersistent extends Persistent {
 	calculate_mana(){
 
 		return this._stats.intellect * 50
+
+	}
+
+	die(){
+
+		this._status = 'dead'
+
+		if( this._objective ){
+
+			this._objective.void( this )
+
+			this.clear_intervals( this.intervals )
+
+		}
+		
+	}
+
+	clear_intervals(){
+
+		const obj = this.intervals
+
+		for( const key of Object.keys( obj ) ){ // clear all intervals
+			if( typeof obj[ key ] === 'number' ){
+				clearInterval( obj[ key ] )
+			}else if( typeof obj[ key ] === 'object' ){
+				for( const subkey of Object.keys( obj[key]) ){
+					clearInterval( obj[ key ][ subkey ] )
+				}
+			}
+		}
 
 	}
 

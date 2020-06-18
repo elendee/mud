@@ -13,11 +13,6 @@ const Item = require('../items/Item.js')
 
 const SOCKETS = require('../SOCKETS.js')
 
-const objective_enum = {
-	'travel': 'travel', 
-	'attack': 'attack',
-	'wait': 'wait'
-}
 
 let remaining_dist
 
@@ -26,11 +21,22 @@ class Objective{
 	constructor( init ){
 
 		init = init || {}
-		this.type = objective_enum[ init.type ]
-		this.destination = lib.validate_vec3( init.destination, new Vector3(500, 0, 500) )
+		this.type = lib._enum.objectives[ init.type ]
+		this.destination = lib.validate_vec3( init.destination, new Vector3( 500, 0, 500 ) )
 		this.target = init.target
-		this.count = init.count
+		this.count = init.count || 10
 
+	}
+
+	void( agent ){
+		if( !agent ){
+			log('flag', 'invalid obj void')
+			return false
+		}
+		this.type = 'wait'
+		this.target = false
+		this.count = 10
+		this.destination = new Vector3().clone( agent.ref.position )
 	}
 
 }
@@ -44,12 +50,6 @@ module.exports = class Toon extends AgentPersistent {
 		super( init )
 
 		init = init || {}
-
-		// needs hydrations.  not sure if needed yet..
-		this._session = init._session || {
-			inventory: false,
-			equipped: false	
-		}
 
 		this.type = 'npc'
 
@@ -113,6 +113,10 @@ module.exports = class Toon extends AgentPersistent {
 		this.equipped = init.equipped 
 
 		this._abiding = init._abiding 
+
+		this._objective = new Objective({
+			type: 'wait'
+		})
 
 		this.logistic = this.logistic || []
 		this.logistic.push('equipped', 'right_hand', 'left_hand')
@@ -227,11 +231,68 @@ module.exports = class Toon extends AgentPersistent {
 
 
 
-	assign_objective(){
+
+	assign_objective( type, zone, data ){
+
+		if( !type || !zone || !data ){
+			log('flag', 'invalid assign_objective', typeof type, typeof zone, typeof data )
+			return false
+		}
+
+		if( type === 'attack' ){ // begin intervals
+
+			const left_item = this._INVENTORY[ this.equipped[ 2 ] ] ? this._INVENTORY[ this.equipped[ 2 ] ] : this.left_hand
+			const right_item = this._INVENTORY[ this.equipped[ 3 ] ] ? this._INVENTORY[ this.equipped[ 3 ] ] : this.right_hand
+
+			if( !this.intervals.attack.left ){
+				this.intervals.attack.left = setInterval(() => {
+					zone.resolve_attack( this, {
+						slot: 2,
+						target: {
+							type: data.target.type,
+							mud_id: data.target.mud_id
+						}
+					})
+				}, left_item.cooldown )
+			}
+
+			if( !this.intervals.attack.right ){
+				this.intervals.attack.right = setInterval(() => {
+					zone.resolve_attack( this, {
+						slot: 3,
+						target: {
+							type: data.target.type,
+							mud_id: data.target.mud_id
+						}
+					})
+				}, right_item.cooldown )
+			}
+
+		}else{
+
+			this.clear_intervals( this.intervals )
+
+		}
+
+
+		this._objective = new Objective({
+			type: type,
+			destination: data.destination,
+			count: data.count,
+			target: data.target
+		})
+
+	}
+
+
+	idle( zone ){
+
+		if( !zone ){
+			log('flag', 'invalid idle')
+			return false
+		}
 
 		if( Math.random() < .2 ){
-
-			// log('flag', 'new dest')
 
 			let new_x = Math.floor( Math.random() * 1000 )
 			let new_z = Math.floor( Math.random() * 1000 )
@@ -242,19 +303,13 @@ module.exports = class Toon extends AgentPersistent {
 			if( new_z < 0 ) new_z = Math.abs( new_z )
 			if( new_z > 1000 ) new_z = new_z - 1000 
 
-			this._objective = new Objective({
-				type: 'travel',
+			this.assign_objective( lib._enum.objectives['travel'], zone, { 
 				destination: new Vector3( new_x, 0, new_z )
 			})
-
-			// throw new Error(0)
-
+			
 		}else{
 
-			// log('flag', 'new wait')
-
-			this._objective = new Objective({
-				type: 'wait',
+			this.assign_objective( lib._enum.objectives['wait'], zone, {
 				count: Math.floor( Math.random() * 10 )
 			})
 
@@ -264,13 +319,17 @@ module.exports = class Toon extends AgentPersistent {
 
 
 
-	move(){
+	move( zone ){
 
 		if( this._objective.type === 'travel' ){
 
 			// log('flag', 'travel')
 
-			if( !this._objective.destination ) return false
+			if( !this._objective.destination || !this._objective.destination.isVector3 ){
+				log('flag', 'invalid destination npc.move()')
+				this._objective.void( this )
+				return false
+			}
 
 			this._scratch.facing.subVectors( this._objective.destination, this.ref.position ).normalize()
 			const projection = new Vector3().copy( this._scratch.facing ).multiplyScalar( this.speed )
@@ -280,8 +339,9 @@ module.exports = class Toon extends AgentPersistent {
 			// log('flag', 'r: ', remaining_dist)
 
 			if( this._scratch.projection.distanceTo( this.ref.position ) >  remaining_dist ){
+
 				this.ref.position.copy( this._objective.destination )
-				this._objective = false
+				this._objective.void( this )
 
 			}else{
 				this.ref.position.copy( this._scratch.projection )
@@ -291,14 +351,26 @@ module.exports = class Toon extends AgentPersistent {
 
 			// log('flag', 'attack')
 
-			if( !this._objective.target ) return false
+			if( !this._objective.target || this._objective.target.inside ){
+				this.idle( zone )
+				return false
+			}
 
 			this._scratch.facing.subVectors( this._objective.target.ref.position, this.ref.position ).normalize()
 			this._scratch.projection.copy( this._scratch.facing ).multiplyScalar( this.speed )
 
-			if( this._scratch.projection.distanceTo( this.ref.position ) > this._objective.destination.distanceTo( this.ref.position )){
-				this.ref.position = this._objective.destination
-				this._objective = false
+			const projected_loc = this.ref.position.clone().add( this._scratch.projection ) // distanceTo( this.ref.position )
+			const remaining_dist = this._objective.target.ref.position.distanceTo( this.ref.position )
+			const projected_dist = this.ref.position.distanceTo( projected_loc )
+
+			// log('flag', remaining_dist, projected_dist )
+
+			if( projected_dist > remaining_dist ){
+				if( this.ref.position.distanceTo( this._objective.target.ref.position ) > 5 ){
+					this._scratch.projection.divideScalar( this.speed ).multiplyScalar( (projected_dist / 2) )
+					this.ref.position.add( this._scratch.projection )
+					// log('flag', 'npc edged closer..')
+				}
 			}else{
 				this.ref.position.add( this._scratch.projection )
 			}
@@ -308,7 +380,7 @@ module.exports = class Toon extends AgentPersistent {
 			// log('flag', 'wait')
 
 			this._objective.count--
-			if( this._objective.count <= 0 ) this.assign_objective()
+			if( this._objective.count <= 0 ) this.idle( zone )
 
 		}
 

@@ -22,10 +22,10 @@ module.exports = class Toon extends AgentPersistent {
 		init = init || {}
 
 		// needs hydrations.  not sure if needed yet..
-		this._session = init._session || {
-			inventory: false,
-			equipped: false	
-		}
+		// this._session = init._session || {
+		// 	inventory: false,
+		// 	equipped: false	
+		// }
 
 		this.type = 'toon'
 
