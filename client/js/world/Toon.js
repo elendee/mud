@@ -179,9 +179,51 @@ export default class Toon {
 		return new Promise(( resolve, reject ) => {
 
 			const model = lib.identify( 'model', toon )
+
+			const type = GLOBAL.MODEL_TYPES[ model ]
+
+			const url  = '/resource/geometries/' + model + '.' + type
 			// console.log( model )
 
 			if( model === 'npc' || model === 'toon' ){
+
+				// if( !proto_map[ model ] ){
+					
+				// 	gltfLoader.load(
+				// 		url,
+				// 		function ( model ) {
+				// 			console.log('>>>>>', model )
+				// 			proto_map[ model ] = model.scene
+				// 			toon.MODEL = model.scene
+				// 			toon.MODEL.traverse(function(ele){
+				// 				if( ele.name.match(/_cs_/)){
+				// 					ele.castShadow = true
+				// 				}
+				// 				toon.MODEL.userData = new Clickable( toon )
+				// 			})
+						
+				// 			resolve( model.scene )
+
+				// 			// gltf.animations; // Array<THREE.AnimationClip>
+				// 			// gltf.scene; // THREE.Group
+				// 			// gltf.scenes; // Array<THREE.Group>
+				// 			// gltf.cameras; // Array<THREE.Camera>
+				// 			// gltf.asset; // Object
+				// 		},
+				// 		function ( xhr ) {
+				// 			console.log( model + ' ' + ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+				// 		},
+				// 		function ( error ) {
+				// 			reject( error )
+				// 		}
+				// 	)
+
+				// }else{
+
+				// 	toon.MODEL = proto_map[ model ]
+				// 	resolve( proto_map[ model ] )
+
+				// }
 
 				toon.MODEL = new Group()
 				toon.MODEL.castShadow = true
@@ -278,10 +320,6 @@ export default class Toon {
 				resolve()
 
 			}else{
-
-				const type = GLOBAL.MODEL_TYPES[ model ]
-
-				const url  = '/resource/geometries/' + model + '.' + type
 
 				if( type === 'glb' ){
 
