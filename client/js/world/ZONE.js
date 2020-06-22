@@ -33,6 +33,8 @@ import CHAT from './ui/CHAT.js'
 import * as EFFECTS from './ui/EFFECTS.js'
 import TARGET from './ui/TARGET.js'
 
+import Popup from './ui/Popup.js'
+
 import Flora from './env/Flora.js'
 import Structure from './env/Structure.js'
 
@@ -105,6 +107,12 @@ class Zone {
 		KEYS.init( this )
 		MOUSE.init( this )
 		CHAT.init()
+		TARGET.popup = new Popup({
+			id: 'inspector',
+			curX: 150, 
+			curY: 20
+		})
+		TARGET.popup.render = TARGET.popup.render_target
 		// DIALOGUE.init()
 
 		const TOON = window.TOON
@@ -479,7 +487,6 @@ class Zone {
 	handle_entry( data ){
 		if( data.success ){
 			if( data.toon_id === TOON.mud_id ){
-				TARGET.structure_ele.src = '/resource/images/icons/key.png'
 				TARGET.clear()
 				// console.log( data )
 				STRUCTURE.show( this.STRUCTURES[ data.structure_id ] )
@@ -490,6 +497,7 @@ class Zone {
 		}else{
 			hal( 'error', data.msg, 3000 )
 		}
+		TARGET.structure_ele.src = '/resource/images/icons/key.png'
 	}
 
 

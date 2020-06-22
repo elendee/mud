@@ -15,6 +15,7 @@ import * as MOUSE from './MOUSE.js'
 
 import texLoader from '../../three/texLoader.js'
 
+
 import { 
 	// LineSegments, 
 	// WireframeGeometry, 
@@ -64,6 +65,8 @@ class Target {
 		this.mana_readout = document.querySelector('#target-mana .readout')
 		this.profile_img = document.getElementById('target-profile')
 
+		this.popup = false
+
 		this.reticule = reticule
 
 		this.target = init.target
@@ -78,6 +81,10 @@ class Target {
 				TOON.attempt_entry( this.target.mud_id )
 				this.structure_ele.src = '/resource/images/icons/hourglass.png'
 			}
+		})
+
+		this.profile_img.addEventListener('click', (e)=>{
+			this.popup.set_visible( true )
 		})
 
 	}

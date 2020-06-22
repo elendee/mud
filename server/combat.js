@@ -48,7 +48,7 @@ class Resolver {
 					}
 
 					data.target.health.current = Math.max( 0, data.target.health.current - dmg )
-					log('flag', 'target_health: ', data.target.health.current )
+					// log('flag', 'target_health: ', data.target.health.current )
 
 					let loot = false
 					if( data.target.health.current <= 0 ){

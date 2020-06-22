@@ -7,8 +7,8 @@ import Clickable from '../Clickable.js'
 
 import { 
 	// CylinderBufferGeometry,
-	// MeshBasicMaterial,
-	// MeshLambertMaterial,
+	MeshBasicMaterial,
+	MeshLambertMaterial,
 	Mesh,
 	Box3,
 	// DoubleSide,
@@ -19,6 +19,25 @@ import {
 	// Sprite,
 	// RepeatWrapping
 } from '../../lib/three.module.js'
+
+const materials = {
+	wooddark: new MeshLambertMaterial({
+		color: 'rgb(40, 20, 15)'
+	}),
+	stonedark: new MeshLambertMaterial({
+		color: 'rgb(100, 100, 100)'
+	}),
+	forge: new MeshLambertMaterial({
+		color: 'rgb(10,10,10)'
+	}),
+	furnace: new MeshBasicMaterial({
+		color: 'rgb(255, 185, 50)',
+		// emissive: 'rgb(55, 05, 120)'
+	})
+}
+
+window.materials = materials
+
 
 
 export default class Entity {
@@ -32,6 +51,10 @@ export default class Entity {
 		}
 
 		this.MODEL = false
+
+		this.logistic = []
+		this.logistic = this.logistic.concat( init.logistic )
+		this.logistic.push('MODEL', 'orientation')
 
 	}
 
@@ -54,20 +77,42 @@ export default class Entity {
 		if( init.proto_map[ init.address ].type === 'obj' ) mesh = group.children[0]
 		if( init.proto_map[ init.address ].type === 'glb' ) mesh = group.scene
 
+
 		if( !mesh ){
 			console.log('invalid obj prototype requested: ', lib.identify( 'generic', this ) )
 			return false
 		}
+
 		if( init.proto_map[ init.address ].type === 'glb' ){
-			for( const child of mesh.children ){
-				// console.log('name: ', child.name )
-				if( child.name.match(/_cs_/)){
-					child.castShadow = true
+
+			// let mat
+
+			mesh.traverse((ele)=>{
+				// if( init.address.match(/blacksmit/) ) console.log('n: ', ele.name )
+				if( ele.name.match(/_cs_/)){
+					ele.castShadow = true
 				}
-			}
+				if( ele.name.match(/_rs_/)){
+					ele.receiveShadow = true
+				}
+				if( ele.name.match(/_mat/)){
+					window[ ele.name ] = ele
+					// console.log( ele.name.substr( ele.name.indexOf('_mat') + 4 ) )
+					// console.log( 'trying to assign: ', materials[ ele.name.substr( ele.name.indexOf('_mat') + 4 ) ] )
+					ele.material = materials[ ele.name.substr( ele.name.indexOf('_mat') + 5 ) ]
+					// console.log('mat after: ', ele.material )
+				}
+			})
+			// for( const child of mesh.children ){
+			// 	if( child.name.match(/_cs_/)){
+			// 		child.castShadow = true
+			// 	}
+			// }
+		}else{ // obj 
+			mesh.castShadow = true
+			mesh.receiveShadow = true			
 		}
-		mesh.castShadow = true
-		mesh.receiveShadow = true
+
 
 		init.proto_map[ init.address ].model = mesh
 
@@ -78,19 +123,13 @@ export default class Entity {
 	model( init ){
 		// address
 		// proto_map
+
 		let proto = init.proto_map[ init.address ]
-		// let key = init.address
-
-		// if( key.match(/blacksmith/)){
-		// 	console.log("model: ", proto, key )
-
-		// }
-
-		// console.log('model Entity: ', init )
 
 		if( proto.model.isMesh || proto.model.isGroup ){ 
 
 			this.MODEL = proto.model.clone()
+
 			if( proto.type === 'obj' && proto.material )  this.MODEL.material = proto.material
 			// if( init.this.MODEL.material = init.proto_material
 			this.inflate()

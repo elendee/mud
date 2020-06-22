@@ -4,6 +4,11 @@ const log = require('../log.js')
 const EnvironPersistent = require('./EnvironPersistent.js')
 
 
+
+const has_proprietors = ['blacksmith', 'tavern']
+
+
+
 class Structure extends EnvironPersistent {
 
 	constructor( init ){
@@ -30,11 +35,28 @@ class Structure extends EnvironPersistent {
 		this.height = lib.validate_number( init.height, 40 )
 		this.length = lib.validate_number( init.length, 40 )
 
+		this.proprietor_name = init.proprietor_name
+
 		this.orientation = lib.validate_number( init.orientation, 0 )
 
 		this._private = lib.validate_number( init._private, init.private, false )
 		this._owners = init._owners || []
 		this._residents = []
+
+		this.fill_proprietor( this.proprietor_name )
+
+	}
+
+
+
+	fill_proprietor(){
+
+		if( has_proprietors.includes[ this.subtype ] ){
+			this.proprietor = new Proprietor({
+				type: this.subtype,
+				name: this.proprietor_name
+			})
+		}
 
 	}
 
@@ -83,6 +105,29 @@ class Structure extends EnvironPersistent {
 
 	}
 
+}
+
+
+
+
+class Proprietor{
+
+	constructor( init ){
+		init = init || {}
+		this.name = init.proprietor_name || 'An anonymous figure'
+	}
+
+	process_input( input ){
+
+		if( input.match(/^hi$/i) ){
+
+		}else if( input.match(/^hello$/i)){
+
+		}else if( input.match(/adf/)){
+
+		}
+
+	}
 }
 
 

@@ -475,6 +475,15 @@ const _enum = {
 }
 
 
+function publish( obj ){
+	let r = {}
+	for( const key of Object.keys( obj ) ){
+		r[ key ] = obj[ key ].publish()
+	}
+	return r
+}
+
+
 
 module.exports = {
 	tables,
@@ -506,5 +515,6 @@ module.exports = {
 	identify,
 	mumble,
 	_enum,
+	publish
 }
 

@@ -289,7 +289,7 @@ class Zone extends Persistent {
 				zone._TIMEOUTS.items[ item.mud_id ] = setTimeout(function(){
 					if( zone && zone._ITEMS[ item.mud_id ] ){
 						delete zone._ITEMS[ item.mud_id ]
-						zone.emit( 'pong_items', SOCKETS, false, zone.bundle_items() )
+						zone.emit( 'pong_items', SOCKETS, false, lib.publish( zone._ITEMS ) )
 					}
 				}, 1000 * 60 * 5 )
 
@@ -297,18 +297,10 @@ class Zone extends Persistent {
 
 		}
 
-		zone.emit( 'pong_items', SOCKETS, false, zone.bundle_items() )
+		zone.emit( 'pong_items', SOCKETS, false, lib.publish( zone._ITEMS ) )
 
 	}
 
-
-	bundle_items(){
-		const bundle = {}
-		for( const mud_id of Object.keys( this._ITEMS ) ){
-			bundle[ mud_id ] = this._ITEMS[ mud_id ].publish()
-		}
-		return bundle
-	}
 
 
 

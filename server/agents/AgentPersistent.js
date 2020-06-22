@@ -3,6 +3,8 @@ const env = require('../.env.js')
 const lib = require('../lib.js')
 const log = require('../log.js')
 
+const DB = require('../db.js')
+
 const Persistent = require('../Persistent.js')
 
 const { Vector3 } = require('three')
@@ -106,7 +108,23 @@ class AgentPersistent extends Persistent {
 			this.clear_intervals( this.intervals )
 
 		}
-		
+
+		if( !this._table || !this._id ){
+			log('flag', 'invalid die DELETE', this._table + '___ ' + this._id )
+			return false
+		}
+
+		const pool = DB.getPool()
+
+		pool.query( 'DELETE FROM ' + this._table + ' WHERE id=' + this._id, (error, results, fields) => {
+			if( error ){
+				log('flag', 'err killing agent', error )
+				return false
+			}
+			log('flag', 'agent die result: ', results )
+			// resolve({ error, results, fields })
+		})
+
 	}
 
 	clear_intervals(){

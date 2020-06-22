@@ -83,7 +83,7 @@ export default {
 		// entity:
 		'structure_tavern': 'glb',
 		'structure_hut': 'glb',
-		'structure_blacksmith': 'obj',
+		'structure_blacksmith': 'glb',
 		'flora_oak': 'obj',
 		'flora_pine': 'obj',
 		// 'plainsgrass': 'obj',

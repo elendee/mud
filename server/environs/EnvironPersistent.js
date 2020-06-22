@@ -9,6 +9,8 @@ const FACTORY = require('../items/FACTORY.js')
 
 const LOOT = require('./LOOT_types.js')
 
+const DB = require('../db.js')
+
 class EnvironPersistent extends Persistent {
 
 	constructor( init ){
@@ -90,6 +92,32 @@ class EnvironPersistent extends Persistent {
 		return loot
 
 	}
+
+
+
+	die(){
+
+		this._status = 'dead'
+
+		if( !this._table || !this._id ){
+			log('flag', 'invalid die DELETE', this._table + '___ ' + this._id )
+			return false
+		}
+
+		const pool = DB.getPool()
+
+		pool.query( 'DELETE FROM ' + this._table + ' WHERE id=' + this._id, (error, results, fields) => {
+			if( error ){
+				log('flag', 'err killing environ', error )
+				return false
+			}
+			log('flag', 'environ die result: ', results )
+			// resolve({ error, results, fields })
+		})
+
+	}
+
+
 
 }
 

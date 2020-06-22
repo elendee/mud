@@ -10,7 +10,7 @@ export default class Structure extends Entity{
 		init = init || {}
 
 		this.type = 'structure'
-
+		
 	}
 
 }

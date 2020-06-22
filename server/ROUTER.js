@@ -83,9 +83,10 @@ module.exports = {
 				case 'ping_flora':
 					zone = loop_zones( GAME, mud_id )
 					if( zone ){
+						const flora = lib.publish( zone._FLORA )
 						SOCKETS[ mud_id ].send(JSON.stringify({
 							type: 'pong_flora',
-							data: zone._FLORA
+							data: flora
 						}))
 					}
 					break;
@@ -93,9 +94,10 @@ module.exports = {
 				case 'ping_structures':
 					zone = loop_zones( GAME, mud_id )
 					if( zone ){
+						const structures = lib.publish( zone._STRUCTURES )
 						SOCKETS[ mud_id ].send(JSON.stringify({
 							type: 'pong_structures',
-							data: zone._STRUCTURES
+							data: structures
 						}))
 					}
 					break;
@@ -103,9 +105,10 @@ module.exports = {
 				case 'ping_items':
 					zone = loop_zones( GAME, mud_id )
 					if( zone ){
+						const items = lib.publish( zone._ITEMS )
 						SOCKETS[ mud_id ].send(JSON.stringify({
 							type: 'pong_items',
-							data: zone.bundle_items()
+							data: items
 						}))
 					}
 					break;

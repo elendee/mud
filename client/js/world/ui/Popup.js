@@ -306,6 +306,57 @@ export default class Popup {
 
 	}
 
+
+	render_target(){
+
+		if( !TARGET.target ) return false
+
+		this.content.innerHTML = ''
+
+		this.portrayal = document.createElement('div')
+		this.portrayal.classList.add('portrayal')
+		this.portrayal_wrapper = document.createElement('div')
+		this.portrayal_wrapper.classList.add('circle-rimmed')
+		this.portrayal.appendChild( this.portrayal_wrapper )
+		this.portrayal_img = document.createElement('img')
+		this.portrayal_img.src = '/resource/images/icons/' + lib.identify('icon', TARGET.target ) + '.png'
+		this.portrayal_wrapper.appendChild( this.portrayal_img )
+		this.portrayal.appendChild( this.portrayal_wrapper )
+		this.content.appendChild( this.portrayal )
+
+		for( const key of Object.keys( TARGET.target )){
+
+			if( !TARGET.target.logistic.includes( key ) ){
+
+				let this_key = TARGET.target[ key ]
+
+				if( typeof this_key === 'object' ) {
+
+					let stat_wrapper = document.createElement('div')
+					stat_wrapper.classList.add('stat-wrapper')
+					this.content.appendChild( stat_wrapper )
+					
+					let stat_wrap_title = document.createElement('div')
+					stat_wrap_title.classList.add('stat-key')
+					stat_wrap_title.innerHTML = '<span class="stat-wrap-title">' + key.replace('_','') + ':</span><br>'
+					stat_wrapper.appendChild( stat_wrap_title )
+					
+					for( const sub_key of Object.keys( TARGET.target[ key ] ) ){
+						render_stat( sub_key, TARGET.target[ key ][ sub_key ], stat_wrapper )
+					}
+
+				}else{
+					render_stat( key, TARGET.target[ key ], this.content )
+				}
+				
+
+			}
+
+		}
+
+	}
+
+
 	unrender(){
 		this.content_equip.innerHTML = this.content_resource.innerHTML = ''
 		// this.content.innerHTML = ''

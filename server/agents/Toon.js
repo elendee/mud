@@ -443,6 +443,23 @@ module.exports = class Toon extends AgentPersistent {
 		if( !zone._ITEMS[ mud_id ] ){ log('flag', 'item is not in zone: ', mud_id, zone._ITEMS ); return false }
 		if( this._INVENTORY[ mud_id ] ){ log('flag', 'toon already has item: ', mud_id ); return false }
 
+
+		if( typeof zone._ITEMS[ mud_id ]._id !== 'number' || typeof this._id !== 'number' ){
+			return false
+			log('flag', 'invalid item acquire', zone._ITEMS[ mud_id ], 'toon id: ' + this._id )
+		}
+
+		const pool = DB.getPool()
+
+		pool.query('UPDATE items SET owner_key=' + this._id + ', zone_key=NULL, npc_key=NULL', (error, rseults, fields)=>{
+			if( error ){
+				log('flag', 'error toon acquire', err )
+				return false
+			}
+			log('toon', 'update item success')
+		})
+
+
 		this._INVENTORY[ mud_id ] = zone._ITEMS[ mud_id ]
 		delete zone._ITEMS[ mud_id ]
 
@@ -454,7 +471,7 @@ module.exports = class Toon extends AgentPersistent {
 		// log('flag', 'WHY\n',  this._INVENTORY )//publish_inventory() )
 		SOCKETS[ this.mud_id ].request.session.save()
 
-		log('flag', 'toon acquired ', mud_id )
+		// log('flag', 'toon acquired ', mud_id )
 
 		// emit acquisition (for all other toons)
 		zone.emit('zone_remove_item', SOCKETS, [], { mud_id: mud_id } )
@@ -465,6 +482,8 @@ module.exports = class Toon extends AgentPersistent {
 			data: this._INVENTORY,
 			// mud_id: mud_id
 		}))
+
+		
 
 	}
 

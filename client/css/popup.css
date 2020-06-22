@@ -217,3 +217,19 @@ body.mousehold .popup:hover .overlay{
 .sub-bind span{
 	float: right;
 }
+
+.portrayal{
+	text-align: center;
+/* 	border: 2px solid; */
+}
+
+.portrayal .circle-rimmed{
+	width: 100px;
+	height: 100px;
+	display: inline-block;
+}
+
+
+.portrayal .circle-rimmed img{
+	width: 100%;
+}
