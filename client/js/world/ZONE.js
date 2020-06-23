@@ -476,7 +476,7 @@ class Zone {
 				if( needs_move ){
 
 					if( !old_pos || !old_pos.isVector3 ){
-						console.log('missing ref.position for ', this.NPCS[ mud_id ] )
+						console.log('missing ref.position for ', mud_id, this.NPCS[ mud_id ] )
 						return false
 					}
 
