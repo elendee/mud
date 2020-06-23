@@ -35,7 +35,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.icon_url = init.icon_url || 'toon'
 
-		this._INVENTORY = init._INVENTORY || {}
+		this._INVENTORY = init._INVENTORY
 
 		// this.surname = init.surname || 'O\'Toon'
 		this.surname = init.surname 
@@ -66,12 +66,12 @@ module.exports = class Toon extends AgentPersistent {
 		this._camped_key = lib.validate_number( init._camped_key, init.camped_key, undefined )
 
 		this._eqp = {
-			hand_left: false,
-			hand_right: false,
-			waist_left: false,
-			waist_right: false,
-			back1: false,
-			back2: false
+			hand_left: lib.validate_string( init.eqp_hand_left, undefined ),
+			hand_right: lib.validate_string( init.eqp_hand_right, undefined ),
+			waist_left: lib.validate_string( init.eqp_waist_left, undefined ),
+			waist_right: lib.validate_string( init.eqp_waist_right, undefined ),
+			back1: lib.validate_string( init.eqp_back1, undefined ),
+			back2: lib.validate_string( init.eqp_back2, undefined ),
 		}
 
 		this.left_hand = init.left_hand || new Item({
@@ -86,11 +86,15 @@ module.exports = class Toon extends AgentPersistent {
 			range: 15
 		})
 
-		this.starter_equip = init.starter_equip || false
-
 		this.inside = init.inside
 
-		this.equipped = init.equipped 
+		this.equipped = init.equipped // || new Array(6)
+		// this.equipped[0] = lib.validate_number( init.eqp_waist_left, undefined )
+		// this.equipped[1] = lib.validate_number( init.eqp_back1, undefined )
+		// this.equipped[2] = lib.validate_number( init.eqp_hand_left, undefined )
+		// this.equipped[3] = lib.validate_number( init.eqp_hand_right, undefined )
+		// this.equipped[4] = lib.validate_number( init.eqp_back2, undefined )
+		// this.equipped[5] = lib.validate_number( init.eqp_waist_right, undefined )
 
 		this._abiding = init._abiding 
 
@@ -103,58 +107,27 @@ module.exports = class Toon extends AgentPersistent {
 	}
 
 
+
+
+
+
+
+
 	async touch_inventory(){
 
 		if( typeof( this._id ) === 'number' ){ // registered user
 
 			log('toon', 'registered user login: ', this._id, lib.identify( 'name', this ))
 
-			if( typeof this._INVENTORY === 'object' ){
+			if( typeof this._INVENTORY === 'object' ){ // toon is already in memory
 
-				// log('flag', 'created test: ', typeof this._created, typeof this._edited ) 
-
-				if( this._created && this._created.toString() === this._edited.toString() ){
-
-					log('toon', 'first time toon fill: ', this._created, this._edited )
-
-					const stick = new FACTORY({
-						subtype: 'melee',
-						name: 'Unwieldy Stick',
-						power: 2,
-						owner_key: this._id
-					})
-					this._INVENTORY[ stick.mud_id ] = stick
-
-					const trousers = new FACTORY({
-						subtype: 'armor',
-						name: 'Unwieldy Trousers',
-						owner_key: this._id,
-						// icon_url: 'noun_trousers',
-					})
-					this._INVENTORY[ trousers.mud_id ] = trousers
-
-					const belt = new FACTORY({
-						subtype: 'armor',
-						name: 'Unwieldy Vest',
-						owner_key: this._id,
-						// icon_url: 'noun_shirt',
-					})
-					this._INVENTORY[ belt.mud_id ] = belt
-
-					await this._INVENTORY[ stick.mud_id ].save()
-					await this._INVENTORY[ trousers.mud_id ].save()
-					await this._INVENTORY[ belt.mud_id ].save()
-
-					this._initialized_inventory = true
-
-					await this.save()
-
-				}
+				this.touch_equipped()
 
 				return true
 
+			}else{ // standard retrieve
 
-			}else{
+				this._INVENTORY = {}
 
 				const pool = DB.getPool()
 
@@ -166,31 +139,60 @@ module.exports = class Toon extends AgentPersistent {
 					return false
 				}
 
-				log('toon', 'retrieved ' + results.length + ' items for toon ' + this._id )
+				if( !results.length ){ // toon no items
 
-				for( const item of results ){
-					const this_item = new FACTORY( item )
-					this._INVENTORY[ this_item.mud_id ] = this_item
+					log('toon', 'no items found for toon')
+
+					if( !this.initialized_inventory ){ //  new toon fill
+
+						log('toon', 'new toon inventory fill')
+						
+						const stick = new FACTORY({
+							subtype: 'melee',
+							name: 'Unwieldy Stick',
+							power: 2,
+							owner_key: this._id
+						})
+						this._INVENTORY[ stick.mud_id ] = stick
+
+						const trousers = new FACTORY({
+							subtype: 'armor',
+							name: 'Unwieldy Trousers',
+							owner_key: this._id,
+							// icon_url: 'noun_trousers',
+						})
+						this._INVENTORY[ trousers.mud_id ] = trousers
+
+						const belt = new FACTORY({
+							subtype: 'armor',
+							name: 'Unwieldy Vest',
+							owner_key: this._id,
+							// icon_url: 'noun_shirt',
+						})
+						this._INVENTORY[ belt.mud_id ] = belt
+
+					}
+
+				}else{ // standard fill
+
+					log('toon', 'registered toon retrieved: ' + results.length + ' items for toon ' + this._id )
+
+					for( const item of results ){
+						const this_item = new FACTORY( item )
+						this._INVENTORY[ this_item.mud_id ] = this_item
+					}
+
 				}
 
-				if( !results.length ){
-					const stick = new FACTORY({
-						subtype: 'melee',
-						name: 'Unwieldy Stick',
-						power: 2
-					})
-					this._INVENTORY[ stick.mud_id ] = stick
-				}
-
-				return true
+				this.touch_equipped()
 
 			}
 
-		}else{  // unregistered
+		}else{  // unregistered inventory fill
 
-			log('toon', 'unregistered user login: ', lib.identify( 'name', this ) )
+			log('toon', 'unregistered inventory fill: ', lib.identify( 'name', this ) )
 
-			if( !this._INVENTORY || env.ETERNAL_NOOB || this.starter_equip ){
+			if( !this._INVENTORY ){ // 
 
 				this._INVENTORY = {}
 
@@ -253,6 +255,8 @@ module.exports = class Toon extends AgentPersistent {
 					})
 					this._INVENTORY[ hatchet_launcher.mud_id ] = hatchet_launcher
 
+					this.equipped[3] = hatchet_launcher.mud_id
+
 				}
 
 			}else{
@@ -261,27 +265,48 @@ module.exports = class Toon extends AgentPersistent {
 
 			}
 
-			return true
+			this.touch_equipped()	
 
 		}
+
+		if( env.DEV && !this.get_inventory('name', 'hatchet launcher', true ) ){ // dev adds
+
+			const hatchet_launcher = new FACTORY({
+				subtype: 'ranged',
+				name: 'Hatchet Launcher',
+				icon_url: 'bow',
+				power: 500
+			})
+			this._INVENTORY[ hatchet_launcher.mud_id ] = hatchet_launcher
+
+			this.equipped[ 2 ] = hatchet_launcher.mud_id 
+
+		}
+
+		return true
 
 	}
 
 
 
-	async touch_equipped(){
+
+
+
+
+
+
+
+	touch_equipped(){
 
 		// log('flag', 'wot: ', this.equipped )
 		// log('flag', 'wot: ', this._INVENTORY )
-
 		// if( typeof( this._id ) === 'number' ){ // auth'd avatars
+		// to use the session equip or the db equip ... ?
+		// how to know if you HAVE session ?
 
-			// to use the session equip or the db equip ... ?
-
-			// how to know if you HAVE session ?
 		if( Array.isArray( this.equipped ) ){
 
-			// return true
+			return true
 
 		}else{
 
@@ -291,7 +316,7 @@ module.exports = class Toon extends AgentPersistent {
 
 				if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_left ){
 
-					log('flag', 'wott', 'ya' )
+					// log('flag', 'wott', 'ya' )
 					this.equipped[0] = this._INVENTORY[ mud_id ]
 
 				}else if( this._INVENTORY[ mud_id ]._id === this._eqp.hand_right ){
@@ -318,19 +343,19 @@ module.exports = class Toon extends AgentPersistent {
 
 			}
 
-			for( const mud_id of Object.keys( this._INVENTORY ) ){
-
-				if( this._INVENTORY[ mud_id ].name === 'Hatchet Launcher' ){
-					this.equipped[ 2 ] =  mud_id 
-				}
-
-			}
-
 		}
 		
 		return this.equipped
 
 	}
+
+
+
+
+
+
+
+
 
 
 	equip( held, slot ){
@@ -405,6 +430,12 @@ module.exports = class Toon extends AgentPersistent {
 	}
 
 
+
+
+
+
+
+
 	drop( held ){
 
 		let update_eqp = false
@@ -459,6 +490,11 @@ module.exports = class Toon extends AgentPersistent {
 		if( update_eqp || update_inv )  SOCKETS[ this.mud_id ].request.session.save()
 	
 	}
+
+
+
+
+
 
 
 
@@ -530,6 +566,43 @@ module.exports = class Toon extends AgentPersistent {
 		}))
 
 		
+
+	}
+
+
+
+
+
+
+
+
+
+	get_inventory( type, data, once ){
+
+		const r = {}
+
+		switch( type ){
+			case 'name':
+				const regex = new RegExp( data, 'i' )
+				for( const mud_id of Object.keys( this._INVENTORY )){
+					if( this._INVENTORY[ mud_id ].name && this._INVENTORY[ mud_id ].name.match( regex ) ){
+						log('flag', 'MATCH: ', this._INVENTORY[ mud_id ].name )
+						if( once ){
+							return this._INVENTORY[ mud_id ]
+						}else{
+							r[ mud_id ] = this._INVENTORY[ mud_id ].name
+						}
+					}
+				}
+				break;
+			default: break;
+		}
+
+		if( Object.keys( r ).length ){
+			return r
+		}else{
+			return false
+		}
 
 	}
 
@@ -625,6 +698,10 @@ module.exports = class Toon extends AgentPersistent {
 	}
 
 
+
+
+
+
 	exit_structure( zone, structure_id ){
 		this.inside = false
 	}
@@ -678,12 +755,18 @@ module.exports = class Toon extends AgentPersistent {
 			this._stats.height,
 			this._user_key,
 			this._camped_key,
-			this._eqp.hand_left,
-			this._eqp.hand_right,
-			this._eqp.waist_left,
-			this._eqp.waist_right,
-			this._eqp.back1,
-			this._eqp.back2,
+			this.equipped[2],
+			this.equipped[3],
+			this.equipped[0],
+			this.equipped[1],
+			this.equipped[4],
+			this.equipped[5],
+			// this._eqp.hand_left,
+			// this._eqp.hand_right,
+			// this._eqp.waist_left,
+			// this._eqp.waist_right,
+			// this._eqp.back1,
+			// this._eqp.back2,
 		]
 
 		const res = await DB.update( this, update_fields, update_vals )

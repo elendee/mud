@@ -92,10 +92,9 @@ class Game {
 		if( USER._id ){ // auth'd users
 
 			// if( socket.request.session ){
-
 			// 	log('flag', 'huzzah', socket.request.body.desired_avatar )
-
 			// }else 
+			
 			if( typeof( USER.active_avatar ) !== 'string' ){ 
 
 				log('flag', 'invalid active_avatar: ', USER.active_avatar )
@@ -110,7 +109,7 @@ class Game {
 
 					USER._TOON = TOON = new Toon( USER._TOON )
 
-				}else{ // no session avatar
+				}else{ // logged in but no session avatar
 
 					const toon = await this.get_toon( 'name', socket.request.session.USER, socket.request.session.USER.active_avatar )
 
@@ -122,7 +121,7 @@ class Game {
 
 						// log('flag', 'how what why' , USER._TOON._created, USER._TOON.created  )
 					
-					}else{
+					}else{ // logged in but no toons
 
 						// USER._TOON = TOON = 
 						socket.send(JSON.stringify({ type: 'error', msg: 'failed to initialize user'}))
@@ -146,7 +145,7 @@ class Game {
 
 		await TOON.touch_inventory()
 
-		await TOON.touch_equipped()
+		// await TOON.touch_equipped()
 
 		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
 

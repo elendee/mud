@@ -15,9 +15,9 @@ module.exports = class Item extends Persistent {
 
 		init = init || {}
 
-		this._owner_key = lib.validate_number( init._owner_key, init.owner_key, false )
-		this._zone_key = lib.validate_number( init._zone_key, init._zone_key, false )
-		this._npc_key = lib.validate_number( init._npc_key, init._npc_key, false )
+		this._owner_key = lib.validate_number( init._owner_key, init.owner_key, undefined )
+		this._zone_key = lib.validate_number( init._zone_key, init._zone_key, undefined )
+		this._npc_key = lib.validate_number( init._npc_key, init._npc_key, undefined )
 
 		this.type = 'item'
 
