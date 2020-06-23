@@ -271,7 +271,7 @@ const create_avatar = async( request ) => {
 		lib.validate_number( Number( request.body.stats.perception ), 0 ),
 		lib.validate_number( Number( request.body.stats.luck ), 0 ),
 		lib.validate_number( Number( request.body.stats.intellect ), 0 ),
-		lib.validate_number( Number( request.body.stats.speed ), 0 ),
+		lib.validate_number( 15 + Math.floor( Number( request.body.stats.speed ) / 2 ), 15 ),
 	])
 	if( error ) {
 		log('flag', 'err: ', error )
