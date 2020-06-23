@@ -475,6 +475,11 @@ class Zone {
 
 				if( needs_move ){
 
+					if( !old_pos || !old_pos.isVector3 ){
+						console.log('missing ref.position for ', this.NPCS[ mud_id ] )
+						return false
+					}
+
 					old_pos.set(
 						new_pos.x,
 						new_pos.y,
