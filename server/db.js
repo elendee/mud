@@ -132,7 +132,8 @@ async function update( doc, field_array, value_array ){
 
 		}else if( type === 'undefined' ){
 
-			log('flag', 'unexpected UPDATE val: \n' + field_array[i] + '\n' + value_array[i] )
+			// log('flag', '(warning) unexpected UPDATE val: \n' + field_array[i] + '\n' + value_array[i] )
+			// value defaults to 'NULL'
 
 		}
 

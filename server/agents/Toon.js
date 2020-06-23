@@ -31,6 +31,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._table = 'avatars'
 
+		this._user_key = lib.validate_number( init._user_key, init.user_key, 0 )
+
 		this.icon_url = init.icon_url || 'toon'
 
 		this._INVENTORY = init._INVENTORY || {}
@@ -38,23 +40,28 @@ module.exports = class Toon extends AgentPersistent {
 		// this.surname = init.surname || 'O\'Toon'
 		this.surname = init.surname 
 
-		this.race = init.race
+		this.race = lib.validate_string( init.race, 'human' )
 
 		this.speed = lib.validate_number( init._stats ? init._stats.speed : undefined, init.speed, 20 )
 		this.height = lib.validate_number( init._stats ? init._stats.height : undefined, init.height, 7 )
 
 		let random_seed = Math.floor( Math.random() * 100 )
-		this.color = init.color || lib.random_rgb( 
-			[ random_seed, random_seed + 150], 
-			[ random_seed, random_seed + 150], 
+		this.primary_color = lib.validate_string( init.primary_color, lib.random_rgb( 
+			[ random_seed, random_seed + 150],
+			[ random_seed, random_seed + 150],
+			[ random_seed, random_seed + 150]
+		))
+		this.secondary_color = lib.validate_string( init.secondary_color, lib.random_rgb( 
+			[ random_seed, random_seed + 150],
+			[ random_seed, random_seed + 150],
 			[ random_seed, random_seed + 150] 
-		)
+		))
 
 		// this.portrait = init.portrait || lib.gen_portrait()
 		
 		this._name_attempted = init._name_attempted || Date.now() - 30000
 
-		this._layer = typeof( init._layer ) === 'number' ? init._layer : 0
+		this._layer = lib.validate_number( this.layer, this._layer, 0 )
 
 		this._camped_key = lib.validate_number( init._camped_key, init.camped_key, undefined )
 
@@ -87,6 +94,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._abiding = init._abiding 
 
+		this._initialized_inventory = init.initialized_inventory
+
 		this.logistic = this.logistic || []
 		this.logistic.push('equipped', 'right_hand', 'left_hand')
 		// new Array(6)
@@ -102,7 +111,7 @@ module.exports = class Toon extends AgentPersistent {
 
 			if( typeof this._INVENTORY === 'object' ){
 
-				log('flag', 'created test: ', typeof this._created, typeof this._edited ) 
+				// log('flag', 'created test: ', typeof this._created, typeof this._edited ) 
 
 				if( this._created && this._created.toString() === this._edited.toString() ){
 
@@ -111,22 +120,35 @@ module.exports = class Toon extends AgentPersistent {
 					const stick = new FACTORY({
 						subtype: 'melee',
 						name: 'Unwieldy Stick',
-						power: 2
+						power: 2,
+						owner_key: this._id
 					})
 					this._INVENTORY[ stick.mud_id ] = stick
 
 					const trousers = new FACTORY({
 						subtype: 'armor',
 						name: 'Unwieldy Trousers',
+						owner_key: this._id,
 						// icon_url: 'noun_trousers',
 					})
 					this._INVENTORY[ trousers.mud_id ] = trousers
+
 					const belt = new FACTORY({
 						subtype: 'armor',
 						name: 'Unwieldy Vest',
+						owner_key: this._id,
 						// icon_url: 'noun_shirt',
 					})
 					this._INVENTORY[ belt.mud_id ] = belt
+
+					await this._INVENTORY[ stick.mud_id ].save()
+					await this._INVENTORY[ trousers.mud_id ].save()
+					await this._INVENTORY[ belt.mud_id ].save()
+
+					this._initialized_inventory = true
+
+					await this.save()
+
 				}
 
 				return true
@@ -616,43 +638,45 @@ module.exports = class Toon extends AgentPersistent {
 
 		const update_fields = [
 			'name',
-			'height',
+			'race',
 			// 'speed',
-			'color',
+			'primary_color',
+			'secondary_color',
 			'layer',
 			'vitality',
 			'strength',
 			'dexterity',
-			'charisma',
 			'perception',
 			'luck',
 			'intellect',
 			'speed',
 			'height',
+			'user_key',
 			'camped_key',
 			'eqp_hand_left',
 			'eqp_hand_right',
 			'eqp_waist_left',
-			'eqp_waist_left',
+			'eqp_waist_right',
 			'eqp_back1',
 			'eqp_back2',
 		]
 
 		const update_vals = [ 
 			this.name, 
-			this.height,
+			this.race,
 			// this.speed,
-			this.color,
+			this.primary_color,
+			this.secondary_color,
 			this._layer,
 			this._stats.vitality,
 			this._stats.strength,
 			this._stats.dexterity,
-			this._stats.charisma,
 			this._stats.perception,
 			this._stats.luck,
 			this._stats.intellect,
 			this._stats.speed,
 			this._stats.height,
+			this._user_key,
 			this._camped_key,
 			this._eqp.hand_left,
 			this._eqp.hand_right,

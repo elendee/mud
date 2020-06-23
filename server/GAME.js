@@ -118,8 +118,6 @@ class Game {
 
 						log('toon', 'looked up avatar: ', toon )
 
-						toon.checkit = true
-
 						USER._TOON = TOON = new Toon( toon )
 
 						// log('flag', 'how what why' , USER._TOON._created, USER._TOON.created  )

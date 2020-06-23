@@ -80,6 +80,10 @@ class Zone extends Persistent {
 	}
 
 
+
+
+
+
 	async bring_online(){
 
 		const zone = this
@@ -162,6 +166,14 @@ class Zone extends Persistent {
 
 
 
+
+
+
+
+
+
+
+
 	get_id(){
 
 		if( typeof( this._x ) !== 'number' || typeof( this._z ) !== 'number' || typeof( this._layer ) !== 'number' ){
@@ -209,6 +221,13 @@ class Zone extends Persistent {
 		return t
 
 	}
+
+
+
+
+
+
+
 
 
 
@@ -269,6 +288,17 @@ class Zone extends Persistent {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 	add_items( items_array, position ){
 
 		const zone = this
@@ -300,6 +330,10 @@ class Zone extends Persistent {
 		zone.emit( 'pong_items', SOCKETS, false, lib.publish( zone._ITEMS ) )
 
 	}
+
+
+
+
 
 
 
@@ -341,6 +375,9 @@ class Zone extends Persistent {
 
 
 
+
+
+
 	grow_day(){
 
 		let projection = Object.keys( this._FLORA ).length + this._growth_rate
@@ -371,6 +408,10 @@ class Zone extends Persistent {
 		}
 
 	}
+
+
+
+
 
 
 	find_clearing(){
@@ -406,6 +447,12 @@ class Zone extends Persistent {
 		}
 
 	}
+
+
+
+
+
+	
 
 
 	grow_new_flora( vector ){

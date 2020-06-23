@@ -116,7 +116,6 @@ class Zone {
 
 		await TOON.model( this.toon_proto_map )
 		TOON.BBOX.userData.self = true
-		CAMERA.lookAt( TOON.BBOX.position ) 
 
 		this.TOONS[ TOON.mud_id ] = TOON
 
@@ -146,17 +145,12 @@ class Zone {
 
 		// LIGHT.spotlight.target = TOON.BBOX
 		TOON.BBOX.position.copy( TOON.ref.position )
-
 		// const y = lib.get_dimensions( TOON.BBOX ).y
-
 		TOON.BBOX.position.y = 0 // y / 2
-
 		SCENE.add( TOON.BBOX )
 
 		// console.log( lib.get_dimensions( TOON.BBOX ) )
 		// SCENE.add( LIGHT.helper )
-
-		// les get dat Y attr ------------------------------
 
 		// TOON.BBOX.position.copy( TOON.ref.position )
 
@@ -164,10 +158,9 @@ class Zone {
 
 		// TOON.HEAD.add( CAMERA )
 		// TOON.BBOX.add( CAMERA )
-		SCENE.add( CAMERA )
 	    CAMERA.position.copy( window.TOON.BBOX.position ).add( CAMERA.offset )
-
-		// CAMERA.position.set( 0, 150, 20 )
+		CAMERA.lookAt( window.TOON.BBOX.position )
+		SCENE.add( CAMERA )
 
 		TOON.begin_intervals()
 
