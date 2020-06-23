@@ -716,7 +716,6 @@ module.exports = class Toon extends AgentPersistent {
 		const update_fields = [
 			'name',
 			'race',
-			// 'speed',
 			'primary_color',
 			'secondary_color',
 			'layer',
@@ -741,7 +740,6 @@ module.exports = class Toon extends AgentPersistent {
 		const update_vals = [ 
 			this.name, 
 			this.race,
-			// this.speed,
 			this.primary_color,
 			this.secondary_color,
 			this._layer,
