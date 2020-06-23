@@ -116,6 +116,7 @@ class Zone {
 
 		await TOON.model( this.toon_proto_map )
 		TOON.BBOX.userData.self = true
+		CAMERA.lookAt( TOON.BBOX.position ) 
 
 		this.TOONS[ TOON.mud_id ] = TOON
 
@@ -175,6 +176,8 @@ class Zone {
 		CHAT.begin_pulse( this )
 
 		if( env.EXPOSE ) window.CAMERA = CAMERA
+
+		RENDERER.frame( SCENE )
 
 	}
 

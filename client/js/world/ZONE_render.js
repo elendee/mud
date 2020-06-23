@@ -122,14 +122,6 @@ async function zone_render ( zone, zone_data ){
 	// 	})			
 	// }
 
-	 setTimeout(function(){
-
-		CAMERA.lookAt( TOON.BBOX.position ) 
-
-		RENDERER.frame( SCENE )
-
-	}, 100 )
-
     if( env.LOCAL && 0 ){
 		setTimeout(function(){
 			CAMERA.offset.set( -50, 50, 50 )
