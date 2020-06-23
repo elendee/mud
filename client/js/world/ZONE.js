@@ -6,9 +6,6 @@ import SCENE from '../three/SCENE.js'
 import CAMERA from '../three/CAMERA.js'
 import RENDERER from '../three/RENDERER.js'
 import * as LIGHT from '../three/LIGHT.js'
-import {
-	dirt 
-} from '../three/GROUND.js'
 
 
 import GLOBAL from '../GLOBAL.js'
@@ -118,19 +115,19 @@ class Zone {
 		const TOON = window.TOON
 
 		await TOON.model( this.toon_proto_map )
-		TOON.MODEL.userData.self = true
+		TOON.BBOX.userData.self = true
 
 		this.TOONS[ TOON.mud_id ] = TOON
 
-		// TOON.MODEL.position.set( 
+		// TOON.BBOX.position.set( 
 		// 	TOON.ref.position.x + Math.floor( Math.random() * 10 ), 
 		// 	TOON.height / 2, 
 		// 	TOON.ref.position.z + Math.floor( Math.random() * 10 )
 		// )
 
-		// TOON.MODEL.position.set( 0, 0, 0 )
+		// TOON.BBOX.position.set( 0, 0, 0 )
 
-		// TOON.MODEL.add( LIGHT.spotlight )
+		// TOON.BBOX.add( LIGHT.spotlight )
 		SCENE.add( LIGHT.hemispherical )
 		// SCENE.add( LIGHT.spotlight )
 		SCENE.add( LIGHT.directional )
@@ -146,26 +143,28 @@ class Zone {
 		SCENE.add( ltarget )
 		LIGHT.directional.target = ltarget
 
-		// LIGHT.spotlight.target = TOON.MODEL
-		TOON.MODEL.position.copy( TOON.ref.position )
+		// LIGHT.spotlight.target = TOON.BBOX
+		TOON.BBOX.position.copy( TOON.ref.position )
 
-		TOON.MODEL.position.y = lib.get_dimensions( TOON.MODEL ).y / 2
+		// const y = lib.get_dimensions( TOON.BBOX ).y
 
-		SCENE.add( TOON.MODEL )
+		TOON.BBOX.position.y = 0 // y / 2
 
-		// console.log( lib.get_dimensions( TOON.MODEL ) )
+		SCENE.add( TOON.BBOX )
+
+		// console.log( lib.get_dimensions( TOON.BBOX ) )
 		// SCENE.add( LIGHT.helper )
 
 		// les get dat Y attr ------------------------------
 
-		// TOON.MODEL.position.copy( TOON.ref.position )
+		// TOON.BBOX.position.copy( TOON.ref.position )
 
-		LIGHT.helper.position.copy( TOON.MODEL.position )
+		LIGHT.helper.position.copy( TOON.BBOX.position )
 
 		// TOON.HEAD.add( CAMERA )
-		// TOON.MODEL.add( CAMERA )
+		// TOON.BBOX.add( CAMERA )
 		SCENE.add( CAMERA )
-	    CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+	    CAMERA.position.copy( window.TOON.BBOX.position ).add( CAMERA.offset )
 
 		// CAMERA.position.set( 0, 150, 20 )
 
@@ -215,7 +214,7 @@ class Zone {
 		// 		if( mud_id === TOON.mud_id ) continue
 
 		// 		if( zone.TOONS[ mud_id ] ){
-		// 			if( zone.TOONS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
+		// 			if( zone.TOONS[ mud_id ].BBOX.position.distanceTo( TOON.BBOX.position ) > 150 ){
 		// 				zone.TOONS[ mud_id ].needs_move = false
 		// 				if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
 		// 			}else{
@@ -225,7 +224,7 @@ class Zone {
 		// 		}
 
 		// 		if( zone.NPCS[ mud_id ] ){
-		// 			if( zone.NPCS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) > 150 ){
+		// 			if( zone.NPCS[ mud_id ].BBOX.position.distanceTo( TOON.BBOX.position ) > 150 ){
 		// 				zone.NPCS[ mud_id ].needs_move = false
 		// 				if( moving_toons.indexOf( mud_id ) > -1 )  removes.push( mud_id )
 		// 			}else{
@@ -268,121 +267,136 @@ class Zone {
 
 
 
-	async prototype_entities( type, group ){
+	// async prototype_entities( type, group ){
 
-		// const zone = this
+	// 	// const zone = this
 
-		const model_inits = []
-		let entity, entity_address, model_type, base_class, color
+	// 	const model_inits = []
+	// 	let entity, entity_address, model_type, base_class, color
 
-		switch( type ){
+	// 	switch( type ){
 
-			case 'flora':
+	// 		case 'flora':
 
-				base_class = Flora
+	// 			base_class = Flora
 
-				// group = zone_data._FLORA
+	// 			// group = zone_data._FLORA
 
-				color = 'rgb(10, 20, 5)'
+	// 			color = 'rgb(10, 20, 5)'
 
-				break;
+	// 			break;
 
-			case 'structures':
+	// 		case 'structures':
 
-				base_class = Structure
+	// 			base_class = Structure
 
-				// group = zone_data._STRUCTURES
+	// 			// group = zone_data._STRUCTURES
 
-				color = 'rgb(65, 55, 45)'
+	// 			color = 'rgb(65, 55, 45)'
 
-				break;
+	// 			break;
 
-			default: break;
+	// 		default: break;
 
-		}
+	// 	}
 
-		for( const mud_id of Object.keys( group ) ){  // iterating to prototype each UNIQUE model 
+	// 	for( const mud_id of Object.keys( group ) ){  // iterating to prototype each UNIQUE model 
 
-			entity = group[ mud_id ]
+	// 		entity = group[ mud_id ]
 
-			if( entity.subtype ){
+	// 		if( entity.subtype ){
 
-				entity_address = entity.type + '_' + entity.subtype
+	// 			entity_address = entity.type + '_' + entity.subtype
 
-				// console.log( 'ead: ', entity_address)
+	// 			// console.log( 'ead: ', entity_address)
 
-				model_type = GLOBAL.MODEL_TYPES[ entity_address ];      if( !model_type ){ console.log( 'invalid model type: ', entity_address); continue }
+	// 			// model_type = GLOBAL.MODEL_TYPES[ entity_address ];      if( !model_type ){ console.log( 'invalid model type: ', entity_address); continue }
 
-				if( !this.entity_proto_map[ entity_address ] || !this.entity_proto_map[ entity_address ].model ){  ///// prototype models
+	// 			if( !this.entity_proto_map[ entity_address ] || !this.entity_proto_map[ entity_address ].model ){  ///// prototype models
 					
-					this.entity_proto_map[ entity_address ] = {}
-					this.entity_proto_map[ entity_address ].model = 'awaiting'
-					this.entity_proto_map[ entity_address ].type = model_type
+	// 				this.entity_proto_map[ entity_address ] = {}
+	// 				this.entity_proto_map[ entity_address ].model = 'awaiting'
+	// 				this.entity_proto_map[ entity_address ].type = 'glb' // model_type
 
-					const proto_model = new base_class( entity )
-					model_inits.push( proto_model.proto({
-							proto_map: zone.entity_proto_map,
-							address: entity_address
-						}) 
-					)
+	// 				const proto_model = new base_class( entity )
+	// 				model_inits.push( proto_model.proto({
+	// 						proto_map: zone.entity_proto_map,
+	// 						address: entity_address
+	// 					}) 
+	// 				)
 
-				}
+	// 			}
 
-				if( model_type === 'obj' && !this.entity_proto_map[ entity_address ].material ){ ///// prototype materials
+	// 			// if( model_type === 'obj' && !this.entity_proto_map[ entity_address ].material ){ ///// prototype materials
 
-					// this.entity_proto_map[ entity_address ].material = new ShaderMaterial({
-					// 	uniforms: SHADERS.uniforms,
-					// 	fragmentShader: SHADERS.sampleFragment(),
-					// 	vertexShader: SHADERS.baseVertexShader(),
-					// 	// clipping: true,
-					// 	// lights: true
-					// })
-					if( entity.type === 'flora' ){
-						if( entity.subtype === 'oak' ){
-							color  = 'rgb( 18, 20, 5)'
-						}else if( entity.subtype === 'pine' ){
-							color = 'rgb(10, 20, 5)'
-						}
-					}
+	// 			// 	// this.entity_proto_map[ entity_address ].material = new ShaderMaterial({
+	// 			// 	// 	uniforms: SHADERS.uniforms,
+	// 			// 	// 	fragmentShader: SHADERS.sampleFragment(),
+	// 			// 	// 	vertexShader: SHADERS.baseVertexShader(),
+	// 			// 	// 	// clipping: true,
+	// 			// 	// 	// lights: true
+	// 			// 	// })
+	// 			// 	if( entity.type === 'flora' ){
+	// 			// 		if( entity.subtype === 'oak' ){
+	// 			// 			color  = 'rgb( 18, 20, 5)'
+	// 			// 		}else if( entity.subtype === 'pine' ){
+	// 			// 			color = 'rgb(10, 20, 5)'
+	// 			// 		}
+	// 			// 	}
 
-					this.entity_proto_map[ entity_address ].material = new MeshLambertMaterial({
-						color: color
-					})
+	// 			// 	this.entity_proto_map[ entity_address ].material = new MeshLambertMaterial({
+	// 			// 		color: color
+	// 			// 	})
 
 
-				}
-				// else{
-					// console.log('no material requested for: ', entity_address )
-				// }
+	// 			// }
+	// 			// else{
+	// 				// console.log('no material requested for: ', entity_address )
+	// 			// }
 
-			}
+	// 		}
 
-		}
+	// 	}
 
-		// const meshes = 
-		await Promise.all( model_inits )
+	// 	// const meshes = 
+	// 	await Promise.all( model_inits )
 
-		return true
+	// 	return true
 
-	}
+	// }
 
 
 
 
 	async render_flora( floras ){
 
-		await this.prototype_entities( 'flora', floras )
+		for( const mud_id of Object.keys( floras )){
+			const flora = new Flora( floras[ mud_id ] )
+			// console.log('render flora: ', typeof this.entity_proto_map )
+			await flora.model( this.entity_proto_map, true )
+			.catch( err => { console.log('err modeling flora: ', err )})
 
-		this.instantiate_entities( 'FLORA', floras, Flora )
+			this.FLORA[ mud_id ] = flora
+
+		}
+
+		return true
 
 	}
 
 
 	async render_structures( structures_data ){
 
-		await this.prototype_entities( 'structures', structures_data )
+		for( const mud_id of Object.keys( structures_data )){
+			const structure = new Structure( structures_data[ mud_id ] )
+			
+			await structure.model( this.entity_proto_map, true )
+			.catch( err => { console.log('err modeling structure: ', structures_data[ mud_id ], err )})
 
-		this.instantiate_entities( 'STRUCTURES', structures_data, Structure )
+			this.STRUCTURES[ mud_id ] = structure
+		}
+
+		return true
 
 	}
 
@@ -394,7 +408,7 @@ class Zone {
 			if( !this.ITEMS[ mud_id ]){
 				this.ITEMS[ mud_id ] = new Item( items_data[ mud_id ] )
 				this.ITEMS[ mud_id ].model()
-				SCENE.add( this.ITEMS[ mud_id ].MODEL )
+				SCENE.add( this.ITEMS[ mud_id ].BBOX )
 			}
 
 		}
@@ -411,76 +425,6 @@ class Zone {
 	}
 
 
-
-
-	async instantiate_entities( dest_group, source_group, base_class ){
-
-		// if( !this.count )  this.count = 0
-
-		for( const mud_id of Object.keys( source_group )){
-
-			// this.count++
-
-			// if( this.count >  50 ) return true
-
-			const entity = new base_class( source_group[ mud_id ])
-
-			const model_key = entity.type + '_' + entity.subtype
-
-			let proto_mesh = this.entity_proto_map[ model_key ].model
-			let proto_material = this.entity_proto_map[ model_key ].material
-
-			
-
-			if( proto_mesh ){
-
-				entity.model({ 
-					address: model_key,
-					proto_map: this.entity_proto_map,
-					// proto_mesh: proto_mesh,
-					// proto_material: proto_material
-				})
-
-			}else{
-				console.log('no prototype found for: ', model_key )
-			}
-
-			this[ dest_group ][ entity.mud_id ] = entity
-
-			if( !entity.MODEL ){
-				console.log('failed to make model: ', lib.identify( 'generic', entity ))
-				return false
-			}
-
-			entity.MODEL.position.set( entity.ref.position.x, entity.ref.position.y, entity.ref.position.z )
-
-			if( entity.type === 'structure' ){
-
-				entity.MODEL.rotation.y = entity.orientation
-				
-				const structure_dirt = dirt.clone()
-				const bbox_source = new Box3().setFromObject( entity.MODEL ).getSize()
-
-				structure_dirt.scale.x = ( bbox_source.x / 10 ) * 1.2 // 10 == standard size..
-				structure_dirt.scale.y = ( bbox_source.z  / 10 ) * 1.2
-
-				structure_dirt.position.copy( entity.MODEL.position )
-				structure_dirt.position.y += 1
-				structure_dirt.receiveShadow = true
-				SCENE.add( structure_dirt )
-
-				if( !window.structure_dirts ) window.structure_dirts = []
-				window.structure_dirts.push( structure_dirt )
-				
-			}
-
-			SCENE.add( entity.MODEL )
-
-		}
-
-		RENDERER.frame( SCENE )
-
-	}
 
 
 
@@ -555,7 +499,7 @@ class Zone {
 				// }
 
 				if( needs_move ){
-					// if( zone.NPCS[ mud_id ].MODEL.position.distanceTo( TOON.MODEL.position ) < 150 ){
+					// if( zone.NPCS[ mud_id ].BBOX.position.distanceTo( TOON.BBOX.position ) < 150 ){
 					 ANIMATE.receive_move( mud_id )
 					// }
 					this.NPCS[ mud_id ].needs_move = needs_move
@@ -663,13 +607,14 @@ class Zone {
 			if( this.TOONS[ toon_data.mud_id ] ){
 				// update
 			}else{
+
 				this.TOONS[ toon_data.mud_id ] = new Toon( toon_data )
 
 				await this.TOONS[ toon_data.mud_id ].model( this.toon_proto_map )
 				// .catch( err=> { console.log('err modeling: ', err )})
 				
-				SCENE.add( this.TOONS[ toon_data.mud_id ].MODEL )
-				this.TOONS[ toon_data.mud_id ].MODEL.position.copy( this.TOONS[ toon_data.mud_id ].ref.position )
+				SCENE.add( this.TOONS[ toon_data.mud_id ].BBOX )
+				this.TOONS[ toon_data.mud_id ].BBOX.position.copy( this.TOONS[ toon_data.mud_id ].ref.position )
 				// set(
 				// 	this.TOONS[ toon_data.mud_id ].ref.position.x,
 				// 	this.TOONS[ toon_data.mud_id ].ref.position.y,
@@ -709,11 +654,11 @@ class Zone {
 
 		if( resolution.status === 'dead' ){
 
-			// target.MODEL.rotateOnWorldAxis( GLOBAL.UP, 1 )
+			// target.BBOX.rotateOnWorldAxis( GLOBAL.UP, 1 )
 
 			ANIMATE.animators.push( new ANIMATE.Animator({
-				model: target.MODEL,
-				// current: target.MODEL.rotation.x,
+				model: target.BBOX,
+				// current: target.BBOX.rotation.x,
 				limit: -Math.PI / 2,
 				step: ( delta_seconds, model )=>{
 					model.rotation.x -= 1 * delta_seconds
@@ -727,10 +672,10 @@ class Zone {
 
 			ANIMATE.animate( true )
 
-			// SCENE.remove( target.MODEL )
+			// SCENE.remove( target.BBOX )
 
 			setTimeout(function(){
-				if( SCENE && target.MODEL )  SCENE.remove( target.MODEL )
+				if( SCENE && target.BBOX )  SCENE.remove( target.BBOX )
 				RENDERER.frame( SCENE )
 			}, 1000 * 60 * 1 )
 
@@ -802,8 +747,8 @@ class Zone {
 		this.NPCS[ data.mud_id ].type = 'npc'
 		this.NPCS[ data.mud_id ].model( this.toon_proto_map )
 		.then( res => {
-			this.NPCS[ data.mud_id ].MODEL.position.copy( this.NPCS[ data.mud_id ].ref.position )
-			SCENE.add( this.NPCS[ data.mud_id ].MODEL )
+			this.NPCS[ data.mud_id ].BBOX.position.copy( this.NPCS[ data.mud_id ].ref.position )
+			SCENE.add( this.NPCS[ data.mud_id ].BBOX )
 		})
 
 	}
@@ -866,7 +811,7 @@ class Zone {
 	// 		if( !this.DECOMPOSERS[ mud_id ]){
 	// 			this.DECOMPOSERS[ mud_id ] = new Item( items[ mud_id ] )
 	// 			this.DECOMPOSERS[ mud_id ].model()
-	// 			SCENE.add( this.DECOMPOSERS[ mud_id ].MODEL )
+	// 			SCENE.add( this.DECOMPOSERS[ mud_id ].BBOX )
 	// 		}
 	// 		// console.log( 'render decompose: ', decomposers[ mud_id ])
 	// 	}
@@ -897,7 +842,7 @@ class Zone {
 	remove_toon( data ){
 
 		if( TARGET.target.mud_id === data.mud_id ) TARGET.clear()
-		SCENE.remove( this.TOONS[ data.mud_id ].MODEL )
+		SCENE.remove( this.TOONS[ data.mud_id ].BBOX )
 		delete this.TOONS[ mud_id ]
 		RENDERER.frame( SCENE )
 
@@ -906,7 +851,7 @@ class Zone {
 	remove_npc( data ){
 
 		if( TARGET.target && TARGET.target.mud_id === data.mud_id ) TARGET.clear()
-		SCENE.remove( this.NPCS[ data.mud_id ].MODEL )
+		SCENE.remove( this.NPCS[ data.mud_id ].BBOX )
 		delete this.NPCS[ data.mud_id ]
 		RENDERER.frame( SCENE )
 

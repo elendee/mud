@@ -196,7 +196,7 @@ class Attack {
 
 		this.source = init.source
 
-		if( !this.source || !this.source.BODY || !this.source.MODEL ){
+		if( !this.source || !this.source.BBOX ){
 			console.log('invalid attack source', this.source )
 			return false
 		}
@@ -245,28 +245,29 @@ class Attack {
 	swing(){
 
 		const attack = this
-		const toon_bod = TOON.BODY.clone()
+		// const toon_model = TOON.BODY.clone()
+		const toon_model = TOON.MODEL.clone()
 
-		toon_bod.translateZ( 3 )
-		attack.bbox.position.copy( TOON.MODEL.position ).add( toon_bod.position )
+		toon_model.translateZ( 3 )
+		attack.bbox.position.copy( TOON.BBOX.position ).add( toon_model.position )
 		attack.bbox.position.y += 5
 
-		// attack.mesh.quaternion.y = toon_bod.quaternion.y
-		// let rotY = Math.max( -3.14, toon_bod.rotation.y )
-		// console.log( toon_bod.rotation.y )
+		// attack.mesh.quaternion.y = toon_model.quaternion.y
+		// let rotY = Math.max( -3.14, toon_model.rotation.y )
+		// console.log( toon_model.rotation.y )
 		// attack.mesh.updateMatrix()
 		// attack.mesh.updateMatrixWorld()
 
 		// @ScieCode genius man
 		let tmp = new Euler();
 		//....
-		tmp.setFromQuaternion( toon_bod.quaternion, 'YXZ' );
+		tmp.setFromQuaternion( toon_model.quaternion, 'YXZ' );
 		attack.bbox.rotation.y = tmp.y;
 
 		// console.log( attack.mesh.rotation.y )
 		// attack.mesh.rotation // reset 
-		// attack.mesh.rotateOnWorldAxis( new Vector3(0, 1, 0), toon_bod.rotation.y )
-		// attack.bbox.rotateY( toon_bod.rotation.y + Math.PI / 2 )
+		// attack.mesh.rotateOnWorldAxis( new Vector3(0, 1, 0), toon_model.rotation.y )
+		// attack.bbox.rotateY( toon_model.rotation.y + Math.PI / 2 )
 		// attack.mesh.rotation.z = 
 		// .rotation.z = window.TOON.BODY.rotation.z
 		// attack.mesh.position.z += 

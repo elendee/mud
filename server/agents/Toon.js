@@ -38,11 +38,10 @@ module.exports = class Toon extends AgentPersistent {
 		// this.surname = init.surname || 'O\'Toon'
 		this.surname = init.surname 
 
-		this.height = lib.validate_number( init.height, 3 )
-
 		this.race = init.race
 
 		this.speed = lib.validate_number( init._stats ? init._stats.speed : undefined, init.speed, 20 )
+		this.height = lib.validate_number( init._stats ? init._stats.height : undefined, init.height, 7 )
 
 		let random_seed = Math.floor( Math.random() * 100 )
 		this.color = init.color || lib.random_rgb( 
@@ -103,7 +102,11 @@ module.exports = class Toon extends AgentPersistent {
 
 			if( typeof this._INVENTORY === 'object' ){
 
-				if( this._created === this._edited ){
+				log('flag', 'created test: ', typeof this._created, typeof this._edited ) 
+
+				if( this._created && this._created.toString() === this._edited.toString() ){
+
+					log('toon', 'first time toon fill: ', this._created, this._edited )
 
 					const stick = new FACTORY({
 						subtype: 'melee',
@@ -141,6 +144,8 @@ module.exports = class Toon extends AgentPersistent {
 					return false
 				}
 
+				log('toon', 'retrieved ' + results.length + ' items for toon ' + this._id )
+
 				for( const item of results ){
 					const this_item = new FACTORY( item )
 					this._INVENTORY[ this_item.mud_id ] = this_item
@@ -161,7 +166,7 @@ module.exports = class Toon extends AgentPersistent {
 
 		}else{  // unregistered
 
-			log('toon', 'unregistered user login: ', this._id, lib.identify( 'name', this ))
+			log('toon', 'unregistered user login: ', lib.identify( 'name', this ) )
 
 			if( !this._INVENTORY || env.ETERNAL_NOOB || this.starter_equip ){
 
@@ -383,20 +388,18 @@ module.exports = class Toon extends AgentPersistent {
 		let update_eqp = false
 		let update_inv = false
 
-
 		if( held.origin === 'inventory' ){
 
 			delete this._INVENTORY[ held.mud_id ]
-
+			update_inv = true
+			
 			for( let i = 0; i < this.equipped.length; i++ ){
-				if( this.equipped[ i ] && !this._INVENTORY[ this.equipped[ i ] ] ){
+				if( this.equipped[ i ] && !this._INVENTORY[ this.equipped[ i ] ] ){ // drop any equipped not in _INVENTORY
 					log('toon', 'dropping: ', this.equipped )
 					this.equipped[ i ] = undefined
 					update_eqp = true
 				}
 			}
-
-			update_inv = true
 
 		}else if( held.origin === 'action_bar' ){
 
@@ -420,9 +423,9 @@ module.exports = class Toon extends AgentPersistent {
 		}
 
 		if( update_inv ){
-			SOCKETS[ this.mud_id ].send(JSON.stringify({
+			SOCKETS[ this.mud_id ].send( JSON.stringify({
 				type: 'set_inventory',
-				inventory: this._INVENTORY
+				data: this._INVENTORY
 			}))
 		}
 		if( update_eqp ){
@@ -440,44 +443,65 @@ module.exports = class Toon extends AgentPersistent {
 
 	acquire( zone, mud_id ){
 
-		if( !zone._ITEMS[ mud_id ] ){ log('flag', 'item is not in zone: ', mud_id, zone._ITEMS ); return false }
-		if( this._INVENTORY[ mud_id ] ){ log('flag', 'toon already has item: ', mud_id ); return false }
-
-
-		if( typeof zone._ITEMS[ mud_id ]._id !== 'number' || typeof this._id !== 'number' ){
-			return false
-			log('flag', 'invalid item acquire', zone._ITEMS[ mud_id ], 'toon id: ' + this._id )
+		if( !zone._ITEMS[ mud_id ] ){ 
+			log('flag', 'item is not in zone: ', mud_id, Object.keys( zone._ITEMS ) )
+			return false 
+		}
+		if( this._INVENTORY[ mud_id ] ){ 
+			log('flag', 'toon already has item: ', mud_id )
+			return false 
 		}
 
-		const pool = DB.getPool()
+		const item = zone._ITEMS[ mud_id ]
 
-		pool.query('UPDATE items SET owner_key=' + this._id + ', zone_key=NULL, npc_key=NULL', (error, rseults, fields)=>{
-			if( error ){
-				log('flag', 'error toon acquire', err )
-				return false
-			}
-			log('toon', 'update item success')
-		})
+		if( typeof this._id !== 'number' ){
+			SOCKETS[ this.mud_id ].send(JSON.stringify({
+				type: 'error',
+				msg: 'anonymous toons may not acquire items'
+			}))
+			return false
+		}
 
+		item.zone_key = false
+		item.npc_key = false
+		item.owner_key = this._id 
 
-		this._INVENTORY[ mud_id ] = zone._ITEMS[ mud_id ]
+		item.save().catch( err => { log('flag', 'err saving item', err ) })
+
+		// const pool = DB.getPool()
+		// let sql = 'UPDATE items SET owner_key=' + this._id + ', zone_key=NULL, npc_key=NULL WHERE id=' + item._id
+
+		// if( typeof item._id === 'number' ){ // update
+
+		// 	sql = 'UPDATE items SET owner_key=' + this._id + ', zone_key=NULL, npc_key=NULL WHERE id=' + item._id
+
+		// }else{ // create
+
+		// 	sql = 'INSERT INTO items  '
+
+		// }
+
+		// pool.query(sql, (error, results, fields)=>{
+		// 	if( error || !results ){
+		// 		log('flag', 'error toon acquire', err )
+		// 		return false
+		// 	}
+		// 	log('toon', 'update item success')
+		// })
+
+		// blorb
+		// also save inventory .......
+
+		this._INVENTORY[ mud_id ] = item
 		delete zone._ITEMS[ mud_id ]
 
-		// log('flag', 'WHY\n', this.publish_inventory() )
-		// const keys = Object.keys( this._INVENTORY )
-		// for( const key of keys ){
-		// 	log('flag', Object.keys( this._INVENTORY[ key ] ))
-		// }
-		// log('flag', 'WHY\n',  this._INVENTORY )//publish_inventory() )
 		SOCKETS[ this.mud_id ].request.session.save()
-
-		// log('flag', 'toon acquired ', mud_id )
 
 		// emit acquisition (for all other toons)
 		zone.emit('zone_remove_item', SOCKETS, [], { mud_id: mud_id } )
 
 		// emit acquisition (to new owner)
-		SOCKETS[ this.mud_id ].send(JSON.stringify({
+		SOCKETS[ this.mud_id ].send( JSON.stringify({
 			type: 'set_inventory',
 			data: this._INVENTORY,
 			// mud_id: mud_id
@@ -604,6 +628,7 @@ module.exports = class Toon extends AgentPersistent {
 			'luck',
 			'intellect',
 			'speed',
+			'height',
 			'camped_key',
 			'eqp_hand_left',
 			'eqp_hand_right',
@@ -627,6 +652,7 @@ module.exports = class Toon extends AgentPersistent {
 			this._stats.luck,
 			this._stats.intellect,
 			this._stats.speed,
+			this._stats.height,
 			this._camped_key,
 			this._eqp.hand_left,
 			this._eqp.hand_right,

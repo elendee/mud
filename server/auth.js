@@ -287,7 +287,10 @@ const create_avatar = async( request ) => {
 			success: false,
 			msg: 'error creating avatar'
 		}
-		request.session.USER.active_avatar = results.insertId
+		
+		// request.session.USER.active_avatar = results.insertId
+		request.session.USER.active_avatar = request.body.name
+
 		const sess_save = await new Promise((resolve, reject)=>{
 			request.session.save(function(err){
 				if( err ) reject( err )

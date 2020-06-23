@@ -111,7 +111,7 @@ class EnvironPersistent extends Persistent {
 				log('flag', 'err killing environ', error )
 				return false
 			}
-			log('flag', 'environ die result: ', results )
+			log('zone', 'environ die result: ', results.affectedRows )
 			// resolve({ error, results, fields })
 		})
 

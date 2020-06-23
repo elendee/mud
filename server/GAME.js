@@ -98,7 +98,7 @@ class Game {
 			// }else 
 			if( typeof( USER.active_avatar ) !== 'string' ){ 
 
-				// USER._TOON = TOON = 
+				log('flag', 'invalid active_avatar: ', USER.active_avatar )
 				socket.send(JSON.stringify({ type: 'error', msg: 'cannot use anon avatars while logged in <a href="/">back</a>'}))
 				return false
 
@@ -118,7 +118,11 @@ class Game {
 
 						log('toon', 'looked up avatar: ', toon )
 
+						toon.checkit = true
+
 						USER._TOON = TOON = new Toon( toon )
+
+						// log('flag', 'how what why' , USER._TOON._created, USER._TOON.created  )
 					
 					}else{
 
@@ -135,6 +139,7 @@ class Game {
 		}else{ // non-auth'd users
 
 			USER._TOON = TOON = new Toon( USER._TOON )
+			if( !USER._TOON.race ) USER._TOON.race = 'human'
 			TOON.starter_equip = true
 
 		}

@@ -70,25 +70,4 @@ export default {
 
 	SPEAKER: 3,
 
-	MODEL_TYPES: {
-
-		// toon:
-		'toon': 'glb',
-		'npc': 'glb',
-
-		'human': 'glb',
-		'gorgon': 'glb',
-		'gargoyle': 'glb',
-
-		// entity:
-		'structure_tavern': 'glb',
-		'structure_hut': 'glb',
-		'structure_blacksmith': 'glb',
-		'flora_oak': 'obj',
-		'flora_pine': 'obj',
-		// 'plainsgrass': 'obj',
-		// 'rock': 'obj'
-
-	},
-
 }

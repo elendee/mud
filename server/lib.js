@@ -291,7 +291,19 @@ function validate_number( ...vals ){
 	for( const num of vals ){
 		if( typeof( num ) === 'number' ) return num
 	}
-	// should never get here
+	return vals[ vals.length - 1 ]
+
+}
+
+function validate_timestamp( ...vals ){
+
+	for( const ts of vals ){
+		if( typeof ts === 'object' && ts.toUTCString ){
+			// log('flag', 'ya: ', ts )
+			return ts
+		}
+	}
+	// log('flag', 'nope', ...vals )
 	return vals[ vals.length - 1 ]
 
 }
@@ -301,26 +313,17 @@ function validate_string( ...vals ){
 	for( const str of vals ){
 		if( typeof( str ) === 'string' ) return str
 	}
-	// should never get here
 	return vals[ vals.length - 1 ]
 
 }
-
 
 function validate_seconds( ...vals ){
 
 	for( const val of vals ){
 		if( typeof( val ) === 'number' && val > 1000000000 )  return val
 	}
-	
 	return vals[ vals.length - 1 ]
-	// if( typeof( init._last_growth ) === 'number' && init._last_growth > 10000000 ){
-	// 	return init._last_growth
-	// }else if( typeof( init.last_growth === 'number ') && init.last_growth > 10000000 ){
-	// 	return init.last_growth
-	// }else{
-	// 	return new Date('1970').getTime()
-	// }
+	
 }
 
 
@@ -508,6 +511,7 @@ module.exports = {
 	validate_number,
 	validate_string,
 	validate_seconds,
+	validate_timestamp,
 	validate_vec3,
 	validate_quat,
 	// range_map,

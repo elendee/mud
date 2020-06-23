@@ -44,6 +44,7 @@ const material = new MeshLambertMaterial({
 const reticule = new Mesh( geo, material )
 reticule.rotation.x = -Math.PI / 2
 
+const look_target = new Vector3()
 
 
 class Target {
@@ -159,7 +160,9 @@ class Target {
 					this.show_status()
 				}
 				
-				TOON.look_at( this.target.MODEL.position )
+				look_target.copy( this.target.BBOX.position )
+				look_target.y = window.TOON.height / 2
+				TOON.look_at( this.target.BBOX.position )
 
 				this.render_selected()
 
@@ -197,25 +200,25 @@ class Target {
 
 		let bbox_size_vector = new Vector3()
 		let target_size = new Box3().setFromObject( this.target.MODEL ).getSize()
-		target_size.x = target_size.x / this.target.MODEL.scale.x
-		target_size.y = target_size.y / this.target.MODEL.scale.y
-		target_size.z = target_size.z / this.target.MODEL.scale.z
+		target_size.x = target_size.x
+		target_size.y = target_size.y
+		target_size.z = target_size.z
 
 		if( this.target.type === 'item' ){
-			this.reticule.scale.x =  Math.max( 1 )
-			this.reticule.scale.y =  Math.max( 1 )
 		}else{
-			this.reticule.scale.x = Math.max( .5, ( target_size.x / reticule_size ) * 1.2 )
-			this.reticule.scale.y = Math.max( .5, ( target_size.z / reticule_size ) * 1.2 )
+			this.reticule.scale.x = this.reticule.scale.y = Math.max( .5, 
+				( target_size.x / reticule_size ) * 1.2, 
+				( target_size.z / reticule_size ) * 1.2 
+			)
 		}
 
 		const wpos = new Vector3()
-		this.target.MODEL.getWorldPosition( wpos )
+		this.target.BBOX.getWorldPosition( wpos )
 
 		this.reticule.position.set( 0, .2, 0 )
 		this.reticule.rotation.z = this.target.MODEL.rotation.y
 
-		this.target.MODEL.add( this.reticule )
+		this.target.BBOX.add( this.reticule )
 
 		this.last_rendered = this.target.mud_id
 
@@ -298,11 +301,11 @@ class Target {
 		this.status_ele.style.display = this.name_ele.style.display = this.structure_ele.style.display = this.item_ele.style.display = 'none'
 		this.profile_url = ''
 
-		if( !this.target || !this.target.MODEL ) return false
+		if( !this.target || !this.target.BBOX ) return false
 
 		if( clear ) this.last_rendered = false
 
-		this.target.MODEL.remove( this.reticule )
+		this.target.BBOX.remove( this.reticule )
 
 		delete this.target
 	

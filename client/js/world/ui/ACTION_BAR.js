@@ -254,6 +254,12 @@ function action( slot ){
 }
 
 
+function swap_item( current_slot, target_slot ){
+
+	console.log('incomplete function, swap_item: ', window.TOON.equipped[ current_slot ], ' to ', window.TOON.equipped[ target_slot ] )
+
+}
+
 
 
 

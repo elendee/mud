@@ -216,8 +216,12 @@ export default class Popup {
 					stat_wrap_title.innerHTML = '<span class="stat-wrap-title">' + key.replace('_','') + ':</span><br>'
 					stat_wrapper.appendChild( stat_wrap_title )
 					
-					for( const sub_key of Object.keys( window.TOON[ key ] ) ){
-						render_stat( sub_key, window.TOON[ key ][ sub_key ], stat_wrapper )
+					if( window.TOON[ key ] ){
+						for( const sub_key of Object.keys( window.TOON[ key ] ) ){
+							render_stat( sub_key, window.TOON[ key ][ sub_key ], stat_wrapper )
+						}
+					}else{
+						console.log('undefined toon key: ', key )
 					}
 
 				}else{

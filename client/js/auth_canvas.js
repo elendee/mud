@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function(){
 	LIGHT.directional.intensity = 6
 
 	SCENE.add( CAMERA )
-	// copy( window.TOON.MODEL.position ).add( CAMERA.offset )
 
 	// RENDERER.setSize( 200, 600, false )
 

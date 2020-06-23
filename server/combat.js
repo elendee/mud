@@ -17,9 +17,11 @@ class Resolver {
 				let fail = ''
 				if( data.item.range < data.dist ){
 
+					log('flag', 'item fail: ', data.item.range, data.dist )
+
 					fail = 'range'
 
-				}else if( data.target.health.current <= 0 ){
+				}else if( typeof data.target.health.current === 'number' && data.target.health.current <= 0 ){
 
 					fail = 'target_dead'
 
@@ -42,12 +44,16 @@ class Resolver {
 					let dmg = Math.max( 0, Math.floor( Math.random() * ( power - defense ) ) )
 
 					// log('flag', 'wtf mate: ', data.item.power, data.attacker._stats.strength )
-					if( typeof power !== 'number' || typeof defense !== 'number' || typeof dmg !== 'number' || typeof data.target.health.current !== 'number'){
-						log('flag', 'invalid combat', power, defense, dmg, data.target.health.current )
-						return false
-					}
+
+					// if( typeof data.target.health.current !== '')
 
 					data.target.health.current = Math.max( 0, data.target.health.current - dmg )
+
+					if( typeof power !== 'number' || typeof defense !== 'number' || typeof dmg !== 'number' || typeof data.target.health.current !== 'number'){
+						log('flag', 'invalid combat', power, defense, dmg, data.target.health.current )
+						throw new Error('STAHP')
+						return false
+					}
 					// log('flag', 'target_health: ', data.target.health.current )
 
 					let loot = false

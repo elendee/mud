@@ -7,6 +7,8 @@ const assert = require('assert')
 
 let _pool
 
+let txacts = 0
+
 function initPool( callback ) {
     
 	if ( _pool ) {
@@ -32,11 +34,23 @@ function initPool( callback ) {
 		user: env.DB.USER,
 		password: env.DB.PW,
 		database: env.DB.NAME,
-		charset: env.DB.CHARSET
+		charset: env.DB.CHARSET,
+		timezone: '+00:00' // should be unecessary if all are TIMESTAMP ?
 	})
+
+	// _pool.on('connection', conn => {
+	// 	conn.query("SET time_zone='+00:00';", error => {
+	// 	    if( error ){
+	// 	        throw error
+	// 	    }
+	// 	})
+	// })
 
 
 	const queryPromise = ( ...args ) => new Promise( (resolve, reject) => {
+
+		txacts++
+		if( txacts % 10 == 0 ) log('flag', 'txacts: ', txacts )
 
 		_pool.query( ...args, (error, results, fields) => {
 			resolve({ error, results, fields })

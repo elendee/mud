@@ -18,8 +18,8 @@ class AgentPersistent extends Persistent {
 
 		init = init || {}
 
-		this._created = lib.validate_string( init.created, init._created, undefined )
-		this._edited = lib.validate_string( init.edited, init._edited, undefined )
+		// this._created = lib.validate_string( init.created, init._created, undefined )
+		// this._edited = lib.validate_string( init.edited, init._edited, undefined )
 
 		this._status = init._status || 'alive'
 
@@ -35,6 +35,7 @@ class AgentPersistent extends Persistent {
 		this._stats.luck = lib.validate_number( this._stats.luck, init.luck, 5 )
 		this._stats.intellect = lib.validate_number( this._stats.intellect, init.intellect, 5 )
 		this._stats.speed = lib.validate_number( this._stats.speed, init.speed, env.FALLBACK_TOON_SPEED )
+		this._stats.height = lib.validate_number( this._stats.height, init.height, 5 )
 
 		this.health = init.health || {}
 		this.health.capacity = lib.validate_number( this.health.capacity, init.health_cap, this.calculate_health() )

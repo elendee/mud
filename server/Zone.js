@@ -277,7 +277,7 @@ class Zone extends Persistent {
 
 			if( !zone._ITEMS[ item.mud_id ]){
 
-				log('flag', 'droppin: ', item )
+				log('zone', 'add_items: ', lib.identify('name', item ), item.mud_id )
 
 				zone._ITEMS[ item.mud_id ] = new ItemFactory( item )
 				zone._ITEMS[ item.mud_id ].ref.position.set(

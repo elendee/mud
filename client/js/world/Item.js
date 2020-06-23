@@ -52,8 +52,8 @@ export default class Item {
 		})
 		const item_mesh = new Mesh( geo, mat )
 
-		this.MODEL = item_mesh
-		this.MODEL.position.set( 
+		this.BBOX = item_mesh
+		this.BBOX.position.set( 
 			this.ref.position.x,
 			this.ref.position.y,
 			this.ref.position.z 
@@ -62,11 +62,11 @@ export default class Item {
 		// let count
 		// let drop = setInterval(()=>{
 		// 	if( count > 10 ) clearInterval( drop )
-		// 	item.MODEL.position.lerp( item.ref.position, .1 )
+		// 	item.BBOX.position.lerp( item.ref.position, .1 )
 		// 	count++
 		// }, 200)
 
-		this.MODEL.userData = new Clickable( this )
+		this.BBOX.userData = new Clickable( this )
 
 	}
 
@@ -74,7 +74,7 @@ export default class Item {
 
 	animate_death( scene ){
 		console.log('animating dead item.. ?')
-		if( this.MODEL )  scene.remove( this.MODEL )
+		if( this.BBOX )  scene.remove( this.BBOX )
 
 	}
 

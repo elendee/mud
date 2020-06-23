@@ -243,11 +243,11 @@ class Bubble {
 
 		let vector
 		if( this.sender_mud_id == window.TOON.mud_id ){
-			vector = new Vector3().copy( window.TOON.MODEL.position )
-		}else if( toons[ this.sender_mud_id ] && toons[ this.sender_mud_id ].MODEL ){
-			vector = new Vector3().copy( toons[ this.sender_mud_id ].MODEL.position )
-		}else if( npcs[ this.sender_mud_id ] && npcs[ this.sender_mud_id ].MODEL ){
-			vector = new Vector3().copy( npcs[ this.sender_mud_id ].MODEL.position )
+			vector = new Vector3().copy( window.TOON.BBOX.position )
+		}else if( toons[ this.sender_mud_id ] && toons[ this.sender_mud_id ].BBOX ){
+			vector = new Vector3().copy( toons[ this.sender_mud_id ].BBOX.position )
+		}else if( npcs[ this.sender_mud_id ] && npcs[ this.sender_mud_id ].BBOX ){
+			vector = new Vector3().copy( npcs[ this.sender_mud_id ].BBOX.position )
 		}else{
 			console.log('no model found for chat ', this.sender_mud_id )
 			return false

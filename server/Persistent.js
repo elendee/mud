@@ -1,3 +1,5 @@
+const log = require('./log.js')
+
 const lib = require('./lib.js')
 
 const uuid = require('uuid').v4
@@ -25,9 +27,9 @@ module.exports = class Persistent {
 
 		this._table = init._table
 
-		this._created = lib.validate_string( init._created, undefined )
+		this._created = lib.validate_timestamp( init.created, init._created, undefined )
 
-		this._edited = lib.validate_string( init._edited, undefined )
+		this._edited = lib.validate_timestamp( init.edited, init._edited, undefined )
 
 		this.ref = init.ref || {}
 		this.ref.position = lib.validate_vec3( this.ref.position, {

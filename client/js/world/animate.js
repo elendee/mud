@@ -50,9 +50,9 @@ class Animator{
 
 function update_compass(){
 	STATE.compassing = true
-	document.getElementById('compass-arrow').style.transform = 'rotate(' + Math.floor( lib.radians_to_degrees( TOON.MODEL.rotation.y ) ) + 'deg)'
+	document.getElementById('compass-arrow').style.transform = 'rotate(' + Math.floor( lib.radians_to_degrees( TOON.BBOX.rotation.y ) ) + 'deg)'
 	setTimeout(function(){
-		document.getElementById('compass-arrow').style.transform = 'rotate(' + Math.floor( lib.radians_to_degrees( TOON.MODEL.rotation.y ) ) + 'deg)'
+		document.getElementById('compass-arrow').style.transform = 'rotate(' + Math.floor( lib.radians_to_degrees( TOON.BBOX.rotation.y ) ) + 'deg)'
 		STATE.compassing = false
 	}, 1000 )
 }
@@ -145,7 +145,7 @@ function move( dir, pressed ){
 function analog_turn( amount ){
 
 	if( amount ){
-		window.TOON.MODEL.rotation.y -= amount
+		window.TOON.BBOX.rotation.y -= amount
 		window.TOON.needs_stream = true
 		STATE.stream_down = true
 		if( !STATE.animating ) animate( true )
@@ -253,38 +253,38 @@ function animate( start ){
 
 	    // console.log( distance[0])
 
-	    window.TOON.MODEL.translateX( distance[0] )
-	    window.TOON.MODEL.translateZ( distance[1] )
+	    window.TOON.BBOX.translateX( distance[0] )
+	    window.TOON.BBOX.translateZ( distance[1] )
 
 	    // bounds:
-	    window.TOON.MODEL.position.x = Math.min( Math.max( 0, window.TOON.MODEL.position.x ), MAP.ZONE_WIDTH )
-	    window.TOON.MODEL.position.z = Math.min( Math.max( 0, window.TOON.MODEL.position.z ), MAP.ZONE_WIDTH )
+	    window.TOON.BBOX.position.x = Math.min( Math.max( 0, window.TOON.BBOX.position.x ), MAP.ZONE_WIDTH )
+	    window.TOON.BBOX.position.z = Math.min( Math.max( 0, window.TOON.BBOX.position.z ), MAP.ZONE_WIDTH )
 
-	    CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+	    CAMERA.position.copy( window.TOON.BBOX.position ).add( CAMERA.offset )
 
-		// SKYBOX.position.copy( window.TOON.MODEL.position )
+		// SKYBOX.position.copy( window.TOON.BBOX.position )
 
-		// LIGHT.spotlight.position.copy( window.TOON.MODEL.position ).add( LIGHT.offset )
+		// LIGHT.spotlight.position.copy( window.TOON.BBOX.position ).add( LIGHT.offset )
 
 		RENDERER.shadowMap.needsUpdate = true
 
-		// GROUND.position.x = window.TOON.MODEL.position.x
-		// GROUND.position.z = window.TOON.MODEL.position.z
+		// GROUND.position.x = window.TOON.BBOX.position.x
+		// GROUND.position.z = window.TOON.BBOX.position.z
 
 	}
 
 	if( STATE.rotate.left ){
-		window.TOON.MODEL.rotation.y += MAP.ROTATE_RATE
+		window.TOON.BBOX.rotation.y += MAP.ROTATE_RATE
 	}else if( STATE.rotate.right ){
-		window.TOON.MODEL.rotation.y -= MAP.ROTATE_RATE
+		window.TOON.BBOX.rotation.y -= MAP.ROTATE_RATE
 	}
 
 	for( const mud_id of Object.keys( ZONE.TOONS )){ // should not include player
 		if( ZONE.TOONS[ mud_id ].needs_move ){
-			ZONE.TOONS[ mud_id ].MODEL.position.lerp( ZONE.TOONS[ mud_id ].ref.position, .02 )
+			ZONE.TOONS[ mud_id ].BBOX.position.lerp( ZONE.TOONS[ mud_id ].ref.position, .02 )
 		}
 		if( ZONE.TOONS[ mud_id ].needs_rotate > 0 ){
-			ZONE.TOONS[ mud_id ].MODEL.quaternion.slerp( ZONE.TOONS[ mud_id ].ref.quaternion, .01 )
+			ZONE.TOONS[ mud_id ].BBOX.quaternion.slerp( ZONE.TOONS[ mud_id ].ref.quaternion, .01 )
 			ZONE.TOONS[ mud_id ].needs_rotate--
 			if( ZONE.TOONS[ mud_id ].needs_rotate === 0 ){
 				// console.log( 'slerp arrived')
@@ -295,17 +295,17 @@ function animate( start ){
 	}
 
 	for( const mud_id of Object.keys( ZONE.NPCS )){ // should not include player
-		if( ZONE.NPCS[ mud_id ].MODEL ){
+		if( ZONE.NPCS[ mud_id ].BBOX ){
 			if( ZONE.NPCS[ mud_id ].needs_move ){
 				// console.log('lerpin npc')
-				ZONE.NPCS[ mud_id ].MODEL.position.lerp( ZONE.NPCS[ mud_id ].ref.position, .02 )
+				ZONE.NPCS[ mud_id ].BBOX.position.lerp( ZONE.NPCS[ mud_id ].ref.position, .02 )
 			}
 		}else{
 			console.log('no model for : ', lib.identify( 'name', ZONE.NPCS[ mud_id ] ) )
 		}
 		if( ZONE.NPCS[ mud_id ].needs_rotate > 0 ){
 			console.log( 'skipping npc slerp')
-			// ZONE.NPCS[ mud_id ].MODEL.quaternion.slerp( ZONE.NPCS[ mud_id ].ref.quaternion, .01 )
+			// ZONE.NPCS[ mud_id ].BBOX.quaternion.slerp( ZONE.NPCS[ mud_id ].ref.quaternion, .01 )
 			// ZONE.NPCS[ mud_id ].needs_rotate--
 			// if( ZONE.NPCS[ mud_id ].needs_rotate === 0 ){
 			// 	// console.log( 'slerp arrived')
@@ -329,26 +329,26 @@ function animate( start ){
 
 	// for( const mud_id of Object.keys( BOTS )){ // should not include player
 	// 	if( BOTS[ mud_id ].needs_move ){
-	// 		BOTS[ mud_id ].MODEL.position.lerp( BOTS[ mud_id ].ref.position, .01 )
-	// 		if( BOTS[ mud_id ].MODEL.position.distanceTo( BOTS[ mud_id ].ref.position ) < .1 ){
+	// 		BOTS[ mud_id ].BBOX.position.lerp( BOTS[ mud_id ].ref.position, .01 )
+	// 		if( BOTS[ mud_id ].BBOX.position.distanceTo( BOTS[ mud_id ].ref.position ) < .1 ){
 	// 			BOTS[ mud_id ].needs_move = false
 	// 			// console.log('lerp arrived')
 	// 		}
 	// 	}
 	// 	if( BOTS[ mud_id ].needs_rotate > 0 ){
-	// 		BOTS[ mud_id ].MODEL.quaternion.slerp( BOTS[ mud_id ].ref.quaternion, .02 )
+	// 		BOTS[ mud_id ].BBOX.quaternion.slerp( BOTS[ mud_id ].ref.quaternion, .02 )
 	// 		BOTS[ mud_id ].needs_rotate--
 	// 		// if( BOTS[ mud_id ].needs_rotate === 0 ) console.log( 'slerp arrived')
 	// 	}
 	// }
 	
 	// for( const mud_id of Object.keys( PILLARS )){
-	// 	if( PILLARS[ mud_id ].MODEL.position.y > 300 ){
+	// 	if( PILLARS[ mud_id ].BBOX.position.y > 300 ){
 	// 		PILLARS[ mud_id ].destruct()
 	// 	}else if( PILLARS[ mud_id ].ballooning ){
-	// 		PILLARS[ mud_id ].MODEL.position.y += .2
-	// 		PILLARS[ mud_id ].MODEL.rotation.y += PILLARS[ mud_id ].balloonY
-	// 		PILLARS[ mud_id ].MODEL.rotation.z += PILLARS[ mud_id ].balloonZ
+	// 		PILLARS[ mud_id ].BBOX.position.y += .2
+	// 		PILLARS[ mud_id ].BBOX.rotation.y += PILLARS[ mud_id ].balloonY
+	// 		PILLARS[ mud_id ].BBOX.rotation.z += PILLARS[ mud_id ].balloonZ
 	// 	}
 	// }
 

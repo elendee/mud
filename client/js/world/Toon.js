@@ -7,6 +7,7 @@ import GLOBAL from '../GLOBAL.js'
 import Clickable from './Clickable.js'
 
 import { 
+	Box3,
 	Vector3,
 	Quaternion,
 	BoxBufferGeometry,
@@ -54,7 +55,8 @@ export default class Toon {
 
 		this.bindings = this.bindings || {}
 
-		this.INVENTORY = false
+		this.INVENTORY = false // instantiated inventory
+		// this._INVENTORY // server inventory
 
 		// this.ref = init.ref = init.ref || {}
 
@@ -120,10 +122,11 @@ export default class Toon {
 		}
 
 		this.MODEL = init.MODEL
+		this.BBOX = init.BBOX
 
 		this.logistic = this.logistic || []
 		this.logistic = this.logistic.concat( init.logistic )
-		this.logistic.push('needs_rotate','starter_equip', 'needs_move', 'needs_stream', 'direction', 'intervals', 'MODEL', 'BODY', 'HEAD', 'ARM_LEFT', 'ARM_RIGHT', 'LEG_LEFT', 'LEG_RIGHT', 'INVENTORY', '_INVENTORY', 'bindings')
+		this.logistic.push('needs_rotate','starter_equip', 'needs_move', 'needs_stream', 'direction', 'intervals', 'BBOX', 'MODEL', 'BODY', 'HEAD', 'ARM_LEFT', 'ARM_RIGHT', 'LEG_LEFT', 'LEG_RIGHT', 'INVENTORY', '_INVENTORY', 'bindings')
 
 	}
 
@@ -141,13 +144,15 @@ export default class Toon {
 
 		const init = inventory || this._INVENTORY
 
-		for( const mud_id of Object.keys( init ) ){
+		console.log('setting inventory: ', inventory )
+
+		for( const mud_id of Object.keys( init ) ){ // fill new
 			if( !this.INVENTORY[ mud_id ]){
 				this.INVENTORY[ mud_id ] = new Item( init[ mud_id ])
 			}
 		}
 
-		for( const mud_id of Object.keys( this.INVENTORY ) ){
+		for( const mud_id of Object.keys( this.INVENTORY ) ){ // clear unrepresented
 			if( !init[ mud_id ]){
 				console.log('item not found in init; dropping: ', mud_id, this.INVENTORY[ mud_id ])
 				delete this.INVENTORY[ mud_id ]
@@ -171,231 +176,113 @@ export default class Toon {
 	model( proto_map ){
 
 		if( !proto_map ){
-			debugger
+			console.log('missing proto map', lib.identify('name', this ))
+			return false
 		}
 
 		const toon = this
 
 		return new Promise(( resolve, reject ) => {
 
-			const model = lib.identify( 'model', toon )
+			const toon_address = lib.identify( 'model', toon )
 
-			const type = GLOBAL.MODEL_TYPES[ model ]
+			const url  = '/resource/geometries/' + toon_address + '.glb' // + type
 
-			const url  = '/resource/geometries/' + model + '.' + type
-			// console.log( model )
+			if( !proto_map[ toon_address ] ){
 
-			if( model === 'npc' || model === 'toon' ){
-
-				// if( !proto_map[ model ] ){
-					
-				// 	gltfLoader.load(
-				// 		url,
-				// 		function ( model ) {
-				// 			console.log('>>>>>', model )
-				// 			proto_map[ model ] = model.scene
-				// 			toon.MODEL = model.scene
-				// 			toon.MODEL.traverse(function(ele){
-				// 				if( ele.name.match(/_cs_/)){
-				// 					ele.castShadow = true
-				// 				}
-				// 				toon.MODEL.userData = new Clickable( toon )
-				// 			})
+				console.log('prototyping: ', toon_address )
+				
+				gltfLoader.load(
+					url,
+					function ( toon_address ) {
+						// console.log('>>>>>', toon_address )
+						proto_map[ toon_address ] = toon_address.scene
 						
-				// 			resolve( model.scene )
+						toon.MODEL = toon_address.scene
 
-				// 			// gltf.animations; // Array<THREE.AnimationClip>
-				// 			// gltf.scene; // THREE.Group
-				// 			// gltf.scenes; // Array<THREE.Group>
-				// 			// gltf.cameras; // Array<THREE.Camera>
-				// 			// gltf.asset; // Object
-				// 		},
-				// 		function ( xhr ) {
-				// 			console.log( model + ' ' + ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-				// 		},
-				// 		function ( error ) {
-				// 			reject( error )
-				// 		}
-				// 	)
+						toon.MODEL.traverse(function(ele){
+							// console.log( ele.name )
+							if( ele.name.match(/_cs_/)){
+								ele.castShadow = true
+							}
+							if( ele.name.match(/_rs_/)){
+								ele.receiveShadow = true
+							}
+							if( ele.name.match(/HEAD/)){
+								toon.MODEL.HEAD = ele
+							}
+							if( ele.name.match(/_mat/)){
+								let slug = ele.name.substr( ele.name.indexOf('_mat') + 5 ).replace(/_.*/g, '')
+								// console.log('assigning material: ', slug )
+								if( lib.materials[ slug ] ){
+									ele.material = lib.materials[ slug ]
+								}else{
+									console.log('missing material: ', slug )
+								}
+							}
+						})
 
-				// }else{
+						toon.inflate()
 
-				// 	toon.MODEL = proto_map[ model ]
-				// 	resolve( proto_map[ model ] )
+						const bbox = new Box3().setFromObject( toon.MODEL ).getSize()
+						const upper_bound_width = Math.max( bbox.x, bbox.z )
+						const bbox_geo = new BoxBufferGeometry( 
+							upper_bound_width, 
+							bbox.y, 
+							upper_bound_width 
+						)
 
-				// }
+						toon.BBOX = new Mesh( bbox_geo, lib.materials.transparent )
+						toon.BBOX.userData = new Clickable( toon )
 
-				toon.MODEL = new Group()
-				toon.MODEL.castShadow = true
-				toon.MODEL.receiveShadow = true
-				toon.MODEL.userData = new Clickable( this )
-				// {
-				// 	clickable: true,
-				// 	mud_id: toon.mud_id,
-				// 	type: 'toon',
-				// 	icon_url: toon.icon_url,
-				// 	// website: toon.website,
-				// 	name: toon.name
-				// }
+						toon.BBOX.add( toon.MODEL )
 
-				toon.BODY = new Group()
-				toon.MODEL.add( toon.BODY )
+						toon.BBOX.position.y = 0 // toon.height / 2
 
-				const material = new MeshLambertMaterial({
-					color: new Color( toon.color )
-				})
+						resolve()
 
-				if( env.LOCAL && 0 ){
-					const gaze_geo = new BoxBufferGeometry(3, 3, 3)
-					const gaze_mat = material
-					toon.GAZE = new Mesh( gaze_geo, gaze_mat )
-					SCENE.add( toon.GAZE )
-				}
-
-				const torso_width = 1.3
-				const torso_depth = .5
-				const torso_geo = new BoxBufferGeometry( torso_width, toon.height * .4, torso_depth )
-				const torso = new Mesh( torso_geo, material )
-				torso.position.set( 0, .55, 0 )
-				toon.BODY.add( torso )
-
-				const hip_width = 1.3
-				const hip_depth = .5
-				const hip_geo = new BoxBufferGeometry( hip_width, toon.height * .2, hip_depth )
-				const hip = new Mesh( hip_geo, material )
-				hip.position.set( 0, 0, .01 )
-				toon.BODY.add( hip )
-
-				const head_geometry = new SphereBufferGeometry( .5, 8, 6 )
-				const head_material = material
-				toon.HEAD = new Mesh( head_geometry, material )
-				// toon.HEAD.castShadow = true
-				toon.HEAD.receiveShadow = true
-				toon.HEAD.position.set( 0, ( toon.height / 2 ) + .2, .1 ) 
-
-				const arm_length = 1.5
-				const arm_radius = .3
-				const arm_displace_x = .75
-				const arm_displace_y = (toon.height / 2) * .25
-				const arm_displace_z = .12
-
-				const arm_left = new BoxBufferGeometry( arm_radius, arm_length, arm_radius )
-				const arm_material = material
-				toon.ARM_LEFT = new Mesh( arm_left, arm_material )
-				// toon.ARM_LEFT.castShadow = true
-				toon.ARM_LEFT.receiveShadow = true
-				toon.ARM_LEFT.position.set( -arm_displace_x, arm_displace_y, arm_displace_z )
-
-				const arm_right = new BoxBufferGeometry( arm_radius, arm_length, arm_radius )
-				toon.ARM_RIGHT = new Mesh( arm_right, arm_material )
-				// toon.ARM_RIGHT.castShadow = true
-				toon.ARM_RIGHT.receiveShadow = true
-				toon.ARM_RIGHT.position.set( arm_displace_x, arm_displace_y, arm_displace_z )
-
-				const leg_length = 1.8
-				const leg_radius = .4
-				const leg_displace_x = .35
-				const leg_displace_y = -(toon.height / 2) * .5
-				const leg_displace_z = .12
-
-				const leg_left = new BoxBufferGeometry( leg_radius, leg_length, leg_radius )
-				const leg_material = material
-				toon.LEG_LEFT = new Mesh( leg_left, leg_material )
-				toon.LEG_LEFT.castShadow = true
-				toon.LEG_LEFT.receiveShadow = true
-				toon.LEG_LEFT.position.set( -leg_displace_x, leg_displace_y, leg_displace_z )
-
-				const leg_right = new BoxBufferGeometry( leg_radius, leg_length, leg_radius )
-				toon.LEG_RIGHT = new Mesh( leg_right, leg_material )
-				// toon.LEG_RIGHT.castShadow = true
-				toon.LEG_RIGHT.receiveShadow = true
-				toon.LEG_RIGHT.position.set( leg_displace_x, leg_displace_y, leg_displace_z )
-
-				toon.BODY.add( toon.HEAD )
-				toon.BODY.add( toon.ARM_LEFT )
-				toon.BODY.add( toon.ARM_RIGHT )
-				toon.BODY.add( toon.LEG_LEFT )
-				toon.BODY.add( toon.LEG_RIGHT )
-
-				resolve()
+						// gltf.animations; // Array<THREE.AnimationClip>
+						// gltf.scene; // THREE.Group
+						// gltf.scenes; // Array<THREE.Group>
+						// gltf.cameras; // Array<THREE.Camera>
+						// gltf.asset; // Object
+					},
+					function ( xhr ) {
+						// console.log( model + ' ' + ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+					},
+					function ( error ) {
+						reject( error )
+					}
+				)
 
 			}else{
 
-				if( type === 'glb' ){
-
-					if( !proto_map[ model ] ){
-					
-						gltfLoader.load(
-							url,
-							function ( model ) {
-								proto_map[ model ] = model.scene
-								toon.MODEL = model.scene
-								toon.MODEL.traverse(function(ele){
-									if( ele.name.match(/_cs_/)){
-										ele.castShadow = true
-									}
-									toon.MODEL.userData = new Clickable( toon )
-									resolve( model.scene )
-								})
-								// gltf.animations; // Array<THREE.AnimationClip>
-								// gltf.scene; // THREE.Group
-								// gltf.scenes; // Array<THREE.Group>
-								// gltf.cameras; // Array<THREE.Camera>
-								// gltf.asset; // Object
-							},
-							function ( xhr ) {
-								console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-							},
-							function ( error ) {
-								reject( error )
-							}
-						)
-
-					}else{
-
-						toon.MODEL = proto_map[ model ]
-						resolve( proto_map[ model ] )
-
-					}
-
-				}else if( type === 'obj' ){
-
-					if( !proto_map[ model ] ){
-
-						objLoader.load(
-							url,
-							function ( model ) {
-
-								console.log( 'how to handle obj model: ', model )
-								debugger
-
-								// proto_map[ model ] = model.scene
-								// toon.MODEL = model.scene
-								// toon.MODEL.traverse(function(ele){
-								// 	if( ele.name.match(/_cs_/)){
-								// 		ele.castShadow = true
-								// 	}
-								// 	resolve( model.scene )
-								// })
-							},
-							function ( xhr ) {
-								console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-							},
-							function ( error ) {
-								reject( error )
-							}
-						)
-
-					}else{
-						toon.MODEL = proto_map[ model ]
-						resolve( proto_map[ model ] )
-					}
-
-				}
+				toon.MODEL = proto_map[ toon_address ]
+				const bbox = new Box3().setFromObject( toon.MODEL ).getSize()
+				const upper_bound_width = Math.max( bbox.x, bbox.z )
+				const bbox_geo = new BoxBufferGeometry( 
+					upper_bound_width, 
+					bbox.y, 
+					upper_bound_width 
+				)
+				toon.BBOX = new Mesh( bbox_geo, lib.materials.transparent )
+				resolve( toon.MODEL )
 
 			}
-
+			
 		})
+
+	}
+
+
+
+	inflate(){
+
+		const bbox = new Box3().setFromObject( this.MODEL ).getSize()
+
+		const ratio = this.height / bbox.y
+
+		this.MODEL.scale.set( ratio, ratio, ratio )
 
 	}
 
@@ -430,7 +317,7 @@ export default class Toon {
 
 			if( direction !== TOON.direction ){
 
-				const dir = new Vector3().copy( TOON.MODEL.position )
+				const dir = new Vector3().copy( TOON.BBOX.position )
 
 				// console.log( direction )
 
@@ -468,9 +355,10 @@ export default class Toon {
 
 		}else{
 
-			if( this.GAZE ) this.GAZE.position.copy( vec3 )
+			// if( this.GAZE ) this.GAZE.position.copy( vec3 )
 
-			this.BODY.lookAt( vec3 )
+			// this.BODY.lookAt( vec3 )
+			this.MODEL.lookAt( vec3 )
 			// this.BODY.rotation.x = this.BODY.rotation.z = Math.PI
 			RENDERER.frame( SCENE )
 
@@ -522,7 +410,7 @@ export default class Toon {
 
 		setTimeout(function(){
 			console.log( 'removing dead toon...')
-			scene.remove( toon.MODEL )
+			scene.remove( toon.BBOX )
 		}, 1000 )
 
 	}
@@ -558,7 +446,7 @@ export default class Toon {
 					window.SOCKET.send(JSON.stringify({
 						type: 'move_stream',
 						ref: {
-							position: toon.MODEL.position,
+							position: toon.BBOX.position,
 							quaternion: toon.MODEL.quaternion
 						}
 					}))
@@ -569,8 +457,8 @@ export default class Toon {
 
 				DEV.render('coords', {
 					packet: {
-						x: TOON.MODEL.position.x,
-						z: TOON.MODEL.position.z
+						x: TOON.BBOX.position.x,
+						z: TOON.BBOX.position.z
 					}
 				})
 

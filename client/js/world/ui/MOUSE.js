@@ -142,7 +142,7 @@ function orient_patron( x, y, e ){
 	if( e.clientY > window.innerHeight / 2 )  x *= -1
 
 	ANIMATE.analog_turn( ( x / 100 ), true )
-	// window.TOON.MODEL.rotation.y -= ( x / 100 )
+	// window.TOON.BBOX.rotation.y -= ( x / 100 )
 	// adjust_camera_altitude( y )
 	// window.TOON.needs_stream = true
 
@@ -182,9 +182,9 @@ function wheel( e ){
 
 	}
 
-	CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+	CAMERA.position.copy( window.TOON.BBOX.position ).add( CAMERA.offset )
 
-	CAMERA.lookAt( window.TOON.MODEL.position )
+	CAMERA.lookAt( window.TOON.BBOX.position )
 
 	RENDERER.frame( SCENE )
 
@@ -281,7 +281,7 @@ function check_distance( clicked, intersects ){
 		
 	}
 
-	dist = clicked_position.distanceTo( window.TOON.MODEL.position )
+	dist = clicked_position.distanceTo( window.TOON.BBOX.position )
 
 	if( dist < required_dist )  return true
 

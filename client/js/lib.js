@@ -1,9 +1,13 @@
+import env from './env.js'
+
 import {
 	Vector3,
 	Euler,
 	Quaternion,
 	BufferGeometry,
-	Box3
+	Box3,
+	MeshLambertMaterial,
+	MeshBasicMaterial
 } from './lib/three.module.js'
 
 import GLTF from './three/loader_GLTF.js'
@@ -378,6 +382,56 @@ function get_avatar_name( avatar ){
 
 
 
+const base_materials = {
+	darkbrown: new MeshLambertMaterial({
+		color: 'rgb(20, 10, 5)'
+	}),
+	darkgrey: new MeshLambertMaterial({
+		color: 'rgb(10, 10, 10)'
+	}),
+	mediumgrey: new MeshLambertMaterial({
+		color: 'rgb(50,50,50)'
+	}),
+	darkgreen: new MeshLambertMaterial({
+		color: 'rgb(20, 30, 20)'
+	}),
+	mediumgreen: new MeshLambertMaterial({
+		color: 'rgb(25, 40, 20)'
+	}),
+	darkblue: new MeshLambertMaterial({
+		color: 'rgb(20, 20, 30)'
+	}),
+	darkbrown: new MeshLambertMaterial({
+		color: 'rgb(20, 20, 15)'
+	}),
+	glowingorange: new MeshBasicMaterial({
+		color: 'rgb(255, 185, 50)',
+		// emissive: 'rgb(55, 05, 120)'
+	})
+}
+
+
+
+const materials = {
+	transparent: new MeshLambertMaterial({
+		color: 'rgb(100, 125, 255)',
+		transparent: true,
+		opacity: env.BBOX_OPACITY || 0,
+		depthWrite: false
+	}),
+	wooddark: base_materials.darkbrown,
+	stonedark: base_materials.mediumgrey,
+	forge: base_materials.darkgrey,
+	furnace: base_materials.glowingorange,
+	oak: base_materials.mediumgreen,
+	pine: base_materials.darkgreen,
+	gnome: base_materials.darkblue,
+	gorgon: base_materials.darkgreen,
+	human: base_materials.darkbrown,
+}
+
+
+
 export {
 	random_hex,
 	degrees_to_radians,
@@ -394,6 +448,7 @@ export {
 	identify,
 	get_dimensions,
 	scale_to_match,
-	get_avatar_name
+	get_avatar_name,
+	materials
 	// clear_object
 }

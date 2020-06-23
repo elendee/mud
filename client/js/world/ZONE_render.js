@@ -124,7 +124,7 @@ async function zone_render ( zone, zone_data ){
 
 	 setTimeout(function(){
 
-		CAMERA.lookAt( TOON.MODEL.position ) 
+		CAMERA.lookAt( TOON.BBOX.position ) 
 
 		RENDERER.frame( SCENE )
 
@@ -133,8 +133,8 @@ async function zone_render ( zone, zone_data ){
     if( env.LOCAL && 0 ){
 		setTimeout(function(){
 			CAMERA.offset.set( -50, 50, 50 )
-			CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
-			CAMERA.lookAt( window.TOON.MODEL.position )
+			CAMERA.position.copy( window.TOON.BBOX.position ).add( CAMERA.offset )
+			CAMERA.lookAt( window.TOON.BBOX.position )
 			RENDERER.frame( SCENE )
 		}, 1000)
 	}
