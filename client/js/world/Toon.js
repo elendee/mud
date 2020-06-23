@@ -51,6 +51,13 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
+		if( !this._stats ){
+			console.log('invalid toon; no _stats')
+			return false
+		}
+
+		this._stats.speed = this._stats.speed || env.SPEED
+
 		this.type = init.type || 'toon'
 
 		this.bindings = this.bindings || {}
@@ -116,10 +123,6 @@ export default class Toon {
 		}
 
 		this.direction = 'north'
-
-		if( env.SPEED && this._stats ){
-			this._stats.speed = env.SPEED
-		}
 
 		this.MODEL = init.MODEL
 		this.BBOX = init.BBOX
