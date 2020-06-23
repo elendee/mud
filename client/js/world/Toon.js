@@ -51,12 +51,14 @@ export default class Toon {
 			this[ key ] = init[ key ]
 		}
 
-		if( !this._stats ){
-			console.log('invalid toon; no _stats')
-			return false
-		}
+		// if( !this._stats ){
+		// 	console.log('invalid toon; no _stats')
+		// 	return false
+		// }
 
-		this._stats.speed = this._stats.speed || env.SPEED
+		this.speed = lib.validate_number( this.speed, init.speed, 0 )
+
+		// this._stats.speed = this._stats.speed || env.SPEED
 
 		this.type = init.type || 'toon'
 

@@ -34,7 +34,7 @@ class AgentPersistent extends Persistent {
 		this._stats.perception = lib.validate_number( this._stats.perception, init.perception, 5 )
 		this._stats.luck = lib.validate_number( this._stats.luck, init.luck, 5 )
 		this._stats.intellect = lib.validate_number( this._stats.intellect, init.intellect, 5 )
-		this._stats.speed = lib.validate_number( this._stats.speed, init.speed, 15 )
+		this._stats.speed = lib.validate_number( this._stats.speed, 15 )
 		this._stats.height = lib.validate_number( this._stats.height, init.height, 5 )
 
 		this.health = init.health || {}

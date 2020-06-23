@@ -43,7 +43,7 @@ class Objective{
 
 
 
-module.exports = class Toon extends AgentPersistent {
+module.exports = class Npc extends AgentPersistent {
 
 	constructor( init ){
 
@@ -62,12 +62,12 @@ module.exports = class Toon extends AgentPersistent {
 		// this.surname = init.surname || 'O\'Toon'
 		this.surname = init.surname 
 
-		this.speed = lib.validate_number( 
-			env.SPEEDUP ? 100 : undefined, 
-			init.speed, 
-			this._stats ? this._stats.speed : undefined, 
+		this.speed = Math.max( 15, lib.validate_number( 
+			init.speed,
+			this._stats && this._stats.speed ? this._stats.speed : undefined, 
 			20 
-		)
+		))
+
 		this.height = lib.validate_number( init._stats ? init._stats.height : undefined, init.height, 5 )
 
 		let random_seed = Math.floor( Math.random() * 100 )

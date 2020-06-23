@@ -404,8 +404,10 @@ function render_stat( key, value, destination ){
 
 	let stat_val = document.createElement('span')
 	stat_val.classList.add('stat-val')
-	if( key === 'color' ){
+	if( key === 'primary_color' || key === 'secondary_color' ){
 		stat_val.innerHTML = '<div class="stat-color" style="background: linear-gradient(' + value + ', transparent )"></div>'
+	}else if( key === 'speed' ){
+		stat_val.innerHTML = TOON.speed
 	}else{
 		stat_val.innerHTML = value
 	}

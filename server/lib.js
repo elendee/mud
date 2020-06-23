@@ -487,6 +487,17 @@ function publish( obj ){
 }
 
 
+function calc_speed( entity, speed_rating ){
+
+	if( entity.type === 'npc' || entity.type === 'toon' ){
+		return Math.floor( 20 + speed_rating / 2 )
+	}else{
+		return speed_rating
+	}
+
+}
+
+
 
 module.exports = {
 	tables,
@@ -519,6 +530,7 @@ module.exports = {
 	identify,
 	mumble,
 	_enum,
-	publish
+	publish,
+	calc_speed
 }
 

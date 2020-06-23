@@ -42,7 +42,11 @@ module.exports = class Toon extends AgentPersistent {
 
 		this.race = lib.validate_string( init.race, 'human' )
 
-		this.speed = lib.validate_number( init._stats ? init._stats.speed : undefined, init.speed, 20 )
+		this.speed = Math.max( 20, lib.validate_number( 
+			init.speed ? init.speed : undefined, 
+			this._stats && this._stats.speed ? this._stats.speed : undefined, 
+			20 
+		))
 		this.height = lib.validate_number( init._stats ? init._stats.height : undefined, init.height, 7 )
 
 		let random_seed = Math.floor( Math.random() * 100 )
@@ -254,6 +258,8 @@ module.exports = class Toon extends AgentPersistent {
 						power: 500
 					})
 					this._INVENTORY[ hatchet_launcher.mud_id ] = hatchet_launcher
+
+					this.touch_equipped()
 
 					this.equipped[3] = hatchet_launcher.mud_id
 
