@@ -23,7 +23,7 @@ class AgentPersistent extends Persistent {
 
 		this._status = init._status || 'alive'
 
-		this.name = init.name || 'Toon_' + lib.random_hex(4)
+		this.name = init.name || 'Agent_' + lib.random_hex(4)
 
 		// log('flag', 'toon has strings ya: ', init._stats )
 

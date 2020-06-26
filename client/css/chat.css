@@ -19,7 +19,7 @@
 /* 	border: 1px solid wheat; */
 /* 	box-shadow: inset 0px 0px 15px black; */
 /* 	border-radius: 0px 15px 0 0; */
-/* 	pointer-events: none; */
+	pointer-events: initial;
 }
 
 #chat-toggle{
@@ -39,8 +39,15 @@
 	color: blue;
 }
 
-#chat-content .self span{
-	color: white;
+#chat-content .chat{
+	color: grey;
+}
+#chat-content .chat.self span{
+/* 	color: white; */
+}
+#chat-content .chat.emote{
+/*     color: pink; */
+    background: rgba(255, 255, 255, .1)
 }
 
 #chat-content,

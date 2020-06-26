@@ -56,7 +56,7 @@ export default class Toon {
 		// 	return false
 		// }
 
-		this.speed = lib.validate_number( this.speed, init.speed, 0 )
+		this.speed = lib.validate_number( env.LOCAL ? 100 : undefined, this.speed, init.speed, 0 )
 
 		// this._stats.speed = this._stats.speed || env.SPEED
 

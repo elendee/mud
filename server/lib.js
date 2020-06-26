@@ -105,7 +105,13 @@ function rgb_to_hex( rgb_color, received_scale, type ){
 
 
 
+function capitalize( input ){
 
+	if( typeof input !== 'string' ) return undefined
+
+	return input.charAt(0).toUpperCase() + input.slice(1);
+
+}
 
 
 
@@ -237,7 +243,7 @@ function random_hex( len ){
 }
 
 
-function random_rgb( ...ranges ){
+function random_rgb( ...ranges ){ // ( [0,255], [0,255], [0,255] )
 
 	let inc = 0
 	let string = 'rgb('
@@ -498,6 +504,17 @@ function calc_speed( entity, speed_rating ){
 }
 
 
+const chat = {
+
+	is_greeting: function( input ){
+		if( input.match(/^hi$/i) || input.match(/hell?o/i) || input.match(/greetings/i) ){
+			return true
+		}
+		return false
+	}
+
+}
+
 
 module.exports = {
 	tables,
@@ -516,6 +533,7 @@ module.exports = {
 	random_hex,
 	random_rgb,
 	zone_id,
+	capitalize,
 	// tile_from_Zpos,
 	// tile_from_Xpos,
 	is_iso_date,
@@ -531,6 +549,7 @@ module.exports = {
 	mumble,
 	_enum,
 	publish,
-	calc_speed
+	calc_speed,
+	chat
 }
 

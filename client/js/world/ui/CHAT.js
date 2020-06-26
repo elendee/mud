@@ -75,9 +75,9 @@ class Chat {
 			STATE.handler = 'chat'
 		})
 
-		chat.ele.addEventListener('click', function(){ 
-			if( STATE.handler !== 'chat' ) chat.input.focus()  
-		})
+		// chat.input.addEventListener('click', function(){ 
+		// 	if( STATE.handler !== 'chat' ) chat.input.focus()  
+		// })
 	}
 
 
@@ -87,6 +87,7 @@ class Chat {
 	add_chat( zone, data ){
 		// type
 		// method
+		// sender_type (proprietors)
 		// sender_mud_id
 		// speaker
 		// chat
@@ -94,21 +95,20 @@ class Chat {
 
 		const CHAT = this		
 
-		if( !data.sender_mud_id ){
-			console.log('undefined sender_mud_id ', data )
-			return false
-		}
-
-		if( !zone.NPCS[ data.sender_mud_id ] && !zone.TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
-			console.log('no toon found for chat ', data.sender_mud_id )
-			return false
-		}
+		// if( data.sender_type !== 'proprietor' && !data.sender_mud_id ){
+		// 	console.log('undefined sender_mud_id ', data )
+		// 	return false
+		// }
 
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
 		chat.classList.add( data.method )
-		if( data.sender_mud_id == window.TOON.mud_id ) chat.classList.add('self')
-		chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span>${ data.chat }`
+		if( data.sender_mud_id == window.TOON.mud_id )  chat.classList.add('self')
+		if( data.method === 'say' ){
+			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span>${ data.chat }`
+		}else if( data.method === 'emote' ){ 
+			chat.innerHTML = data.chat
+		}
 
 		this.content.appendChild( chat )
 
@@ -126,6 +126,11 @@ class Chat {
 		// }
 
 		if( !TOON.inside ){
+
+			if( !zone.NPCS[ data.sender_mud_id ] && !zone.TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
+				console.log('no toon found for chat ', data.sender_mud_id )
+				return false
+			}
 
 			const bubble = new Bubble( data )
 

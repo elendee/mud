@@ -65,7 +65,7 @@ class StructureGUI{
 		// console.log('rendering', structure_data)
 		this.bg.style.display = 'initial'
 		document.getElementById('chat').classList.add('inside')
-		this.proprietor_label.innerHTML = lib.identify( 'name', structure_data ) + ' proprietor:'
+		this.proprietor_label.innerHTML = lib.identify( 'name', structure_data ) + ' proprietor:<br><span style="color: ' + structure_data.proprietor.color + '">' + structure_data.proprietor.name + '</span>'
 		this.mud_id = structure_data.mud_id
 
 		if( !CHAT.toggled ){

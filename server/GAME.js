@@ -361,26 +361,25 @@ class Game {
 
 	handle_chat( packet, zone, toon_id ){
 
+		if( typeof packet.chat !== 'string' || packet.chat.trim() === '' ){
+			return false
+		}
+
 		if( packet.chat.match(/^\/.*/)){
 			this.handle_command( packet, toon_id )
 			return true
 		}
 
-		if( packet.chat == 'xyzzy'){
-			// SOCKETS[ toon_id ].send( JSON.stringify({
-			// 	type: 'zoom'
-			// }))
-			return true
-		}
+		const toon = zone._TOONS[ toon_id ]
 
 		let group
 
-		// log('flag','chat inside: ', typeof zone._TOONS[ toon_id ].inside )
+		// log('flag','chat inside: ', typeof toon.inside )
 
-		if( zone._TOONS[ toon_id ].inside ){
-			group = zone.get_toons( 'structure', { inside: zone._TOONS[ toon_id ].inside } )
+		if( toon.inside ){
+			group = zone.get_toons( 'structure', { inside: toon.inside } )
 		}else{
-			group = zone.get_toons( 'chat', { position: zone._TOONS[ toon_id ].ref.position } )
+			group = zone.get_toons( 'chat', { position: toon.ref.position } )
 		}
 
 		for( const mud_id of Object.keys( group ) ){ // normal range chats
@@ -389,18 +388,28 @@ class Game {
 				data: {
 					method: packet.method,
 					sender_mud_id: toon_id,
-					speaker: SOCKETS[ toon_id ].request.session.USER._TOON.name,
+					speaker: toon.name,
 					chat: lib.sanitize_chat( packet.chat ),
-					color: SOCKETS[ toon_id ].request.session.USER._TOON.color
+					color: toon.primary_color
 				}
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ mud_id ].send(JSON.stringify( chat_pack ))
 		}
 
-		if( !zone._TOONS[ toon_id ].inside ){ // mumble range chats
+		// log('flag', 'inside: ', toon.inside )
 
-			let mumble_group = zone.get_toons( 'mumble_chat', { position: zone._TOONS[ toon_id ].ref.position } )
+		if( toon.inside && Object.keys( group ).length <= 1 ){ // alone with proprietor
+			const structure = zone._STRUCTURES[ toon.inside ]
+			// log('flag', 'indeed alone', structure.proprietor )
+			if( structure ){
+				structure.proprietor.respond( SOCKETS, toon_id, packet )
+			}
+		}
+
+		if( !toon.inside ){ // mumble range chats
+
+			let mumble_group = zone.get_toons( 'mumble_chat', { position: toon.ref.position } )
 
 			for( const mud_id of Object.keys( mumble_group ) ){
 				let chat_pack = {
@@ -408,9 +417,11 @@ class Game {
 					data: {
 						method: packet.method,
 						sender_mud_id: toon_id,
-						speaker: SOCKETS[ toon_id ].request.session.USER._TOON.name,
+						speaker: toon.name,
+						// SOCKETS[ toon_id ].request.session.USER._TOON.name,
 						chat: lib.mumble( lib.sanitize_chat( packet.chat ) ),
-						color: SOCKETS[ toon_id ].request.session.USER._TOON.color
+						color: toon.color
+						// SOCKETS[ toon_id ].request.session.USER._TOON.color
 					}
 				}
 				log('chat', chat_pack.speaker, chat_pack.chat )

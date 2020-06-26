@@ -518,7 +518,8 @@ class Zone extends Persistent {
 		const { error, results, fields } = await pool.queryPromise( sql )
 		if( error ) log('flag', 'structure looukp  err: ', error )
 		for ( const structure of results ){
-			let struct = new Structure( structure )
+			structure.zone_name = this.name
+			const struct = new Structure( structure )
 			this._STRUCTURES[ struct.mud_id ] = struct
 		}
 

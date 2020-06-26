@@ -49,17 +49,9 @@ module.exports = class Toon extends AgentPersistent {
 		))
 		this.height = lib.validate_number( init._stats ? init._stats.height : undefined, init.height, 7 )
 
-		let random_seed = Math.floor( Math.random() * 100 )
-		this.primary_color = lib.validate_string( init.primary_color, lib.random_rgb( 
-			[ random_seed, random_seed + 150],
-			[ random_seed, random_seed + 150],
-			[ random_seed, random_seed + 150]
-		))
-		this.secondary_color = lib.validate_string( init.secondary_color, lib.random_rgb( 
-			[ random_seed, random_seed + 150],
-			[ random_seed, random_seed + 150],
-			[ random_seed, random_seed + 150] 
-		))
+		// let random_seed = Math.floor( Math.random() * 100 )
+		this.primary_color = lib.validate_string( init.primary_color, lib.random_rgb( [100, 255],[100, 255],[100, 255] ))
+		this.secondary_color = lib.validate_string( init.secondary_color, lib.random_rgb( [ 0, 100],[ 0, 100],[ 0, 100] ))
 
 		// this.portrait = init.portrait || lib.gen_portrait()
 		
@@ -592,7 +584,7 @@ module.exports = class Toon extends AgentPersistent {
 				const regex = new RegExp( data, 'i' )
 				for( const mud_id of Object.keys( this._INVENTORY )){
 					if( this._INVENTORY[ mud_id ].name && this._INVENTORY[ mud_id ].name.match( regex ) ){
-						log('flag', 'MATCH: ', this._INVENTORY[ mud_id ].name )
+						// log('flag', 'MATCH: ', this._INVENTORY[ mud_id ].name )
 						if( once ){
 							return this._INVENTORY[ mud_id ]
 						}else{
