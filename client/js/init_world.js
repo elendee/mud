@@ -33,25 +33,31 @@ document.addEventListener('DOMContentLoaded', function(){
 	ROUTER.bind()
 	.then( init_res => {
 		init_session( init_res )
-		zone_render( ZONE, init_res.ZONE )
-		setTimeout(function(){
-			window.SOCKET.send(JSON.stringify({
-				type: 'ping_flora'
-			}))
-		}, 500)
-		setTimeout(function(){
-			window.SOCKET.send(JSON.stringify({
-				type: 'ping_structures'
-			}))
-		}, 1500)
-		setTimeout(function(){
-			window.SOCKET.send(JSON.stringify({
-				type: 'ping_items'
-			}))
-			document.querySelectorAll('img').forEach(function(ele){
-				ele.setAttribute('draggable', false )
-			})
-		}, 2000)
+		.then(res=>{
+			zone_render( ZONE, init_res.ZONE )
+			setTimeout(function(){
+				window.SOCKET.send(JSON.stringify({
+					type: 'ping_flora'
+				}))
+			}, 500)
+			setTimeout(function(){
+				window.SOCKET.send(JSON.stringify({
+					type: 'ping_structures'
+				}))
+			}, 1500)
+			setTimeout(function(){
+				window.SOCKET.send(JSON.stringify({
+					type: 'ping_items'
+				}))
+				document.querySelectorAll('img').forEach(function(ele){
+					ele.setAttribute('draggable', false )
+				})
+			}, 2000)
+		})
+		.catch(err=>{
+			console.log(err)
+		})
+
 	})
 	.catch( err => {
 		console.log( err )
