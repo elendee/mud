@@ -15,7 +15,7 @@ import {
 	// BoxBufferGeometry,
 	// BoxGeometry,
 	MeshLambertMaterial,
-	// DoubleSide,
+	DoubleSide,
 	Mesh,
 	InstancedMesh,
 	// Object3D,
@@ -27,6 +27,7 @@ import {
 import texLoader from '../three/texLoader.js'
 
 const ground = texLoader.load('/resource/textures/grass2.jpg')
+const path_map = texLoader.load('/resource/textures/path.png')
 
 
 
@@ -221,6 +222,48 @@ async function instantiate_instanced_meshes(){
 }
 
 
+
+function render_paths(){
+
+	// console.log('rendering')
+
+	const path_geo = new PlaneBufferGeometry( 100, 360, 1 )
+	const path_mat = new MeshLambertMaterial({
+		map: path_map,
+		side: DoubleSide,
+		transparent: true,
+		opacity: .3,
+	})
+
+	const paths = window.paths = []
+
+	for( let i = 0; i < 4; i++ ){
+		paths[i] = new Mesh( path_geo, path_mat )
+		paths[i].rotation.x = -Math.PI / 2
+		paths[i].position.y = 1
+		SCENE.add( paths[i] )
+	}
+
+	paths[0].position.x = 0 
+	paths[0].position.z = 500 
+	paths[0].rotation.z = -Math.PI / 2
+
+	paths[1].position.x = 500 
+	paths[1].position.z = 0 
+	paths[1].rotation.z = Math.PI
+	
+	paths[2].position.x = 1000 
+	paths[2].position.z = 500 
+	paths[2].rotation.z = Math.PI / 2
+	
+	paths[3].position.x = 500 
+	paths[3].position.z = 1000 
+	// paths[3].rotation.z = -Math.PI
+
+}
+
+
+render_paths()
 
 
 
