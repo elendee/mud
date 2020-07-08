@@ -374,68 +374,94 @@ class Game {
 
 		let group
 
-		let method = 'say'
-		if( packet.chat.match(/^whisper: /) ){
-			method = 'whisper'
-			packet.chat = packet.chat.replace(/^whisper: /, 'whispers: ')
-		}else if( packet.chat.match(/^yell: /) ){
-			method = 'yell'
-			packet.chat = packet.chat.replace(/^yell: /, 'yells: ')
-		}else if( packet.chat.match(/^say: /) ){
-			method = 'say'
-			packet.chat = packet.chat.replace(/^say: /, 'says: ')
+		log('chat', 'packet: \n', packet )
+
+		if( packet.method === 'whisper' ){
+			packet.chat = packet.chat.replace(/^whisper: ?/, '')
+		}else if( packet.method === 'yell' ){
+			packet.chat = packet.chat.replace(/^yell: ?/, '')
+		}else if( packet.method === 'say' ){
+			packet.chat = packet.chat.replace(/^say: ?/, '')
+		}else if( packet.method === 'proprietor' ){
+			packet.chat = packet.chat.replace(/^to proprietor: ?/, '')
+		}else if( packet.method === 'emote' ){
+			packet.chat = packet.chat.replace(/^emote: ?/, '')
 		}
 
-		if( toon.inside ){
-			group = zone.get_toons( 'structure', { inside: toon.inside } )
-		}else{
-			group = zone.get_toons( 'chat', { position: toon.ref.position } )
-		}
 
-		for( const mud_id of Object.keys( group ) ){ // normal range chats
-			let chat_pack = {
-				type: 'chat',
-				data: {
-					method: method,
-					sender_mud_id: toon_id,
-					speaker: toon.name,
-					chat: lib.sanitize_chat( packet.chat ),
-					color: toon.primary_color
+		if( packet.method === 'proprietor' && toon.inside ){
+
+			const proprietor = zone.get_proprietor( toon.inside )
+
+			if( proprietor )  proprietor.respond( SOCKETS, toon_id, packet )
+
+		}else{ // standard chats
+
+			if( packet.method === 'yell' ){
+				if( Date.now() - toon._last_yell < 1000 * 30 ){ 
+					SOCKETS[ toon_id ].send(JSON.stringify({
+						type: 'error',
+						msg: 'your lungs are still tired from yelling',
+						time: 2000
+					}))
+					return false
+				}else{
+					toon._last_yell = Date.now()
 				}
 			}
-			log('chat', chat_pack.speaker, chat_pack.chat )
-			SOCKETS[ mud_id ].send(JSON.stringify( chat_pack ))
-		}
 
-		// log('flag', 'inside: ', toon.inside )
-
-		if( toon.inside && Object.keys( group ).length <= 1 ){ // alone with proprietor
-			const structure = zone._STRUCTURES[ toon.inside ]
-			// log('flag', 'indeed alone', structure.proprietor )
-			if( structure ){
-				structure.proprietor.respond( SOCKETS, toon_id, packet )
+			if( toon.inside ){
+				group = zone.get_toons( 'structure', { inside: toon.inside } )
+			}else{
+				group = zone.get_toons( 'chat', { position: toon.ref.position }, packet.method )
 			}
-		}
 
-		if( !toon.inside ){ // mumble range chats
+			let the_chat = lib.sanitize_chat( packet.chat )
+			if( packet.method === 'emote' ) the_chat = toon.name + ' ' + the_chat
 
-			let mumble_group = zone.get_toons( 'mumble_chat', { position: toon.ref.position } )
-
-			for( const mud_id of Object.keys( mumble_group ) ){
+			for( const mud_id of Object.keys( group ) ){ // normal range chats
 				let chat_pack = {
 					type: 'chat',
 					data: {
 						method: packet.method,
 						sender_mud_id: toon_id,
 						speaker: toon.name,
-						// SOCKETS[ toon_id ].request.session.USER._TOON.name,
-						chat: lib.mumble( lib.sanitize_chat( packet.chat ) ),
-						color: toon.color
-						// SOCKETS[ toon_id ].request.session.USER._TOON.color
+						chat: the_chat,
+						color: toon.primary_color
 					}
 				}
 				log('chat', chat_pack.speaker, chat_pack.chat )
 				SOCKETS[ mud_id ].send(JSON.stringify( chat_pack ))
+			}
+
+			if( toon.inside && Object.keys( group ).length <= 1 ){ // alone with proprietor
+				const structure = zone._STRUCTURES[ toon.inside ]
+				if( structure ){
+					structure.proprietor.respond( SOCKETS, toon_id, packet, true )
+				}
+			}
+
+			if( !toon.inside && packet.method === 'say' ){ // mumble range chats
+
+				let mumble_group = zone.get_toons( 'mumble_chat', { position: toon.ref.position } )
+
+				for( const mud_id of Object.keys( mumble_group ) ){
+					let chat_pack = {
+						type: 'chat',
+						data: {
+							method: packet.method,
+							sender_mud_id: toon_id,
+							speaker: toon.name,
+							// SOCKETS[ toon_id ].request.session.USER._TOON.name,
+							chat: lib.mumble( lib.sanitize_chat( packet.chat ) ),
+							color: toon.color
+							// SOCKETS[ toon_id ].request.session.USER._TOON.color
+						}
+					}
+					log('chat', chat_pack.speaker, chat_pack.chat )
+					SOCKETS[ mud_id ].send(JSON.stringify( chat_pack ))
+				}
+
 			}
 
 		}
@@ -454,8 +480,12 @@ class Game {
 				log('flag', 'err test time: ', err )
 			})
 
-		}else if( 1 ){
-			// ........
+		}else{
+			SOCKETS[ mud_id ].send( JSON.stringify({
+				type: 'error',
+				msg: 'unknown command',
+				time: 3000
+			}))
 		}
 
 	}

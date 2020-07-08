@@ -14,9 +14,25 @@ import {
 
 
 // const say = new RegExp(/^\/s/i)
-const say = /^\/s /i
-const yell = /^\/y /i
-const whisper = /^\/w /i
+const methods = {
+	say: /^\/s /i,
+	yell: /^\/y /i,
+	whisper: /^\/w /i,
+	proprietor: /^\/p /i,
+	help: /^\/h /i,
+	emote: /^\/e /i,
+}
+
+
+const help_menu = `
+include space after command key:<br>
+/h - Help<br>
+/s - Say<br>
+/y - Yell<br>
+/w - Whisper<br>
+/e - Emote<br>
+/p - Speak to proprietor if available - NPC's inside structures.  Proprietor chats are private.<br>
+`
 
 class Chat {
 
@@ -82,16 +98,31 @@ class Chat {
 
 
 	parse_command( value ){
-		if( value.match( say ) ){
-			value = value.replace(/^\/s /, 'say: ')
-		}else if( value.match( whisper ) ){
-			value = value.replace(/^\/w /, 'whisper: ')
-		}else if( value.match( yell ) ){
-			value = value.replace(/^\/y /, 'yell: ')
+		if( value.match( methods.say ) ){
+			value = value.replace( methods.say, 'say: ')
+		}else if( value.match( methods.whisper ) ){
+			value = value.replace( methods.whisper, 'whisper: ')
+		}else if( value.match( methods.yell ) ){
+			value = value.replace( methods.yell, 'yell: ')
+		}else if( value.match( methods.proprietor ) ){
+			value = value.replace( methods.proprietor, 'proprietor: ')
+		}else if( value.match( methods.help ) ){
+			value = value.replace( methods.help, 'press enter for help menu: ')
+		}else if( value.match( methods.emote ) ){
+			value = value.replace( methods.emote, 'emote: ')
 		}
+
 		chat.input.value = value
 	}
 
+
+
+	parse_type( value ){
+		for( const key of Object.keys( methods )){
+			if( value.match( key + ':' ) ) return key
+		}
+		return 'none'
+	}
 
 	
 
@@ -108,11 +139,6 @@ class Chat {
 
 		const CHAT = this		
 
-		// if( data.sender_type !== 'proprietor' && !data.sender_mud_id ){
-		// 	console.log('undefined sender_mud_id ', data )
-		// 	return false
-		// }
-
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
 		// chat.classList.add( data.method )
@@ -120,7 +146,15 @@ class Chat {
 		if( data.method === 'emote' ){ 
 			chat.innerHTML = data.chat
 		}else{
-			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ data.chat }</span>`
+			let prefix 
+			if( data.method === 'emote' ){
+				prefix = ''
+			}else if( data.method === 'proprietor' ){
+				prefix = 'to proprietor: '
+			}else{
+				prefix = data.method + 's: '
+			}
+			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ data.chat }</span>`
 		}
 
 		this.content.appendChild( chat )
@@ -133,7 +167,7 @@ class Chat {
 			chats[ 0 ].remove()
 		}
 
-		if( !TOON.inside ){
+		if( !TOON.inside && zone ){
 
 			if( !zone.NPCS[ data.sender_mud_id ] && !zone.TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
 				console.log('no toon found for chat ', data.sender_mud_id )
@@ -160,24 +194,76 @@ class Chat {
 
 	send_chat(){
 
-		const val = this.input.value.trim()
+		const chat = this
 
-		if( val.length > 240 ) {
-			hal('hal', '240 character max', 3000 )
-			return false
-		}
+		const val = chat.input.value.trim()
 
 		if( val && val != '' ){
 
+			if( val.length > 240 ) {
+				hal('hal', '240 character max', 3000 )
+				return false
+			}
+
+			const method = chat.parse_type( val )
+
+			if( val.match(/^press enter for help menu:/) || val.match(/^\/h$/) ){
+				chat.add_chat(false, {
+					method: 'emote',
+					sender_mud_id: TOON.mud_id, 
+					speaker: lib.identify('name', TOON),
+					chat: help_menu,
+				})
+				chat.input.value = ''
+				return true
+			}
+
+			if( method === 'proprietor' ){
+				if( TOON.inside ){
+					chat.add_chat(false, {
+						// type:
+						method: 'proprietor',
+						sender_mud_id: TOON.mud_id, 
+						// sender_type
+						speaker: lib.identify('name', TOON),
+						chat: val.replace('proprietor: ', ''),
+						color: TOON.primary_color
+					})
+				}else{
+					hal('error', 'you must be in a structure', 2000 )
+					chat.input.value = ''
+					return false
+				}
+			}
+
+			if( val.match(/^\// ) ){ 
+
+				// filter commands before send
+
+			}else if( method === 'none' ){
+				chat.add_chat(false, {
+					// type:
+					method: 'emote',
+					sender_mud_id: TOON.mud_id, 
+					// sender_type
+					speaker: lib.identify('name', TOON),
+					chat: 'You think to yourself .. ' + val,
+					color: TOON.primary_color
+				})
+				chat.input.value = ''
+				return true
+			}
+
 			let pack = JSON.stringify({
 				type: 'chat',
+				method: method,
 				// method: 'say',
 				chat: val
 			})
 
-			window.SOCKET.send( pack )
+			chat.input.value = ''
 
-			this.input.value = ''
+			window.SOCKET.send( pack )
 		}
 
 	}
@@ -309,8 +395,6 @@ class Bubble {
 
 
 }
-
-
 
 
 

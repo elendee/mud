@@ -101,12 +101,37 @@ class Structure extends EnvironPersistent {
 
 
 
+
+
+
+
+
+
+
+
 const proprietor_map = {
 	'tavern': 'innkeeper',
 	'blacksmith': 'blacksmith'
 }
 
-
+const help_messages = {
+	innkeeper: `
+		I've got it all, try:<br>
+		quest<br>
+		riddle<br>
+		news<br>
+		thirsty<br>
+		or just chatting.
+		`,
+	blacksmith: `
+		I provide many services, try:<br>
+		quest<br>
+		riddle<br>
+		news<br>
+		thirsty<br>
+		or just chatting.
+	`,
+}
 
 
 class Proprietor{
@@ -117,83 +142,319 @@ class Proprietor{
 		this.name = init.proprietor_name || lib.capitalize( this.type ) + '_' + lib.random_hex(4)
 		this.zone_name = init.zone_name
 		this.color = lib.random_rgb([0,255], [0,255], [0,255])
-		// lib.random_rgb(250, 250, 250)
+		this.awaitings = {
+			// 'a_mud_id': 'an_await_key'
+		}
+		this._guestbook = {
+			// real_name: {
+			// 	name: given_name,
+			// 	last_seen: Date.now()
+			// }
+		}
 	}
 
-	respond( SOCKETS, toon_id, packet ){
+
+
+	greet( SOCKETS, toon ){
+
+		let msg = ''
+
+		if( !this._guestbook[ toon.mud_id ] ){
+			
+			this._guestbook[ toon.mud_id ] = {
+				name: 'awaiting',
+				last_seen: Date.now()
+			}
+
+			msg = 'hey there, what do you go by? <br>(use "/p " to respond)'
+
+		}else{
+
+			msg = 'Hello again, ' + ( this._guestbook[ toon.mud_id ].name || 'stranger' ) 
+
+		}
+
+		SOCKETS[ toon.mud_id ].send(JSON.stringify({
+			type: 'chat',
+			data: {
+				method: 'say',
+				speaker: this.name,
+				// sender_type: 'proprietor',
+				chat: msg,
+				sender_mud_id: false,
+				color: this.color,
+			}
+		}))
+
+
+
+	}
+
+
+
+	respond( SOCKETS, toon_id, packet, empty_room_say ){
 
 		const proprietor = this
 
-		let method = packet.method
-		const c = packet.chat
-		let response, timeout
+		const c = packet.chat.replace(/proprietor: ?/, '')
 
-		if( c.match(/xyzzy/i)){
-			method = 'emote'
-			response = proprietor.name + ' arches an eyebrow quizzically at you.'
-			timeout = 1000
-		}else if( lib.chat.is_greeting( c ) ){
-			response = 'Good day, ' + SOCKETS[ toon_id ].request.session.USER._TOON.name + '.'
-			// response = 'Well hello.'
-		}else if( c.match(/^asdf$/i)){
-			response = 'I\'m sorry to bore you, it\'s been a long day.'
-		}else if( c.match(/where am i/i)){
-			if( proprietor.zone_name ){
-				response = 'You\'re in ' + proprietor.zone_name + '.'
+		let answer = {}
+
+		if( empty_room_say ){
+
+			answer.response = 'There\'s no one here, \'m afraid.  <br>(Use "/p " to speak to the proprietor)'
+			answer.timeout = 1000
+			answer.method = 'say'
+
+		}else if( this._guestbook[ toon_id ].name  === 'awaiting' ){
+
+			let name = c.trim()
+			let len = name.split(' ').length
+			answer.method = 'proprietor'
+			answer.timeout = 1000
+			if( len === 2 || len === 1 ){
+				answer.response = 'Alright, ' + name + ' it is.'
+				this._guestbook[ toon_id ].name = name
 			}else{
-				response = 'Out here, it is what you want it to be.  You\'re outland, friend.'
+				answer.response = 'I didn\'t catch that, what should I call you?'
 			}
-		}else if( c.match(/have you seen/i)){
-			response = 'Mmm... no, no I haven\'t.'
 
-		}else if( c.match(/i sell/i)){
-
-			response = 'We don\'t have any coin on hand for buying now, sorry.'
-
-		}else if( c.match(/i want to buy/i) || c.match(/can i buy/i) || c.match(/what'?s for sale/i) || c.match(/what have you got/i) ){
-
-			response = 'Sorry, the pandemic has run us out of supplies currently.  Check back soon.'
-
-		// }else if( packet.match(//i)){
-		// }else if( packet.match(//i)){
-		// }else if( packet.match(//i)){
-		// }else if( packet.match(//i)){
-		// }else if( packet.match(//i)){
-
-		}else{
-			method = 'emote'
-			response = 'The ' + proprietor.type + ' furrows their brow, slightly confused.'
 		}
 
-		if( c.match(/^asdf$/i) ){
-			setTimeout(function(){
-				SOCKETS[ toon_id ].send(JSON.stringify({
-					type: 'chat',
-					data: {
-						sender_type: 'proprietor',
-						method: 'emote',
-						speaker: proprietor.name,
-						// sender_mud_id: 
-						chat: 'The ' + proprietor.type + ' hears you drumming you fingers...',
-						color: proprietor.color
-					}
-				}))
-			}, timeout - 100 )
+		if( !answer.response ) answer = this.parse( 'yes_no', toon_id, packet, c )
+
+		if( !answer.response ) answer = this.parse( 'followups', toon_id, packet, c )
+
+		if( !answer.response ) answer = this.parse( 'misc', toon_id, packet, c )
+
+		if( !answer.response ) answer = this.parse( 'greetings', toon_id, packet, c )
+
+		if( !answer.response ) answer = this.parse( 'one_offs', toon_id, packet, c )
+		
+		if( !answer.response ){
+
+			answer.method = 'emote'
+			answer.response = 'The ' + proprietor.type + ' furrows their brow, slightly confused. <br>(type "help" for intro)'
+
 		}
+
+		if( !answer.save_await ) delete this.awaitings[ toon_id ]
+
 
 		setTimeout(function(){
 			SOCKETS[ toon_id ].send(JSON.stringify({
 				type: 'chat',
 				data: {
-					sender_type: 'proprietor',
-					method: method,
+					// sender_type: 'proprietor',
+					method: answer.method,
 					speaker: proprietor.name,
 					// sender_mud_id: 
-					chat: response,
+					chat: answer.response,
 					color: proprietor.color
 				}
 			}))
-		}, timeout || Math.random() * 2000 )
+		}, answer.timeout )
+
+
+	}
+
+
+
+	parse( type, toon_id, packet, c ){
+
+		const proprietor = this
+
+		const answer = {
+			response: false,
+			method: 'say',
+			timeout: Math.floor( Math.random() * 2000 ),
+			save_await: false
+		}
+
+		switch( type ){
+
+			case 'yes_no':
+
+				if( c.match(/^y?$/i) || c.match(/^yes ?$/i) ){
+
+					if( proprietor.awaitings[ toon_id ] ){
+
+						let obj = proprietor.followup( proprietor.awaitings[ toon_id ] )
+						answer.response = obj.response
+						answer.method = obj.method
+						answer.timeout = obj.timeout
+
+					}else{
+						answer.response = 'what was the question?'
+					}
+
+				}else if( c.match(/^n$/i) || c.match(/^no ?$/i) ){
+
+					if( proprietor.awaitings[ toon_id ] ){
+						answer.response = 'very well then'
+					}else{
+						if( Math.random() > .5 ){
+							answer.response = 'no what?  Awful negative today aren\'t we.'
+						}else{
+							answer.response = 'Negative Nancy here I see'
+						}
+					}
+
+				}
+
+				break;
+
+			case 'followups':
+
+				if( c.match(/thirsty/i) ){
+
+					answer.response = 'Would you like something to drink?'
+					proprietor.awaitings[ toon_id ] = 'drink'
+					answer.save_await = true
+
+				}
+
+			case 'misc':
+					
+				if( c.match(/xyzzy/i) ){
+
+					answer.method = 'emote'
+					answer.response = proprietor.name + ' pauses briefly, arching an eyebrow at you, before carrying on.'
+					answer.timeout = 1000
+
+				}else if( c.match(/^asdf$/i) ){
+
+					answer.response = 'I\'m sorry to bore you, it\'s been a long day.'
+
+					setTimeout(function(){
+						SOCKETS[ toon_id ].send(JSON.stringify({
+							type: 'chat',
+							data: {
+								// sender_type: 'proprietor',
+								method: 'emote',
+								speaker: proprietor.name,
+								// sender_mud_id: 
+								chat: 'The ' + proprietor.type + ' hears you drumming you fingers...',
+								color: proprietor.color
+							}
+						}))
+					}, timeout - 100 )
+
+				}
+
+				break;
+
+
+			case 'greetings':
+
+				if( lib.chat.is_greeting( c ) ){
+
+					answer.response = 'Good day, ' + SOCKETS[ toon_id ].request.session.USER._TOON.name + '.'
+
+				}
+
+				break;
+
+
+			case 'one_offs': 
+
+				if( c.match(/where am i/i)){
+
+					if( proprietor.zone_name ){
+						answer.response = 'You\'re in ' + proprietor.zone_name + '.'
+					}else{
+						answer.response = 'Out here, it is what you want it to be.  You\'re outland, friend.'
+					}
+
+				}else if( c.match(/have you seen/i)){
+
+					answer.response = 'Mmm... no, no I haven\'t.'
+
+				}else if( c.match(/i sell/i)){
+
+					answer.response = 'We don\'t have any coin on hand for buying now, sorry.'
+
+				}else if( c.match(/i want to buy/i) || c.match(/can i buy/i) || c.match(/what'?s for sale/i) || c.match(/what have you got/i) ){
+
+					answer.response = 'Sorry, the pandemic has run us out of supplies...  check back soon.'
+
+				}else if( c.match(/^thanks/i) || c.match(/^thank you/i) ){
+
+					answer.response = 'anytime'
+
+				}else if( c.match(/^help/i) ){
+
+					answer.response = help_msg
+
+				}else if( c.match(/^news/i)){
+
+					answer.response = proprietor.recount_guestbook()
+
+				}else if( c.match(/^riddle/i)){
+
+					answer.response = 'Well.. I need to work on that actually.'
+
+				}else if( c.match(/^quest$/i)){
+
+					answer.response = 'We\'ve got this tremendous chest of gold, but nothing to award it for at the moment, sadly.'
+
+				}
+
+				break;
+
+			default: break;
+
+		}
+
+		return answer
+
+
+	}
+
+
+
+	recount_guestbook(){
+
+		if( !Object.keys( this._guestbook ).length || Object.keys( this._guestbook ).length <= 1 ){
+			return 'There hasn\'t been anyone by in quite some time, until now.'
+		}else{
+			let visitors = ''
+			for( const toon_id of Object.keys( this._guestbook ) ){
+				if( Date.now() - this._guestbook[ toon_id ].name > 1000 * 60 * 60 ){
+					delete this._guestbook[ toon_id ]
+				}else{
+					visitors += this._guestbook[ toon_id ].name + '<br>'
+				}
+			}
+			return 'We\'ve had about ' + Object.keys( this._guestbook ).length + ' visitors in the past hour or so. They called themselves:<br>' + visitors + ''
+		}
+
+	}
+
+
+
+	followup( key, toon_id ){
+
+		let response = ''
+		let method = 'say'
+		let timeout = 1000
+
+		switch( key ){
+			case 'quest':
+				response = 'I don\'t have any quests currently, sorry'
+				break;
+			case 'drink':
+				response = this.name + ' slides you an ale'
+				method = 'emote'
+				break;
+			default: 
+				response = 'scratches their head, "sorry, I forgot what I was doing there..."'
+				method = 'emote'
+				break;
+		}
+
+		return { response, method, timeout }
+
 	}
 }
 
@@ -202,7 +463,7 @@ class Proprietor{
 
 function fill_proprietor( structure ){
 
-	if( has_proprietors.includes(structure.subtype) ){
+	if( has_proprietors.includes( structure.subtype ) ){
 		structure.proprietor = new Proprietor({
 			type: structure.subtype,
 			name: structure.proprietor_name,

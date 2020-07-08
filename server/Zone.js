@@ -187,7 +187,7 @@ class Zone extends Persistent {
 
 
 
-	get_toons( type, data ){
+	get_toons( type, data, method ){
 
 		const t = {}
 
@@ -201,6 +201,10 @@ class Zone extends Persistent {
 				break;
 			case 'chat':
 				for( const mud_id of Object.keys( this._TOONS )){
+					if( method === 'yell' ){
+						t[ mud_id ] = this._TOONS[ mud_id ]
+						continue
+					}
 					if( this._TOONS[ mud_id ].ref.position.distanceTo( data.position ) < MAP.CHAT_DIST && !this._TOONS[ mud_id ].inside ){
 						t[ mud_id ] = this._TOONS[ mud_id ]
 					}
@@ -224,7 +228,12 @@ class Zone extends Persistent {
 
 
 
+	get_proprietor( structure_id ){
 
+		// log('flag', 'is structure id ya ? ', structure_id )
+		return this._STRUCTURES[ structure_id ] ? this._STRUCTURES[ structure_id ].proprietor : {}
+
+	}
 
 
 

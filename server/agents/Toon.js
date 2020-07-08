@@ -96,6 +96,8 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._initialized_inventory = init.initialized_inventory
 
+		this._last_yell = 0
+
 		this.logistic = this.logistic || []
 		this.logistic.push('equipped', 'right_hand', 'left_hand')
 		// new Array(6)
@@ -681,11 +683,15 @@ module.exports = class Toon extends AgentPersistent {
 		// }))
 
 		setTimeout(()=>{
+			
 			zone.emit('entry', SOCKETS, [], {
 				toon_id: toon.mud_id,
 				structure_id: mud_id,
 				success: true
-			})			
+			})		
+
+			zone._STRUCTURES[ mud_id ].proprietor.greet( SOCKETS, this )
+
 		}, 1000 )
 
 		// emit( type, group, exclude, packet ){

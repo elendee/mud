@@ -62,7 +62,7 @@ const overlays = {
 			<div id='chat-toggle'>&#128101;</div>
 			<div id='chat-content'>
 			</div>
-			<input id='chat-input' type='text' placeholder="say:">
+			<input id='chat-input' type='text' placeholder="type /h for basic commands">
 		</div>`,
 	target:`
 		<div id='target' class='dialogue hold-click' data-name='target'>
