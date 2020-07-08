@@ -8,13 +8,15 @@ import CAMERA from '../../three/CAMERA.js'
 
 import GLOBAL from '../../GLOBAL.js'
 
-// import TOONS from '../TOONS.js'
-// import NPCS from '../NPCS.js'
-
 import {
 	Vector3
 } from '../../lib/three.module.js'
 
+
+// const say = new RegExp(/^\/s/i)
+const say = /^\/s /i
+const yell = /^\/y /i
+const whisper = /^\/w /i
 
 class Chat {
 
@@ -37,7 +39,9 @@ class Chat {
 
 
 	toggle(){
+
 		const chat = this
+
 		if( chat.toggled ){
 			chat.ele.style.right = '100%'
 			chat.ele.style.left = 'initial'
@@ -49,35 +53,43 @@ class Chat {
 			chat.toggled = true
 			chat.input.focus()
 		}
+
 	}
 
 	init(){
 
 		const chat = this
 
-		chat.toggle_ele.addEventListener('click', function(){
+		chat.toggle_ele.addEventListener('click', ()=>{
 			chat.toggle()
 		})
 
-		chat.input.addEventListener('blur', function(){
+		chat.input.addEventListener('blur', ()=>{
 			STATE.handler = 'world'
-			// if( document.body.classList.contains('gallery') ){
-			// 	STATE.handler = 'gallery'
-			// }else if( document.body.classList.contains('station') ){
-			// 	STATE.handler = 'station'
-			// }else{
-			// 	STATE.handler = 'none'
-			// }
 		})
 
-		chat.input.addEventListener('focus', function(){
+		chat.input.addEventListener('focus', ()=>{
 			console.log('focus chat')
 			STATE.handler = 'chat'
 		})
 
-		// chat.input.addEventListener('click', function(){ 
-		// 	if( STATE.handler !== 'chat' ) chat.input.focus()  
-		// })
+		chat.input.addEventListener('keyup', ()=>{
+			chat.parse_command( chat.input.value )
+		})
+
+	}
+
+
+
+	parse_command( value ){
+		if( value.match( say ) ){
+			value = value.replace(/^\/s /, 'say: ')
+		}else if( value.match( whisper ) ){
+			value = value.replace(/^\/w /, 'whisper: ')
+		}else if( value.match( yell ) ){
+			value = value.replace(/^\/y /, 'yell: ')
+		}
+		chat.input.value = value
 	}
 
 
@@ -85,6 +97,7 @@ class Chat {
 
 
 	add_chat( zone, data ){
+
 		// type
 		// method
 		// sender_type (proprietors)
@@ -102,12 +115,12 @@ class Chat {
 
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
-		chat.classList.add( data.method )
-		if( data.sender_mud_id == window.TOON.mud_id )  chat.classList.add('self')
-		if( data.method === 'say' ){
-			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span>${ data.chat }`
-		}else if( data.method === 'emote' ){ 
+		// chat.classList.add( data.method )
+		if( data.sender_mud_id == window.TOON.mud_id )  chat.classList.add('self')			
+		if( data.method === 'emote' ){ 
 			chat.innerHTML = data.chat
+		}else{
+			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ data.chat }</span>`
 		}
 
 		this.content.appendChild( chat )
@@ -119,11 +132,6 @@ class Chat {
 		for( let i = 0; i < diff; i++ ){
 			chats[ 0 ].remove()
 		}
-
-		// if( !TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
-		// 	console.log('speaker not found for chat')
-		// 	return false
-		// }
 
 		if( !TOON.inside ){
 
@@ -163,7 +171,7 @@ class Chat {
 
 			let pack = JSON.stringify({
 				type: 'chat',
-				method: 'say',
+				// method: 'say',
 				chat: val
 			})
 

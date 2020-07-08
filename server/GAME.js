@@ -374,7 +374,17 @@ class Game {
 
 		let group
 
-		// log('flag','chat inside: ', typeof toon.inside )
+		let method = 'say'
+		if( packet.chat.match(/^whisper: /) ){
+			method = 'whisper'
+			packet.chat = packet.chat.replace(/^whisper: /, 'whispers: ')
+		}else if( packet.chat.match(/^yell: /) ){
+			method = 'yell'
+			packet.chat = packet.chat.replace(/^yell: /, 'yells: ')
+		}else if( packet.chat.match(/^say: /) ){
+			method = 'say'
+			packet.chat = packet.chat.replace(/^say: /, 'says: ')
+		}
 
 		if( toon.inside ){
 			group = zone.get_toons( 'structure', { inside: toon.inside } )
@@ -386,7 +396,7 @@ class Game {
 			let chat_pack = {
 				type: 'chat',
 				data: {
-					method: packet.method,
+					method: method,
 					sender_mud_id: toon_id,
 					speaker: toon.name,
 					chat: lib.sanitize_chat( packet.chat ),
