@@ -389,7 +389,7 @@ class Proprietor{
 
 				}else if( c.match(/^help/i) ){
 
-					answer.response = help_msg
+					answer.response = help_messages.innkeeper
 
 				}else if( c.match(/^news/i)){
 
