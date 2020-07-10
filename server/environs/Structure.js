@@ -170,7 +170,12 @@ class Proprietor{
 
 		}else{
 
-			msg = 'Hello again, ' + ( this._guestbook[ toon.mud_id ].name || 'stranger' ) 
+			let name = this._guestbook[ toon.mud_id ].name
+			if( !name || name === 'awaiting' ){
+				name = 'stranger'
+			}
+
+			msg = 'Hello again, ' + name 
 
 		}
 
