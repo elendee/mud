@@ -338,6 +338,8 @@ class Proprietor{
 
 		}
 
+		if( !answer.response ) answer = this.parse( SOCKETS, 'one_offs', toon, packet, c )
+
 		if( !answer.response ) answer = this.parse( SOCKETS, 'yes_no', toon, packet, c )
 
 		if( !answer.response ) answer = this.parse( SOCKETS, 'followups', toon, packet, c )
@@ -345,8 +347,6 @@ class Proprietor{
 		if( !answer.response ) answer = this.parse( SOCKETS, 'misc', toon, packet, c )
 
 		if( !answer.response ) answer = this.parse( SOCKETS, 'greetings', toon, packet, c )
-
-		if( !answer.response ) answer = this.parse( SOCKETS, 'one_offs', toon, packet, c )
 		
 		if( !answer.response ){
 
