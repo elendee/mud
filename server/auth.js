@@ -259,12 +259,11 @@ const create_avatar = async( request ) => {
 
 	const pool = DB.getPool()
 
-	const sql = 'INSERT INTO avatars (user_key, `name`, race, strength, vitality, dexterity, perception, luck, intellect, speed ) VALUES (?,?,?,?,?,?,?,?,?,?)'
+	const sql = 'INSERT INTO avatars (user_key, `name`, strength, vitality, dexterity, perception, luck, intellect, speed ) VALUES (?,?,?,?,?,?,?,?,?)'
 
 	const { error, results, fields } = await pool.queryPromise( sql, [ 
 		request.session.USER._id, 
 		lib.validate_string( request.body.name ),
-		lib.validate_string( request.body.race ),
 		lib.validate_number( Number( request.body.stats.strength ), 0 ),
 		lib.validate_number( Number( request.body.stats.vitality ), 0 ),
 		lib.validate_number( Number( request.body.stats.dexterity ), 0 ),

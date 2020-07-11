@@ -84,43 +84,4 @@ module.exports = {
 
 	SPEED_FLOOR: 15,
 
-	MAX_STATS: {
-		human: {
-			strength: 10,
-			vitality: 10,
-			dexterity: 10,
-			perception: 10,
-			luck: 10,
-			intellect: 10,
-			speed: 10,
-		},
-		gnome: {
-			strength: 5,
-			vitality: 6,
-			dexterity: 12,
-			perception: 12,
-			luck: 15,
-			intellect: 11,
-			speed: 9,
-		},
-		elf: {
-			strength: 7,
-			vitality: 10,
-			dexterity: 12,
-			perception: 12,
-			luck: 7,
-			intellect: 12,
-			speed: 10,
-		},
-		dwarf: {
-			strength: 13,
-			vitality: 13,
-			dexterity: 6,
-			perception: 10,
-			luck: 8,
-			intellect: 9,
-			speed: 9,
-		}
-	}
-
 }

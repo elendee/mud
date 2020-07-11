@@ -551,6 +551,8 @@ class Zone extends Persistent {
 			await n.touch_inventory()
 			await n.touch_equipped()
 			this._NPCS[ n.mud_id ] = n
+			this._NPCS[ n.mud_id ].ref.position.x = this._NPCS[ n.mud_id ].ref.position.x || Math.random() * MAP.ZONE_WIDTH
+			this._NPCS[ n.mud_id ].ref.position.z = this._NPCS[ n.mud_id ].ref.position.z || Math.random() * MAP.ZONE_WIDTH
 		}
 
 	}
@@ -684,6 +686,12 @@ class Zone extends Persistent {
 		for( const key of Object.keys( zone._TIMEOUTS )){
 			for( const mud_id of Object.keys( zone._TIMEOUTS[ key ] )){
 				clearTimeout( zone._TIMEOUTS[ key ][ mud_id ] )
+			}
+		}
+
+		for( const key of Object.keys( this._STRUCTURES ) ){
+			if( this._STRUCTURES[ key ].proprietor ){
+				this._STRUCTURES[ key ].proprietor.save_guestbook()
 			}
 		}
 

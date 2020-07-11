@@ -344,10 +344,10 @@ function identify( type, entity ){
 			return ( entity.name || entity.resource_type || entity.subtype || entity.type )
 
 		case 'model':
-			return ( entity.model_url || entity.race || entity.subtype || entity.type ).toLowerCase()
+			return ( entity.model_url || entity.subtype || entity.type ).toLowerCase()
 
 		case 'icon':
-			return ( entity.icon_url || entity.race || entity.resource_type || entity.subtype || entity.type ).toLowerCase()
+			return ( entity.icon_url || entity.resource_type || entity.subtype || entity.type ).toLowerCase()
 
 		default: 
 			return ( entity.subtype || entity.type ).toLowerCase()
@@ -428,6 +428,8 @@ const materials = {
 	gnome: base_materials.darkblue,
 	gorgon: base_materials.darkgreen,
 	human: base_materials.darkbrown,
+	toon: base_materials.darkbrown,
+	npc: base_materials.darkbrown,
 }
 
 

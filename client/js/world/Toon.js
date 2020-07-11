@@ -213,10 +213,10 @@ export default class Toon {
 							if( ele.name.match(/_rs_/)){
 								ele.receiveShadow = true
 							}
-							if( ele.name.match(/HEAD/)){
-								toon.MODEL.HEAD = ele
-							}
-							if( ele.name.match(/_mat/)){
+							// if( ele.name.match(/HEAD/)){
+							// 	toon.MODEL.HEAD = ele
+							// }
+							if( ele.name.match(/_mat/)){								
 								let slug = ele.name.substr( ele.name.indexOf('_mat') + 5 ).replace(/_.*/g, '')
 								// console.log('assigning material: ', slug )
 								if( lib.materials[ slug ] ){
@@ -225,6 +225,7 @@ export default class Toon {
 									console.log('missing material: ', slug )
 								}
 							}
+
 						})
 
 						toon.inflate()

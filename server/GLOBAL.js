@@ -16,4 +16,6 @@ module.exports = {
 
 	MIN_FLORA_DIST: 10,
 
+	GUESTBOOK_TIME: 1000 * 60 * 60 * 48
+
 }

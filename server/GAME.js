@@ -67,7 +67,7 @@ class Game {
 
 				clearInterval( game.pulse )
 				game.pulse = false
-				log('flag', 'no zones; game going offline')
+				log('zone', 'no zones; game going offline')
 
 			}
 
@@ -136,7 +136,6 @@ class Game {
 		}else{ // non-auth'd users
 
 			USER._TOON = TOON = new Toon( USER._TOON )
-			if( !USER._TOON.race ) USER._TOON.race = 'human'
 			TOON.starter_equip = true
 
 		}
@@ -393,7 +392,7 @@ class Game {
 
 			const proprietor = zone.get_proprietor( toon.inside )
 
-			if( proprietor )  proprietor.respond( SOCKETS, toon_id, packet )
+			if( proprietor )  proprietor.respond( SOCKETS, toon, packet )
 
 		}else{ // standard chats
 
@@ -437,7 +436,7 @@ class Game {
 			if( toon.inside && Object.keys( group ).length <= 1 ){ // alone with proprietor
 				const structure = zone._STRUCTURES[ toon.inside ]
 				if( structure ){
-					structure.proprietor.respond( SOCKETS, toon_id, packet, true )
+					structure.proprietor.respond( SOCKETS, toon, packet, true )
 				}
 			}
 

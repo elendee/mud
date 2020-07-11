@@ -40,8 +40,6 @@ module.exports = class Toon extends AgentPersistent {
 		// this.surname = init.surname || 'O\'Toon'
 		this.surname = init.surname 
 
-		this.race = lib.validate_string( init.race, 'human' )
-
 		this.speed = Math.max( 20, lib.validate_number( 
 			init.speed ? init.speed : undefined, 
 			this._stats && this._stats.speed ? this._stats.speed : undefined, 
@@ -719,7 +717,6 @@ module.exports = class Toon extends AgentPersistent {
 
 		const update_fields = [
 			'name',
-			'race',
 			'primary_color',
 			'secondary_color',
 			'layer',
@@ -743,7 +740,6 @@ module.exports = class Toon extends AgentPersistent {
 
 		const update_vals = [ 
 			this.name, 
-			this.race,
 			this.primary_color,
 			this.secondary_color,
 			this._layer,

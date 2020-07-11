@@ -210,10 +210,14 @@ const overlays = {
 
 
 const render = function( type, request, error ){
+
 	let css_includes = styles.base
 	let js_includes = scripts.base
+	
 	switch( type ){
+
 		case 'index':
+		
 			css_includes += styles.index
 			js_includes += scripts.auth
 			return `
@@ -270,6 +274,7 @@ const render = function( type, request, error ){
 			break;
 
 		case 'avatar':
+
 			css_includes += styles.avatar
 			js_includes += scripts.avatar
 			return `
@@ -301,6 +306,7 @@ const render = function( type, request, error ){
 			break;
 
 		case 'create':
+
 			css_includes += styles.create
 			js_includes += scripts.create
 			return `
@@ -314,18 +320,42 @@ const render = function( type, request, error ){
 					${ overlays.alert }
 					<div id='create'>
 						<form action='/create_avatar' method='post'>
-							<select id='avatar-race'>
-								<option value='human'>human</option>
-								<option value='gnome'>gnome</option>
-								<option value='elf'>elf</option>
-								<option value='dwarf'>dwarf</option>
-							</select>
 							<div id='create-display'>
 								<div id='stats'>
-
+									<div class='stat-panel'>
+										<div class='stat'>
+											<div class='stat-name'>strength</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='strength'>
+										</div>
+										<div class='stat'>
+											<div class='stat-name'>vitality</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='vitality'>
+										</div>
+										<div class='stat'>
+											<div class='stat-name'>dexterity</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='dexterity'>
+										</div>
+										<div class='stat'>
+											<div class='stat-name'>perception</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='perception'>
+										</div>
+										<div class='stat'>
+											<div class='stat-name'>luck</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='luck'>
+										</div>
+										<div class='stat'>
+											<div class='stat-name'>intellect</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='intellect'>
+										</div>
+										<div class='stat'>
+											<div class='stat-name'>speed</div>
+											<input type='range' value='1' min='0' max='${ env.DEV ? 50 : 10 }' data-stat='speed'>
+										</div>
+									</div>
+									<div id='avatar-points'></div>
 								</div>
 								<div id='avatar-image'>
-									<img>
+									<canvas id='avtr-img'></canvas>
 								</div>
 							</div>
 							<input id='avatar-name' type='text' placeholder='avatar name' name='name'>
@@ -339,6 +369,7 @@ const render = function( type, request, error ){
 			break;
 
 		case 'world':
+
 			css_includes += styles.world + styles.chat + styles.popup + styles.structureGUI
 			js_includes += scripts.world
 			return `

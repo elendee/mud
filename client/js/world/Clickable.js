@@ -13,7 +13,7 @@ export default class Clickable {
 		this.type = init.type
 		this.subtype = init.subtype
 		this.resource_type = init.resource_type
-		this.race = init.race
+		// this.race = init.race
 
 	}
 
