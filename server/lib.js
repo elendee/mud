@@ -122,11 +122,12 @@ function sanitize_chat( chat ){
 
 	if( typeof( chat ) === 'string' ){
 		chat = chat.substr( 0, 240 )
+		let r
 		for( const v of tables.verboten ){
-			let r = new RegExp( v, 'g')
+			r = new RegExp( v, 'g')
 			chat = chat.replace(r, '---')
 		}
-		return chat
+		return encodeURIComponent( chat )
 	}
 	return false
 

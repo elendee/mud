@@ -519,7 +519,7 @@ class Proprietor{
 
 				}else if( c.match(/^message /) ){
 
-					const msg = c.replace(/^message /, '')
+					const msg = lib.sanitize_chat( c.replace(/^message /, '') )
 					if( msg.trim().length < 280 ){
 						proprietor._guestbook[ toon_id ].message = msg
 						answer.response = 'Got it! I\'ll show it to anyone who looks at the guestbook.'
