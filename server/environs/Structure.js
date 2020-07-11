@@ -228,7 +228,7 @@ class Proprietor{
 
 			if( typeof Number( guest.last_seen ) !== 'number' ) continue
 			if( Math.abs( guest.last_seen ) - Date.now() > GLOBAL.GUESTBOOK_TIME ){
-				deletes.push( guest._id )
+				if( typeof guest._id === 'number' )  deletes.push( guest._id )
 				continue
 			}
 			if( !guest.moniker ) continue
@@ -244,13 +244,11 @@ class Proprietor{
 			}
 		}
 
-		if( deletes.length > 50 ){
-			log('flag', '\n\nSKIPPING GUESTBOOK CLEAN FOR STRUCTURE: ' + this._structure_key + '\n\n')
-		}
-
 		if( value_string === 'z' ) return true
 
 		const pool = DB.getPool()
+
+		if( deletes.length > 50 )  await this.clean_guestbook( pool, deletes )
 
 		const sql = 'INSERT INTO `guestbook` ( id, structure_key, moniker, last_seen, message ) VALUES ' + value_string + ' ON DUPLICATE KEY UPDATE structure_key = VALUES( structure_key ), moniker = VALUES( moniker ), last_seen = VALUES( last_seen ), message = VALUES( message );'
 
@@ -265,6 +263,33 @@ class Proprietor{
 		return true
 
 	}
+
+
+
+
+	async clean_guestbook( pool, deletes ){
+
+		// log('flag', '\n\nSKIPPING GUESTBOOK CLEAN FOR STRUCTURE: ' + this._structure_key + '\n\n')
+		if( !deletes ) return false
+
+		let delete_string = deletes[0]
+		for( let i = 1; i < deletes.length; i++ ) delete_string += ', ' + deletes[i]
+
+		const sql = 'DELETE * FROM guestbook WHERE id IN (' + delete_string + ')'
+
+		const { error, results, fields } = await pool.queryPromise( sql )
+		if( error || !results ){
+			log('flag', error || 'failed to delete any guestbook entries' )
+			return false
+		}
+
+		log('structure', 'deleted guestbook entries', results )
+
+		return true
+
+	}
+
+
 
 
 	greet( SOCKETS, toon ){
