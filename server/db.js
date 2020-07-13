@@ -110,7 +110,7 @@ async function update( doc, field_array, value_array ){
 
 			}else{
 
-				value = '"' + value_array[i] + '"' // normal string
+				value = '"' + mysql.escape( value_array[i] ) + '"' // normal string
 
 			}
 
@@ -124,7 +124,7 @@ async function update( doc, field_array, value_array ){
 
 		}else if( type === 'object' ){
 
-			value = "'" + JSON.stringify( value_array[i] ) + "'" // stringify generates " so it needs ' wrappers for SQL
+			value = "'" + mysql.escape( JSON.stringify( value_array[i] ) ) + "'" // stringify generates " so it needs ' wrappers for SQL
 
 		}else if( type === 'boolean' ){
 
