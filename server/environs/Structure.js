@@ -222,20 +222,24 @@ class Proprietor{
 		let guest
 		const deletes = []
 
+		const pool = DB.getPool()
+
 		for( const mud_id of Object.keys( this._guestbook ) ){
 
 			guest = this._guestbook[ mud_id ]
 
 			if( typeof Number( guest.last_seen ) !== 'number' ) continue
+
 			if( Math.abs( guest.last_seen ) - Date.now() > GLOBAL.GUESTBOOK_TIME ){
 				if( typeof guest._id === 'number' )  deletes.push( guest._id )
 				continue
 			}
+
 			if( !guest.moniker ) continue
 
 			const msg = guest.message ? '"' + guest.message + '"' : 'NULL'
 
-			const current_string = '(' + ( guest._id || 'NULL' ) + ', ' + this._structure_key + ', "' + guest.moniker + '", "' + guest.last_seen + '", ' + msg + ')'
+			const current_string = '(' + ( guest._id || 'NULL' ) + ', ' + this._structure_key + ', "' + pool.escape( guest.moniker ) + '", "' + guest.last_seen + '", ' + pool.escape( msg ) + ')'
 
 			if( value_string === 'z' ){
 				value_string = current_string
@@ -245,8 +249,6 @@ class Proprietor{
 		}
 
 		if( value_string === 'z' ) return true
-
-		const pool = DB.getPool()
 
 		if( deletes.length > 50 )  await this.clean_guestbook( pool, deletes )
 

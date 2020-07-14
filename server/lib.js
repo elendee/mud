@@ -14,6 +14,16 @@ const {
 	Quaternion
 } = require('three')
 
+const html_char_map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    "/": '&#x2F;',
+    "`": '&grave;',
+};
+
 name_schema
 	.is().min(3)
 	.is().max(25)
@@ -121,13 +131,19 @@ function capitalize( input ){
 function sanitize_chat( chat ){
 
 	if( typeof( chat ) === 'string' ){
+
 		chat = chat.substr( 0, 240 )
+
 		let r
+
 		for( const v of tables.verboten ){
 			r = new RegExp( v, 'g')
 			chat = chat.replace(r, '---')
 		}
-		return encodeURIComponent( chat )
+
+		const reg = /[&<>"'`/]/ig
+		return chat.replace( reg, ( match ) => ( html_char_map[ match ] ) )
+
 	}
 	return false
 
