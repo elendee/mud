@@ -12,7 +12,7 @@ const log = require('../log.js')
 const EnvironPersistent = require('./EnvironPersistent.js')
 const Persistent = require('../Persistent.js')
 
-const parse_search = require('../parse_search.js')
+// const parse_search = require('../parse_search.js')
 
 
 
@@ -605,8 +605,11 @@ class Proprietor{
 						method: 'say',
 						speaker: proprietor.name,
 						color: proprietor.color,
-						// results: []
-						results: parse_search( r )
+						results: [{
+							text: 'Actually I haven\'t heard a blasted thing recently.',
+							link: '#' 
+						}]
+						// results: parse_search( r )
 					}
 				}))
 			})
