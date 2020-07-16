@@ -532,7 +532,7 @@ class Proprietor{
 
 					answer.response = help_messages.innkeeper
 
-				}else if( c.match(/^news/i)){
+				}else if( c.match(/^guestbook/)){
 
 					answer.response = proprietor.recount_guestbook( toon )
 
