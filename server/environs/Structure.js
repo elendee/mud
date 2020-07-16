@@ -1,7 +1,10 @@
+const node_fetch = require('node-fetch')
+
 const DB = require('../db.js')
 
 const lib = require('../lib.js')
 const log = require('../log.js')
+
 
 const EnvironPersistent = require('./EnvironPersistent.js')
 const Persistent = require('../Persistent.js')
@@ -540,6 +543,12 @@ class Proprietor{
 
 					answer.response = 'Well.. I need to work on that actually.'
 
+				}else if( c.match(/^news ?/)){
+
+					answer.response = 'The ' + proprietor.type + ' scratches their chin, "what have I heard, hmm.."'
+					answer.method = 'emote'
+					this.fetch_news( SOCKETS, toon, c )
+
 				}else if( c.match(/^quest$/i)){
 
 					answer.response = 'We\'ve got this tremendous chest of gold, but nothing to award it for at the moment, sadly.'
@@ -564,6 +573,27 @@ class Proprietor{
 
 		return answer
 
+
+	}
+
+
+	fetch_news( SOCKETS, toon, chat ){
+
+		let topic = typeof chat === 'string' ? chat.replace(/^news ?/, '').substr(0, 100) : 'news'
+
+		node_fetch('https://www.google.com/search?q=' + topic )
+		.then( res => {
+			res.json()
+			.then( res => {
+				console.log( res )
+			})
+			.catch( err => {
+				console.log( err )
+			})
+		})
+		.catch( err => {
+			console.log( err )
+		})
 
 	}
 

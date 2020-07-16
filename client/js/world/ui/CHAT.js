@@ -190,25 +190,6 @@ class Chat {
 	}
 
 
-	fetch_news( topic ){
-
-		if( typeof( String( topic ) ) !== 'string' ) topic = 'news'
-
-		fetch('https://www.google.com/search?q=' + topic )
-		.then( res => {
-			res.json()
-			.then( res => {
-				console.log( res )
-			})
-			.catch( err => {
-				console.log( err )
-			})
-		})
-		.catch( err => {
-			console.log( err )
-		})
-	}
-
 
 	send_chat(){
 
@@ -257,13 +238,6 @@ class Chat {
 			if( val.match(/^\// ) ){ 
 
 				// filter commands before send
-
-			}else if( val.match(/^proprietor: ?news ?$/i) ){
-
-				console.log( 'ya')
-
-				this.fetch_news()
-				return true
 
 			}else if( method === 'none' ){
 				chat.add_chat(false, {
