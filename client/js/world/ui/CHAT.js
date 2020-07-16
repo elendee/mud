@@ -152,7 +152,15 @@ class Chat {
 			}else{
 				prefix = data.method + 's: '
 			}
-			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ data.chat }</span>`
+			if( data.google ){
+				let res = '<br>'
+				data.results.forEach((r)=>{
+					res += '<a class="" href="https://www.google.com/' + r.link + '" target="_blank" rel="noreferrer noopener">' + r.text.substr(0, 75) + '</a><br>'
+				})
+				chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ res }</span>`
+			}else{
+				chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ data.chat }</span>`
+			}
 		}
 
 		this.content.appendChild( chat )

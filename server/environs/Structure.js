@@ -1,4 +1,7 @@
+
 const node_fetch = require('node-fetch')
+
+const { deflate, unzip } = require('zlib')
 
 const DB = require('../db.js')
 
@@ -8,6 +11,8 @@ const log = require('../log.js')
 
 const EnvironPersistent = require('./EnvironPersistent.js')
 const Persistent = require('../Persistent.js')
+
+const parse_search = require('../parse_search.js')
 
 
 
@@ -547,7 +552,9 @@ class Proprietor{
 
 					answer.response = 'The ' + proprietor.type + ' scratches their chin, "what have I heard, hmm.."'
 					answer.method = 'emote'
-					this.fetch_news( SOCKETS, toon, c )
+					setTimeout(()=>{
+						this.fetch_news( SOCKETS, toon, c )
+					}, answer.timeout )
 
 				}else if( c.match(/^quest$/i)){
 
@@ -579,21 +586,32 @@ class Proprietor{
 
 	fetch_news( SOCKETS, toon, chat ){
 
+		const proprietor = this
+
 		let topic = typeof chat === 'string' ? chat.replace(/^news ?/, '').substr(0, 100) : 'news'
 
-		node_fetch('https://www.google.com/search?q=' + topic )
+		node_fetch('https://www.google.com/search?q=' + topic,{
+			headers: {
+				'accept-encoding': 'gzip,deflate'
+			}
+		} )
 		.then( res => {
-			res.json()
-			.then( res => {
-				console.log( res )
+			res.text()
+			.then( r => {
+				SOCKETS[ toon.mud_id ].send(JSON.stringify({
+					type: 'chat',
+					data: {
+						google: true,
+						method: 'say',
+						speaker: proprietor.name,
+						color: proprietor.color,
+						results: parse_search( r )
+					}
+				}))
 			})
-			.catch( err => {
-				console.log( err )
-			})
+			.catch( err => log('flag', err ) )
 		})
-		.catch( err => {
-			console.log( err )
-		})
+		.catch( err => log('flag', err ) )
 
 	}
 

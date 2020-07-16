@@ -567,6 +567,6 @@ module.exports = {
 	_enum,
 	publish,
 	calc_speed,
-	chat
+	chat,
 }
 

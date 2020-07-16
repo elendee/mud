@@ -8,6 +8,7 @@ const os = require('os')
 
 // LOCAL PACKAGES
 const log = require('./server/log.js')
+const lib = require('./server/lib.js')
 const DB = require('./server/db.js')
 // const config = require('./config.js')
 const env = require('./server/.env.js')
@@ -21,7 +22,10 @@ const cookieParser = require('cookie-parser')
 const FormData = require('express-form-data')
 const mkdirp = require('mkdirp')
 const uuid = require('uuid').v4
+// const { parse } = require('node-html-parser')
 
+const node_fetch = require('node-fetch')
+const { unzip, deflate, inflate, gunzip } = require('zlib')
 
 
 const User = require('./server/User.js')
