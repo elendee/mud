@@ -386,7 +386,7 @@ class Game {
 
 
 
-	handle_chat( packet, zone, toon_id ){
+	async handle_chat( packet, zone, toon_id ){
 
 		if( typeof packet.chat !== 'string' || packet.chat.trim() === '' ){
 			return false
@@ -436,7 +436,7 @@ class Game {
 
 			const proprietor = zone.get_proprietor( toon.inside )
 
-			if( proprietor )  proprietor.respond( SOCKETS, toon, packet )
+			if( proprietor )  await proprietor.respond( SOCKETS, toon, packet )
 
 		}else{ // standard chats
 
@@ -480,7 +480,7 @@ class Game {
 			if( toon.inside && Object.keys( group ).length <= 1 ){ // alone with proprietor
 				const structure = zone._STRUCTURES[ toon.inside ]
 				if( structure ){
-					structure.proprietor.respond( SOCKETS, toon, packet, true )
+					await structure.proprietor.respond( SOCKETS, toon, packet, true )
 				}
 			}
 

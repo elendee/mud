@@ -163,6 +163,10 @@ class Chat {
 				// <span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span>
 				chat.innerHTML = `<span class='${ data.method }'>${ data.speaker } lists off some items:${ res }</span>`
 
+			}else if( data.url ){
+
+				chat.innerHTML = data.results
+
 			}else{
 
 				chat.innerHTML = data.chat

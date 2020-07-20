@@ -3,30 +3,47 @@ const { JSDOM } = require('jsdom')
 
 const log = require('./log.js')
 
-module.exports = function( search ){
+module.exports = function( type, search ){
 
-	if( typeof search !== 'string' ) return 'unable to parse response'
+	switch ( type ){
 
-	const { window } = new JSDOM( search, {
-		// options: options
-	} )
-	const { document } = (new JSDOM( search )).window
+		case 'search':
 
-	const results = document.querySelectorAll('#main>div>div>div a')
+			if( typeof search !== 'string' ) return 'unable to parse response'
 
-	let send = []
+			const { window } = new JSDOM( search, {
+				// options: options
+			} )
+			const { document } = (new JSDOM( search )).window
 
-	for( const res of results ){
-		if( res.querySelector('h3') ){
-			// log('flag', res.textContent )
-			send.push({
-				text: res.textContent,
-				link: res.href
-			})
-		}
+			const results = document.querySelectorAll('#main>div>div>div a')
+
+			let send = []
+
+			for( const res of results ){
+				if( res.querySelector('h3') ){
+					send.push({
+						text: res.textContent,
+						link: res.href
+					})
+				}
+			}
+
+			return send
+
+			break;
+
+		case 'url':
+
+			return 'not yet available'
+
+			break;
+
+		default: break;
+
 	}
 
-	return send
+	
 
 	// let match = search.match(/<h3(.*?)\/h3>/ig)
 	// let a_match = search.match(/<a href="\/url(.*?)\/a>/ig)

@@ -166,6 +166,9 @@ module.exports = {
 
 				case 'chat':
 					GAME.handle_chat( packet, GAME.ZONES[ TOON._current_zone ], mud_id )
+					.catch( err => {
+						log('flag', 'err chat: ', err )
+					})
 					break;
 
 				case 'equip':

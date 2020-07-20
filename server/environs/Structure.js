@@ -12,7 +12,7 @@ const log = require('../log.js')
 const EnvironPersistent = require('./EnvironPersistent.js')
 const Persistent = require('../Persistent.js')
 
-const parse_search = require('../parse_search.js')
+const mud_parser = require('../mud_parser.js')
 
 
 
@@ -346,7 +346,7 @@ class Proprietor{
 
 
 
-	respond( SOCKETS, toon, packet, empty_room_say ){
+	async respond( SOCKETS, toon, packet, empty_room_say ){
 
 		const proprietor = this
 
@@ -375,15 +375,15 @@ class Proprietor{
 
 		}
 
-		if( !answer.response ) answer = this.parse( SOCKETS, 'one_offs', toon, packet, c )
+		if( !answer.response ) answer = await this.parse( SOCKETS, 'one_offs', toon, packet, c )
 
-		if( !answer.response ) answer = this.parse( SOCKETS, 'yes_no', toon, packet, c )
+		if( !answer.response ) answer = await this.parse( SOCKETS, 'yes_no', toon, packet, c )
 
-		if( !answer.response ) answer = this.parse( SOCKETS, 'followups', toon, packet, c )
+		if( !answer.response ) answer = await this.parse( SOCKETS, 'followups', toon, packet, c )
 
-		if( !answer.response ) answer = this.parse( SOCKETS, 'misc', toon, packet, c )
+		if( !answer.response ) answer = await this.parse( SOCKETS, 'misc', toon, packet, c )
 
-		if( !answer.response ) answer = this.parse( SOCKETS, 'greetings', toon, packet, c )
+		if( !answer.response ) answer = await this.parse( SOCKETS, 'greetings', toon, packet, c )
 		
 		if( !answer.response ){
 
@@ -414,7 +414,7 @@ class Proprietor{
 
 
 
-	parse( SOCKETS, type, toon, packet, c ){
+	async parse( SOCKETS, type, toon, packet, c ){
 
 		const toon_id = toon.mud_id
 
@@ -476,25 +476,22 @@ class Proprietor{
 
 					answer.method = 'emote'
 					answer.response = proprietor.name + ' pauses briefly, arching an eyebrow at you, before carrying on.'
-					answer.timeout = 1000
 
 				}else if( c.match(/^asdf$/i) ){
 
 					answer.response = 'I\'m sorry to bore you, it\'s been a long day.'
 
-					setTimeout(function(){
-						SOCKETS[ toon_id ].send(JSON.stringify({
-							type: 'chat',
-							data: {
-								// sender_type: 'proprietor',
-								method: 'emote',
-								speaker: proprietor.name,
-								// sender_mud_id: 
-								chat: 'The ' + proprietor.type + ' hears you drumming you fingers...',
-								color: proprietor.color
-							}
-						}))
-					}, answer.timeout - 100 )
+					SOCKETS[ toon_id ].send(JSON.stringify({
+						type: 'chat',
+						data: {
+							// sender_type: 'proprietor',
+							method: 'emote',
+							speaker: proprietor.name,
+							// sender_mud_id: 
+							chat: 'The ' + proprietor.type + ' hears you drumming you fingers...',
+							color: proprietor.color
+						}
+					}))
 
 				}
 
@@ -555,12 +552,8 @@ class Proprietor{
 					answer.method = 'emote'
 
 					let topic = typeof c === 'string' ? c.replace(/^news ?/, '').substr(0, 100) : 'news'
-
 					if( topic ){
-						answer.response = 'The ' + proprietor.type + ' scratches their chin, "what have I heard, hmm.."'
-						setTimeout(()=>{
-							this.fetch_news( SOCKETS, toon, topic )
-						}, answer.timeout )
+						answer.response = await this.fetch_news( SOCKETS, toon, topic )
 					}else{
 						answer.response = '"News about wot now?"  ( use "news [topic]" )'
 					}
@@ -571,7 +564,7 @@ class Proprietor{
 					if( url.length > 1000 ){
 						answer.response = 'What a query!  Can you shorten that for me ?'
 					}else{
-						this.fetch_url( SOCKETS, toon, url )
+						answer.response = await this.fetch_url( SOCKETS, toon, url )
 					}
 
 				}else if( c.match(/^quest$/i)){
@@ -602,36 +595,93 @@ class Proprietor{
 	}
 
 
-	fetch_news( SOCKETS, toon, topic ){
+	async fetch_news( SOCKETS, toon, topic ){
 
 		const proprietor = this
 
-		node_fetch('https://www.google.com/search?q=' + topic,{
+		const res = await node_fetch('https://www.google.com/search?q=' + topic,{
 			headers: {
 				'accept-encoding': 'gzip,deflate'
 			}
 		} )
-		.then( res => {
-			res.text()
-			.then( r => {
-				SOCKETS[ toon.mud_id ].send(JSON.stringify({
-					type: 'chat',
-					data: {
-						google: true,
-						method: 'emote',
-						speaker: proprietor.name,
-						color: proprietor.color,
-						// results: [{
-						// 	text: 'Actually I haven\'t heard a blasted thing recently.',
-						// 	link: '#' 
-						// }]
-						results: parse_search( r )
-					}
-				}))
-			})
-			.catch( err => log('flag', err ) )
+		
+		const text = await res.text()
+		// .then( r => {
+
+		SOCKETS[ toon.mud_id ].send(JSON.stringify({
+			type: 'chat',
+			data: {
+				google: true,
+				method: 'emote',
+				speaker: proprietor.name,
+				color: proprietor.color,
+				// results: [{
+				// 	text: 'Actually I haven\'t heard a blasted thing recently.',
+				// 	link: '#' 
+				// }]
+				results: mud_parser( 'search', text )
+			}
+		}))
+
+		return ' '
+
+	}
+
+
+	async fetch_url( SOCKETS, toon, url ){
+
+		const proprietor = this
+
+		if( !url.match(/^https?:\/\//i)){
+			url = 'http://' + url
+		}
+		if( !url.match(/\..*/i)){
+			return 'I don\'t understand how to look that up'
+		}
+
+		const response = await node_fetch( url, {
+			headers: {
+				'accept-encoding': 'gzip,deflate'
+			}
 		})
-		.catch( err => log('flag', err ) )
+
+		const text = await response.text()
+
+		// SOCKETS[ toon.mud_id ].send( JSON.stringify({
+		// 	type: 'chat',
+		// 	data: {
+		// 		url: true,
+		// 		method: 'emote',
+		// 		speaker: proprietor.name,
+		// 		color: proprietor.color,
+		// 		results: mud_parser( 'url', text )
+		// 	}
+		// }))
+
+		return 'Not yet available, sorry'
+		// 'Let me look that up for you'
+
+		// .then( res => {
+		// 	res.text()
+		// 	.then( r => {
+		// 		SOCKETS[ toon.mud_id ].send(JSON.stringify({
+		// 			type: 'chat',
+		// 			data: {
+		// 				// google: true,
+		// 				method: 'emote',
+		// 				speaker: proprietor.name,
+		// 				color: proprietor.color,
+		// 				// results: [{
+		// 				// 	text: 'Actually I haven\'t heard a blasted thing recently.',
+		// 				// 	link: '#' 
+		// 				// }]
+		// 				results: mud_parser( 'url', r )
+		// 			}
+		// 		}))
+		// 	})
+		// 	.catch( err => log('flag', err ) )
+		// })
+		// .catch( err => log('flag', err ) )
 
 	}
 
