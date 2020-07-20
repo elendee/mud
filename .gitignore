@@ -1,6 +1,7 @@
 .*
 !.gitignore
 node_modules/*
+ecosystem.pm2.js
 fs/*
 _storage/*
 package-lock.json
