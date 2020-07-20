@@ -10,12 +10,16 @@ const SOCKETS = require('./SOCKETS.js')
 const ROUTER = require('./ROUTER.js')
 const MAP = require('./MAP.js')
 
+const WSS = require('./WSS.js')
+
 const DB = require('./db.js')
 
 const Toon = require('./agents/Toon.js')
 const Zone = require('./Zone.js')
 
 // const moment = require('moment')
+
+function noop(){} // ping callback
 
 
 class Game {
@@ -27,6 +31,7 @@ class Game {
 		this.opening = false
 
 		this.pulse = false
+		this.client_sweep = false
 
 		this.ZONES = init.ZONES || {}
 
@@ -72,6 +77,29 @@ class Game {
 			}
 
 		}, GLOBAL.PULSES.GAME )
+
+
+		game.client_sweep = setInterval( function(){
+
+			let toon = {}
+			let zone = {}
+
+			for( const mud_id of Object.keys( SOCKETS )){
+
+				toon = SOCKETS[ mud_id ].request.session.USER._TOON
+		    	zone = game.ZONES[ toon._current_zone ]
+
+			    if ( SOCKETS[ mud_id ].isAlive === false ){
+			    	game.purge( toon )
+			    	return false
+			    }
+			 
+			    SOCKETS[ mud_id ].isAlive = false
+			    SOCKETS[ mud_id ].ping( noop )
+
+			}
+
+		}, 30000)
 
 
 	}
@@ -371,6 +399,22 @@ class Game {
 
 		const toon = zone._TOONS[ toon_id ]
 
+		if( Date.now() - zone._TOONS[ toon_id ]._last_chat < 1000 ){
+			toon._rapid_chats++
+			if( toon._rapid_chats > 100 ){
+				this.purge( toon )
+			}else{
+				SOCKETS[ toon_id ].send(JSON.stringify({
+					type: 'error',
+					msg: 'wait a little longer between chats',
+					time: 2000
+				}))
+			}
+			return false
+		}
+		toon._rapid_chats = 0
+		toon._last_chat = Date.now()
+
 		let group
 
 		log('chat', 'packet: \n', packet )
@@ -464,6 +508,34 @@ class Game {
 			}
 
 		}
+
+	}
+
+
+
+	purge( toon ){
+
+		if( !toon ){
+			log('flag', 'invalid purge: ', toon )
+			return false
+		}
+
+		// close self
+		SOCKETS[ toon.mud_id ].terminate()
+
+		// close for ZONES (sweep all)
+		for( const zone_id of Object.keys( this.ZONES )){
+			for( const toon_id of Object.keys( this.ZONES[ zone_id ]._TOONS )){
+				if( toon_id ===  toon.mud_id ){
+					delete this.ZONES[ zone_id ]._TOONS[ toon_id ]
+				}
+			}
+		}
+
+		// close for SOCKETS
+		if( SOCKETS[ toon.mud_id ] )  delete SOCKETS[ toon.mud_id ]
+
+		log('connection', 'closed toon', toon.mud_id )
 
 	}
 

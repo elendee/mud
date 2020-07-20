@@ -142,25 +142,36 @@ class Chat {
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
 		// chat.classList.add( data.method )
-		if( data.sender_mud_id == window.TOON.mud_id )  chat.classList.add('self')			
-		if( data.method === 'emote' ){ 
-			chat.innerHTML = data.chat
+		if( data.sender_mud_id == window.TOON.mud_id )  chat.classList.add('self')	
+
+		let prefix 
+		if( data.method === 'proprietor' ){
+			prefix = 'to proprietor: '
 		}else{
-			let prefix 
-			if( data.method === 'proprietor' ){
-				prefix = 'to proprietor: '
-			}else{
-				prefix = data.method + 's: '
-			}
+			prefix = data.method + 's: '
+		}		
+
+		if( data.method === 'emote' ){ 
+			
 			if( data.google ){
+
 				let res = '<br>'
+				
 				data.results.forEach((r)=>{
 					res += '<a class="" href="https://www.google.com/' + r.link + '" target="_blank" rel="noreferrer noopener">' + r.text.substr(0, 75) + '</a><br>'
 				})
-				chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ res }</span>`
+				// <span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span>
+				chat.innerHTML = `<span class='${ data.method }'>${ data.speaker } lists off some items:${ res }</span>`
+
 			}else{
-				chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ data.chat }</span>`
+
+				chat.innerHTML = data.chat
+
 			}
+		}else{
+			
+			chat.innerHTML = `<span class="speaker" style="color: ${ data.color }">${ data.speaker }: </span><span class='${ data.method }'>${ prefix }${ data.chat }</span>`
+		
 		}
 
 		this.content.appendChild( chat )

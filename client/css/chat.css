@@ -1,7 +1,7 @@
 #chat{
 	position: fixed;
 	z-index: 99;
-	width: 40%;
+	width: 50%;
 	height: 160px;
 	left: 0%;
 	bottom: 70px;
@@ -90,7 +90,7 @@
 	left: 4%;
 	border: 1px solid rgb(50, 50, 50);
 	width: 92%;
-	height: 30%;
+	height: 50%;
 /* 	border-radius: 5px; */
 }
 
@@ -112,4 +112,10 @@
 
 .yell{
 	color: red;
+}
+
+#chat-content a{
+    color: white;
+    padding: 2px 0;
+    display: inline-block;
 }

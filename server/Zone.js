@@ -488,13 +488,6 @@ class Zone extends Persistent {
 	}
 
 
-	purge( mud_id ){
-
-		delete this._TOONS[ mud_id ]
-		log('zone', 'purged: ', mud_id )
-
-	}
-
 
 	async read_flora(){
 

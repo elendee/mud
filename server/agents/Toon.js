@@ -94,7 +94,9 @@ module.exports = class Toon extends AgentPersistent {
 
 		this._initialized_inventory = init.initialized_inventory
 
+		this._rapid_chats = 0
 		this._last_yell = 0
+		this._last_chat = Date.now()
 
 		this.logistic = this.logistic || []
 		this.logistic.push('equipped', 'right_hand', 'left_hand')

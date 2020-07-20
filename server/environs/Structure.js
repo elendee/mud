@@ -12,7 +12,7 @@ const log = require('../log.js')
 const EnvironPersistent = require('./EnvironPersistent.js')
 const Persistent = require('../Persistent.js')
 
-// const parse_search = require('../parse_search.js')
+const parse_search = require('../parse_search.js')
 
 
 
@@ -149,19 +149,21 @@ const proprietor_map = {
 
 const help_messages = {
 	innkeeper: `
-		I've got it all, try:<br>
-		news<br>
+		I've got it all, try asking me for:<br>
+		news [topic]<br>
+		url [url]<br>
+		guestbook<br>
 		quest<br>
 		riddle<br>
 		thirsty<br>
-		or just chatting.
-		Type "message", followed by a message to leave a note in the guestbook for a couple days.  280 chars.
+		or just chatting.<br>
+		Type "message [message]", to leave a note in the guestbook for a couple days.  280 chars.
 		`,
 	blacksmith: `
-		I provide many services, try:<br>
+		I provide many services, try asking me for:<br>
+		news [topic]<br>
 		quest<br>
 		riddle<br>
-		news<br>
 		thirsty<br>
 		or just chatting.
 	`,
@@ -313,7 +315,7 @@ class Proprietor{
 				last_seen: Date.now()
 			})
 
-			msg = 'hey there, what do you go by? <br>(use "/p " to respond)'
+			msg = 'hey there, what do you go by? <br>(use "/p [message]" to respond)'
 
 		}else{
 
@@ -550,11 +552,27 @@ class Proprietor{
 
 				}else if( c.match(/^news ?/)){
 
-					answer.response = 'The ' + proprietor.type + ' scratches their chin, "what have I heard, hmm.."'
 					answer.method = 'emote'
-					setTimeout(()=>{
-						this.fetch_news( SOCKETS, toon, c )
-					}, answer.timeout )
+
+					let topic = typeof c === 'string' ? c.replace(/^news ?/, '').substr(0, 100) : 'news'
+
+					if( topic ){
+						answer.response = 'The ' + proprietor.type + ' scratches their chin, "what have I heard, hmm.."'
+						setTimeout(()=>{
+							this.fetch_news( SOCKETS, toon, topic )
+						}, answer.timeout )
+					}else{
+						answer.response = '"News about wot now?"  ( use "news [topic]" )'
+					}
+
+				}else if( c.match(/^url ./) ){
+
+					let url = c.replace(/^url /, '').trim()
+					if( url.length > 1000 ){
+						answer.response = 'What a query!  Can you shorten that for me ?'
+					}else{
+						this.fetch_url( SOCKETS, toon, url )
+					}
 
 				}else if( c.match(/^quest$/i)){
 
@@ -584,11 +602,9 @@ class Proprietor{
 	}
 
 
-	fetch_news( SOCKETS, toon, chat ){
+	fetch_news( SOCKETS, toon, topic ){
 
 		const proprietor = this
-
-		let topic = typeof chat === 'string' ? chat.replace(/^news ?/, '').substr(0, 100) : 'news'
 
 		node_fetch('https://www.google.com/search?q=' + topic,{
 			headers: {
@@ -602,14 +618,14 @@ class Proprietor{
 					type: 'chat',
 					data: {
 						google: true,
-						method: 'say',
+						method: 'emote',
 						speaker: proprietor.name,
 						color: proprietor.color,
-						results: [{
-							text: 'Actually I haven\'t heard a blasted thing recently.',
-							link: '#' 
-						}]
-						// results: parse_search( r )
+						// results: [{
+						// 	text: 'Actually I haven\'t heard a blasted thing recently.',
+						// 	link: '#' 
+						// }]
+						results: parse_search( r )
 					}
 				}))
 			})

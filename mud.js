@@ -461,6 +461,10 @@ DB.initPool(( err, pool ) => {
 		// log('wss', 'socket connection ', req.session.USER.name )
 		socket.request = req
 
+		socket.isAlive = true
+
+		socket.on('pong', heartbeat )
+
 		// log('wss', 'stuff...'  )///socket.request.session.save
 
 		// USER not a User yet...
@@ -525,6 +529,9 @@ DB.initPool(( err, pool ) => {
 
 
 
+function heartbeat(){
+	this.isAlive = true
+}
 
 
 
