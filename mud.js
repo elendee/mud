@@ -19,7 +19,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const cookie = require('cookie')
 const cookieParser = require('cookie-parser')
-const FormData = require('express-form-data')
+// const FormData = require('express-form-data')
 const mkdirp = require('mkdirp')
 const uuid = require('uuid').v4
 // const { parse } = require('node-html-parser')
@@ -119,15 +119,16 @@ const server = http.createServer( exp )
 // })
 
 
-const FormData_options = {
-  uploadDir: os.tmpdir(),
-  autoClean: true
-}
+// const FormData_options = {
+//   uploadDir: os.tmpdir(),
+//   autoClean: true
+// }
+// exp.use( FormData.parse( FormData_options ) )
+// exp.use( FormData.format() )
  
+
 // parse data with connect-multiparty. 
-exp.use( FormData.parse( FormData_options ) )
 // delete from the request all empty files (size == 0)
-exp.use( FormData.format() )
 // change the file objects to fs.ReadStream 
 // exp.use( FormData.stream() )
 // union the body and the files

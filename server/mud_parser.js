@@ -3,39 +3,71 @@ const { JSDOM } = require('jsdom')
 
 const log = require('./log.js')
 
-module.exports = function( type, search ){
+module.exports = function( type, text, url ){
 
-	switch ( type ){
+	if( typeof text !== 'string' ) return 'unable to parse response'
+
+	const { window } = new JSDOM( text, {
+		// options: options
+	} )
+	const { document } = (new JSDOM( text )).window
+
+	let response_dom = []
+
+	switch ( type ){ // (google DOM currently)
 
 		case 'search':
 
-			if( typeof search !== 'string' ) return 'unable to parse response'
-
-			const { window } = new JSDOM( search, {
-				// options: options
-			} )
-			const { document } = (new JSDOM( search )).window
-
 			const results = document.querySelectorAll('#main>div>div>div a')
 
-			let send = []
-
 			for( const res of results ){
-				if( res.querySelector('h3') ){
-					send.push({
-						text: res.textContent,
+				const h3 = res.querySelector('h3')
+				if( h3 ){
+					response_dom.push({
+						text: h3.textContent,
 						link: res.href
 					})
 				}
 			}
 
-			return send
+			return response_dom
 
 			break;
 
 		case 'url':
 
-			return 'not yet available'
+			const scripts = document.querySelectorAll('script')
+			for( const script of scripts ){
+				log('flag', 'removing script')
+				script.remove()
+			}
+
+			const styles = document.querySelectorAll('style')
+			for( const style of styles ){
+				log('flag', 'removing style')
+				style.remove()
+			}
+
+			const as = document.querySelectorAll('a')
+			for( const a of as ){
+				if( a.href && !a.href.match(/^https?:\/\//g) ){
+					a.href = url + '/' + a.href
+				}
+			}
+
+			// let res = []
+			let res = ''
+
+			const ps = document.querySelectorAll('p')
+			for( const p of ps ){
+				// res.push( p.textContent  + '<br>' )
+				// res += p.textContent + '<br>'
+				res += p.innerHTML + '<br>'
+			}
+
+			// return document || 'could not understand request'
+			return '<br>' + res || 'could not understand request'
+			// ? document.serialize() :
 
 			break;
 

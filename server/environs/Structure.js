@@ -1,4 +1,6 @@
 
+// const mud_read = require('../mud_read.js')
+
 const node_fetch = require('node-fetch')
 
 const { deflate, unzip } = require('zlib')
@@ -564,7 +566,16 @@ class Proprietor{
 					if( url.length > 1000 ){
 						answer.response = 'What a query!  Can you shorten that for me ?'
 					}else{
+						// const document 
 						answer.response = await this.fetch_url( SOCKETS, toon, url )
+						// answer.response = document.textContent
+						// const r = 
+						// if( r.success ){
+						// 	answer.response = r.title + '<br>' + r.content
+						// }else{
+						// 	answer.response = 'I couldn\'t understand that'
+						// }
+
 					}
 
 				}else if( c.match(/^quest$/i)){
@@ -639,6 +650,10 @@ class Proprietor{
 			return 'I don\'t understand how to look that up'
 		}
 
+		// const response = await mud_read( url )
+
+		// return response
+
 		const response = await node_fetch( url, {
 			headers: {
 				'accept-encoding': 'gzip,deflate'
@@ -646,6 +661,8 @@ class Proprietor{
 		})
 
 		const text = await response.text()
+
+		return mud_parser( 'url', text, url )
 
 		// SOCKETS[ toon.mud_id ].send( JSON.stringify({
 		// 	type: 'chat',
@@ -658,7 +675,7 @@ class Proprietor{
 		// 	}
 		// }))
 
-		return 'Not yet available, sorry'
+		// return 'Not yet available, sorry'
 		// 'Let me look that up for you'
 
 		// .then( res => {

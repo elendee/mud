@@ -188,6 +188,21 @@ class Chat {
 			chats[ 0 ].remove()
 		}
 
+		const as = this.content.querySelectorAll('a')
+		for( const a of as ){
+			if( !a.prefaced ){
+				a.target = '_blank'
+				a.rel = 'noreferrer noopener'
+				a.addEventListener('click', function(e){
+					if( !confirm('Caution: this is an EXTERNAL link.  Proceed ?\n' + a.href ) ){
+						e.preventDefault()
+						return false
+					}
+				})
+				a.prefaced = true
+			}
+		}
+
 		if( !TOON.inside && zone ){
 
 			if( !zone.NPCS[ data.sender_mud_id ] && !zone.TOONS[ data.sender_mud_id ] && window.TOON.mud_id !== data.sender_mud_id ){
