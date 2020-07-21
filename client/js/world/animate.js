@@ -257,8 +257,30 @@ function animate( start ){
 	    window.TOON.BBOX.translateZ( distance[1] )
 
 	    // bounds:
+		// move this whole deal to an interval state flag
+		if( window.TOON.BBOX.position.z > 450 && window.TOON.BBOX.position.z < 550 ){
+			if( window.TOON.BBOX.position.x < 0 ){
+				window.TOON.BBOX.position.x = 0
+				block_move('west')
+			}else if( window.TOON.BBOX.position.x > MAP.ZONE_WIDTH ){
+				window.TOON.BBOX.position.x = MAP.ZONE_WIDTH
+				block_move('east')
+			}	
+		}else if( window.TOON.BBOX.position.x > 450 && window.TOON.BBOX.position.x < 550 ){
+			//debugger
+			if( window.TOON.BBOX.position.z < 0 ){
+				window.TOON.BBOX.position.z = 0
+				block_move('north')
+			}else if( window.TOON.BBOX.position.z > MAP.ZONE_WIDTH ){
+				window.TOON.BBOX.position.z = MAP.ZONE_WIDTH
+				block_move('south')
+			}		
+		}
+
 	    window.TOON.BBOX.position.x = Math.min( Math.max( 0, window.TOON.BBOX.position.x ), MAP.ZONE_WIDTH )
 	    window.TOON.BBOX.position.z = Math.min( Math.max( 0, window.TOON.BBOX.position.z ), MAP.ZONE_WIDTH )
+
+		// all this ^^ in interval state flag
 
 	    CAMERA.position.copy( window.TOON.BBOX.position ).add( CAMERA.offset )
 
@@ -357,7 +379,15 @@ function animate( start ){
 
 }
 
-
+function block_move( dir ){
+	if( !window.TOON.move_flagged ){	
+		hal('standard', 'The path ' + dir + ' is unpassable', 2000)
+		window.TOON.move_flagged = true
+		setTimeout(function(){
+			window.TOON.move_flagged = false
+		}, 2000)
+	}
+}
 
 
 export { 
