@@ -567,8 +567,8 @@ class Proprietor{
 						answer.response = 'What a query!  Can you shorten that for me ?'
 					}else{
 						// const document 
-						answer.response = await this.fetch_url( SOCKETS, toon, url )
-						// answer.response = document.textContent
+						const content = await this.fetch_url( SOCKETS, toon, url )
+						answer.response = 'Here you are: <br>' + '<div class="mud-page">' + content + '</div>'
 						// const r = 
 						// if( r.success ){
 						// 	answer.response = r.title + '<br>' + r.content

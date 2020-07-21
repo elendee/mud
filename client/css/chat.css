@@ -119,3 +119,10 @@
     padding: 2px 0;
     display: inline-block;
 }
+
+.mud-page{
+/* 	background: red; */
+	padding: 1%;
+	border: 1px solid;
+	font-family: Times;
+}

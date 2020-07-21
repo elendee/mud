@@ -50,8 +50,15 @@ module.exports = function( type, text, url ){
 
 			const as = document.querySelectorAll('a')
 			for( const a of as ){
-				if( a.href && !a.href.match(/^https?:\/\//g) ){
-					a.href = url + '/' + a.href
+				if( a.href ){
+					if( !a.href.match(/^https?\:\/\//g) ){
+						log('flag', 'fixing url: ', a.href )
+						if( a.href.match(/^\//)){
+							a.href = a.href.replace(/^\/*/, 'http://')
+						}else{
+							a.href = url + '/' + a.href
+						}
+					}
 				}
 			}
 
