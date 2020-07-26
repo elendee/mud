@@ -368,11 +368,12 @@ class Proprietor{
 			let len = moniker.split(' ').length
 			answer.method = 'say'
 			answer.timeout = 1000
-			if( len === 2 || len === 1 ){
+			// if( len === 2 || len === 1 ){
+			if( len === 1 ){
 				answer.response = 'Alright, ' + moniker + ' it is.'
 				this._guestbook[ toon.mud_id ].moniker = moniker
 			}else{
-				answer.response = 'I didn\'t catch that, what should I call you?'
+				answer.response = 'I didn\'t catch that, what should I call you? (single nickname)'
 			}
 
 		}
