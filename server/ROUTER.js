@@ -9,7 +9,10 @@ const MAP = require('./MAP.js')
 
 const auth = require('./auth.js')
 
-const { Vector3, Quaternion } = require('three')
+const { 
+	Vector3, 
+	Quaternion 
+} = require('three')
 
 // const TREES = require('./TREES.js')
 // const BOTS = require('./BOTS.js')

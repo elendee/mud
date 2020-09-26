@@ -230,7 +230,7 @@ class Proprietor{
 			return false
 		}
 
-		let value_string = 'z'
+		let value_string = 'first'
 		let guest
 		const deletes = []
 
@@ -249,11 +249,11 @@ class Proprietor{
 
 			if( !guest.moniker ) continue
 
-			const msg = guest.message ? '"' + guest.message + '"' : 'NULL'
+			const msg = guest.message ? guest.message : 'NULL'
 
-			const current_string = '(' + ( guest._id || 'NULL' ) + ', ' + this._structure_key + ', "' + pool.escape( guest.moniker ) + '", "' + guest.last_seen + '", ' + pool.escape( msg ) + ')'
+			const current_string = '(' + ( guest._id || 'NULL' ) + ', ' + this._structure_key + ', ' + pool.escape( guest.moniker ) + ', ' + guest.last_seen + ', ' + pool.escape( msg ) + ')'
 
-			if( value_string === 'z' ){
+			if( value_string === 'first' ){
 				value_string = current_string
 			}else{
 				value_string = value_string + ', ' + current_string

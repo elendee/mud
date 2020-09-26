@@ -110,7 +110,8 @@ async function update( doc, field_array, value_array ){
 
 			}else{
 
-				value = '"' + mysql.escape( value_array[i] ) + '"' // normal string
+				// '"' +  + '"'
+				value = mysql.escape( value_array[i] ) // normal string
 
 			}
 
@@ -124,7 +125,9 @@ async function update( doc, field_array, value_array ){
 
 		}else if( type === 'object' ){
 
-			value = "'" + mysql.escape( JSON.stringify( value_array[i] ) ) + "'" // stringify generates " so it needs ' wrappers for SQL
+			// "'" ++ "'"
+			value = mysql.escape( JSON.stringify( value_array[i] ) )  
+			// stringify generates " so it needs ' wrappers for SQL
 
 		}else if( type === 'boolean' ){
 
@@ -138,7 +141,6 @@ async function update( doc, field_array, value_array ){
 		}
 
 		// log('flag', 'field_array: ', field_array[i] +'\n' + type + '\n' + value_array[i] + '\n' + value )
-
 
 		let concat
 		if( first_val ){
